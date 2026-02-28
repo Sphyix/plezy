@@ -969,6 +969,7 @@ class _TranslationsDownloadsKo implements TranslationsDownloadsEn {
 	@override String get pauseAll => '모두 일시정지';
 	@override String get resumeAll => '모두 재개';
 	@override String get deleteAll => '모두 삭제';
+	@override String get storageUnavailable => '저장소를 사용할 수 없습니다. 외장 드라이브 또는 다운로드 위치 설정을 확인하세요.';
 }
 
 // Path: shaders
@@ -1858,6 +1859,7 @@ extension on TranslationsKo {
 			'downloads.pauseAll' => '모두 일시정지',
 			'downloads.resumeAll' => '모두 재개',
 			'downloads.deleteAll' => '모두 삭제',
+			'downloads.storageUnavailable' => '저장소를 사용할 수 없습니다. 외장 드라이브 또는 다운로드 위치 설정을 확인하세요.',
 			'shaders.title' => '셰이더',
 			'shaders.noShaderDescription' => '비디오 향상 없음',
 			'shaders.nvscalerDescription' => '더 선명한 비디오를 위한 NVIDIA 이미지 스케일링',

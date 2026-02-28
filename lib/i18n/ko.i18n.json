@@ -699,7 +699,8 @@
     "noDownloadsTree": "다운로드 없음",
     "pauseAll": "모두 일시정지",
     "resumeAll": "모두 재개",
-    "deleteAll": "모두 삭제"
+    "deleteAll": "모두 삭제",
+    "storageUnavailable": "저장소를 사용할 수 없습니다. 외장 드라이브 또는 다운로드 위치 설정을 확인하세요."
   },
   "shaders": {
     "title": "셰이더",

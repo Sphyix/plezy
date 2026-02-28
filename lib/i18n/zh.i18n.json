@@ -599,7 +599,8 @@
     "noDownloadsTree": "暂无下载",
     "pauseAll": "全部暂停",
     "resumeAll": "全部继续",
-    "deleteAll": "全部删除"
+    "deleteAll": "全部删除",
+    "storageUnavailable": "存储不可用。请检查您的外部驱动器或下载位置设置。"
   },
   "playlists": {
     "title": "播放列表",

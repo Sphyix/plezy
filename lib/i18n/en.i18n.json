@@ -699,7 +699,8 @@
     "noDownloadsTree": "No downloads",
     "pauseAll": "Pause all",
     "resumeAll": "Resume all",
-    "deleteAll": "Delete all"
+    "deleteAll": "Delete all",
+    "storageUnavailable": "Storage unavailable. Please check your external drive or download location settings."
   },
   "shaders": {
     "title": "Shaders",

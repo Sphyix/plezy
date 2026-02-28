@@ -490,6 +490,13 @@ class DownloadManagerService {
     }
   }
 
+  /// Validate that configured download storage is available, or throw.
+  Future<void> _validateStorageOrThrow() async {
+    if (!await _storageService.validateAvailable()) {
+      throw StorageUnavailableException();
+    }
+  }
+
   /// Resolve metadata, video URL, and file path, then enqueue a background download task.
   Future<void> _prepareAndEnqueueDownload(String globalKey, PlexClient client, DownloadQueueItem queueItem) async {
     try {
@@ -525,6 +532,9 @@ class DownloadManagerService {
       // Get WiFi-only setting for native enforcement
       final settings = await SettingsService.getInstance();
       final requiresWiFi = settings.getDownloadOnWifiOnly();
+
+      // Validate storage availability before any file operations
+      await _validateStorageOrThrow();
 
       if (_storageService.isUsingSaf) {
         // SAF mode: use UriDownloadTask (writes directly to content:// URI, no pause/resume)
@@ -1154,6 +1164,9 @@ class DownloadManagerService {
 
   /// Cancel a download
   Future<void> cancelDownload(String globalKey) async {
+    // Validate storage availability for consistency
+    await _validateStorageOrThrow();
+
     final bgTaskId = await _database.getBgTaskId(globalKey);
     if (bgTaskId != null) {
       await FileDownloader().cancelTaskWithId(bgTaskId);
@@ -1165,6 +1178,9 @@ class DownloadManagerService {
 
   /// Delete a downloaded item and its files
   Future<void> deleteDownload(String globalKey) async {
+    // Validate storage availability before file deletion
+    await _validateStorageOrThrow();
+
     // Cancel if actively downloading via background_downloader
     final bgTaskId = await _database.getBgTaskId(globalKey);
     if (bgTaskId != null) {
@@ -1676,4 +1692,12 @@ class DownloadManagerService {
     _progressController.close();
     _deletionProgressController.close();
   }
+}
+
+/// Exception thrown when configured download storage is unavailable
+class StorageUnavailableException implements Exception {
+  final String message = 'Download storage is unavailable';
+
+  @override
+  String toString() => message;
 }

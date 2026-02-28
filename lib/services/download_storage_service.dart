@@ -8,6 +8,7 @@ import '../models/plex_metadata.dart';
 import '../utils/formatters.dart';
 import 'settings_service.dart';
 import 'saf_storage_service.dart';
+import '../utils/app_logger.dart';
 
 class DownloadStorageService {
   static DownloadStorageService? _instance;
@@ -102,6 +103,34 @@ class DownloadStorageService {
     }
   }
 
+  /// Check-on-use storage validation. Returns true if configured storage is available.
+  /// Invalidates caches on failure so next successful check rebuilds them.
+  Future<bool> validateAvailable() async {
+    if (isUsingSaf) {
+      if (_customDownloadPath == null) return false;
+      final hasPermission = await SafStorageService.instance.hasPersistedPermission(_customDownloadPath!);
+      if (!hasPermission) {
+        _baseDownloadsDir = null;
+        _artworkDirectoryPath = null;
+        return false;
+      }
+      return true;
+    }
+
+    if (_customDownloadPath != null && _customPathType == 'file') {
+      final customDir = Directory(_customDownloadPath!);
+      if (!await isDirectoryWritable(customDir)) {
+        _baseDownloadsDir = null;
+        _artworkDirectoryPath = null;
+        return false;
+      }
+      return true;
+    }
+
+    // Default path (app documents directory) — always available
+    return true;
+  }
+
   /// Initialize and get base downloads directory
   Future<Directory> getDownloadsDirectory() async {
     if (_baseDownloadsDir != null) return _baseDownloadsDir!;
@@ -113,7 +142,9 @@ class DownloadStorageService {
         _baseDownloadsDir = customDir;
         return _baseDownloadsDir!;
       }
-      // Fall through to default if custom path is not writable
+      // Custom path not writable — do NOT silently fall back to default
+      appLogger.w('Custom download path is not writable: $_customDownloadPath');
+      throw Exception('Custom download path is not writable: $_customDownloadPath');
     }
 
     // Default path logic

@@ -2163,6 +2163,9 @@ class TranslationsDownloadsEn {
 
 	/// en: 'Delete all'
 	String get deleteAll => 'Delete all';
+
+	/// en: 'Storage unavailable. Please check your external drive or download location settings.'
+	String get storageUnavailable => 'Storage unavailable. Please check your external drive or download location settings.';
 }
 
 // Path: shaders
@@ -3347,6 +3350,7 @@ extension on Translations {
 			'downloads.pauseAll' => 'Pause all',
 			'downloads.resumeAll' => 'Resume all',
 			'downloads.deleteAll' => 'Delete all',
+			'downloads.storageUnavailable' => 'Storage unavailable. Please check your external drive or download location settings.',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',

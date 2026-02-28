@@ -848,6 +848,7 @@ class _TranslationsDownloadsSv implements TranslationsDownloadsEn {
 	@override String get pauseAll => 'Pausa alla';
 	@override String get resumeAll => 'Återuppta alla';
 	@override String get deleteAll => 'Ta bort alla';
+	@override String get storageUnavailable => 'Lagring otillgänglig. Kontrollera din externa enhet eller inställningar för nedladdningsplats.';
 }
 
 // Path: playlists
@@ -1764,6 +1765,7 @@ extension on TranslationsSv {
 			'downloads.pauseAll' => 'Pausa alla',
 			'downloads.resumeAll' => 'Återuppta alla',
 			'downloads.deleteAll' => 'Ta bort alla',
+			'downloads.storageUnavailable' => 'Lagring otillgänglig. Kontrollera din externa enhet eller inställningar för nedladdningsplats.',
 			'playlists.title' => 'Spellistor',
 			'playlists.noPlaylists' => 'Inga spellistor hittades',
 			'playlists.create' => 'Skapa spellista',

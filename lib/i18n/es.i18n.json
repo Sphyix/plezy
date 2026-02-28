@@ -699,7 +699,8 @@
     "noDownloadsTree": "Sin descargas",
     "pauseAll": "Pausar todo",
     "resumeAll": "Reanudar todo",
-    "deleteAll": "Eliminar todo"
+    "deleteAll": "Eliminar todo",
+    "storageUnavailable": "Almacenamiento no disponible. Verifique su unidad externa o la configuración de ubicación de descargas."
   },
   "shaders": {
     "title": "Shaders",

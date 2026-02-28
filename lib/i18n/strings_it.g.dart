@@ -848,6 +848,7 @@ class _TranslationsDownloadsIt implements TranslationsDownloadsEn {
 	@override String get pauseAll => 'Metti tutto in pausa';
 	@override String get resumeAll => 'Riprendi tutto';
 	@override String get deleteAll => 'Elimina tutto';
+	@override String get storageUnavailable => 'Archiviazione non disponibile. Controlla l\'unità esterna o le impostazioni della posizione di download.';
 }
 
 // Path: playlists
@@ -1764,6 +1765,7 @@ extension on TranslationsIt {
 			'downloads.pauseAll' => 'Metti tutto in pausa',
 			'downloads.resumeAll' => 'Riprendi tutto',
 			'downloads.deleteAll' => 'Elimina tutto',
+			'downloads.storageUnavailable' => 'Archiviazione non disponibile. Controlla l\'unità esterna o le impostazioni della posizione di download.',
 			'playlists.title' => 'Playlist',
 			'playlists.noPlaylists' => 'Nessuna playlist trovata',
 			'playlists.create' => 'Crea playlist',

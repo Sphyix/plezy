@@ -848,6 +848,7 @@ class _TranslationsDownloadsNl implements TranslationsDownloadsEn {
 	@override String get pauseAll => 'Alles pauzeren';
 	@override String get resumeAll => 'Alles hervatten';
 	@override String get deleteAll => 'Alles verwijderen';
+	@override String get storageUnavailable => 'Opslag niet beschikbaar. Controleer uw externe schijf of downloadlocatie-instellingen.';
 }
 
 // Path: playlists
@@ -1764,6 +1765,7 @@ extension on TranslationsNl {
 			'downloads.pauseAll' => 'Alles pauzeren',
 			'downloads.resumeAll' => 'Alles hervatten',
 			'downloads.deleteAll' => 'Alles verwijderen',
+			'downloads.storageUnavailable' => 'Opslag niet beschikbaar. Controleer uw externe schijf of downloadlocatie-instellingen.',
 			'playlists.title' => 'Afspeellijsten',
 			'playlists.noPlaylists' => 'Geen afspeellijsten gevonden',
 			'playlists.create' => 'Afspeellijst maken',

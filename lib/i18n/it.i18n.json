@@ -599,7 +599,8 @@
     "noDownloadsTree": "Nessun download",
     "pauseAll": "Metti tutto in pausa",
     "resumeAll": "Riprendi tutto",
-    "deleteAll": "Elimina tutto"
+    "deleteAll": "Elimina tutto",
+    "storageUnavailable": "Archiviazione non disponibile. Controlla l'unità esterna o le impostazioni della posizione di download."
   },
   "playlists": {
     "title": "Playlist",

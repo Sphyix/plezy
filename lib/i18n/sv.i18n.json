@@ -599,7 +599,8 @@
     "noDownloadsTree": "Inga nedladdningar",
     "pauseAll": "Pausa alla",
     "resumeAll": "Återuppta alla",
-    "deleteAll": "Ta bort alla"
+    "deleteAll": "Ta bort alla",
+    "storageUnavailable": "Lagring otillgänglig. Kontrollera din externa enhet eller inställningar för nedladdningsplats."
   },
   "playlists": {
     "title": "Spellistor",

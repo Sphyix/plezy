@@ -11,6 +11,12 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+.vestige*
+.mcp.json
+.claude/
+.fastembed_cache/
+CLAUDE.md
+_bmad*
 
 # IntelliJ related
 *.iml

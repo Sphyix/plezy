@@ -969,6 +969,7 @@ class _TranslationsDownloadsFr implements TranslationsDownloadsEn {
 	@override String get pauseAll => 'Tout mettre en pause';
 	@override String get resumeAll => 'Tout reprendre';
 	@override String get deleteAll => 'Tout supprimer';
+	@override String get storageUnavailable => 'Stockage indisponible. Veuillez vérifier votre disque externe ou les paramètres d\'emplacement de téléchargement.';
 }
 
 // Path: shaders
@@ -1858,6 +1859,7 @@ extension on TranslationsFr {
 			'downloads.pauseAll' => 'Tout mettre en pause',
 			'downloads.resumeAll' => 'Tout reprendre',
 			'downloads.deleteAll' => 'Tout supprimer',
+			'downloads.storageUnavailable' => 'Stockage indisponible. Veuillez vérifier votre disque externe ou les paramètres d\'emplacement de téléchargement.',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Aucune amélioration vidéo',
 			'shaders.nvscalerDescription' => 'Mise à l\'échelle NVIDIA pour une vidéo plus nette',

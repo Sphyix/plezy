@@ -848,6 +848,7 @@ class _TranslationsDownloadsZh implements TranslationsDownloadsEn {
 	@override String get pauseAll => '全部暂停';
 	@override String get resumeAll => '全部继续';
 	@override String get deleteAll => '全部删除';
+	@override String get storageUnavailable => '存储不可用。请检查您的外部驱动器或下载位置设置。';
 }
 
 // Path: playlists
@@ -1764,6 +1765,7 @@ extension on TranslationsZh {
 			'downloads.pauseAll' => '全部暂停',
 			'downloads.resumeAll' => '全部继续',
 			'downloads.deleteAll' => '全部删除',
+			'downloads.storageUnavailable' => '存储不可用。请检查您的外部驱动器或下载位置设置。',
 			'playlists.title' => '播放列表',
 			'playlists.noPlaylists' => '未找到播放列表',
 			'playlists.create' => '创建播放列表',

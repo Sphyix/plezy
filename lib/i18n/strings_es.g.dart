@@ -969,6 +969,7 @@ class _TranslationsDownloadsEs implements TranslationsDownloadsEn {
 	@override String get pauseAll => 'Pausar todo';
 	@override String get resumeAll => 'Reanudar todo';
 	@override String get deleteAll => 'Eliminar todo';
+	@override String get storageUnavailable => 'Almacenamiento no disponible. Verifique su unidad externa o la configuración de ubicación de descargas.';
 }
 
 // Path: shaders
@@ -1858,6 +1859,7 @@ extension on TranslationsEs {
 			'downloads.pauseAll' => 'Pausar todo',
 			'downloads.resumeAll' => 'Reanudar todo',
 			'downloads.deleteAll' => 'Eliminar todo',
+			'downloads.storageUnavailable' => 'Almacenamiento no disponible. Verifique su unidad externa o la configuración de ubicación de descargas.',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Sin mejora de video',
 			'shaders.nvscalerDescription' => 'Escalado de imagen NVIDIA para un video más nítido',

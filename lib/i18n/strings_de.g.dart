@@ -848,6 +848,7 @@ class _TranslationsDownloadsDe implements TranslationsDownloadsEn {
 	@override String get pauseAll => 'Alle pausieren';
 	@override String get resumeAll => 'Alle fortsetzen';
 	@override String get deleteAll => 'Alle löschen';
+	@override String get storageUnavailable => 'Speicher nicht verfügbar. Bitte überprüfen Sie Ihr externes Laufwerk oder die Download-Speicherort-Einstellungen.';
 }
 
 // Path: playlists
@@ -1764,6 +1765,7 @@ extension on TranslationsDe {
 			'downloads.pauseAll' => 'Alle pausieren',
 			'downloads.resumeAll' => 'Alle fortsetzen',
 			'downloads.deleteAll' => 'Alle löschen',
+			'downloads.storageUnavailable' => 'Speicher nicht verfügbar. Bitte überprüfen Sie Ihr externes Laufwerk oder die Download-Speicherort-Einstellungen.',
 			'playlists.title' => 'Wiedergabelisten',
 			'playlists.noPlaylists' => 'Keine Wiedergabelisten gefunden',
 			'playlists.create' => 'Wiedergabeliste erstellen',

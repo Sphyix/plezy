@@ -599,7 +599,8 @@
     "noDownloadsTree": "Geen downloads",
     "pauseAll": "Alles pauzeren",
     "resumeAll": "Alles hervatten",
-    "deleteAll": "Alles verwijderen"
+    "deleteAll": "Alles verwijderen",
+    "storageUnavailable": "Opslag niet beschikbaar. Controleer uw externe schijf of downloadlocatie-instellingen."
   },
   "playlists": {
     "title": "Afspeellijsten",

@@ -10,6 +10,7 @@ import '../services/download_manager_service.dart';
 import '../services/download_storage_service.dart';
 import '../services/plex_api_cache.dart';
 import '../services/plex_client.dart';
+import '../i18n/strings.g.dart';
 import '../utils/app_logger.dart';
 import '../utils/global_key_utils.dart';
 
@@ -54,6 +55,10 @@ class DownloadProvider extends ChangeNotifier {
   // Key: globalKey (serverId:ratingKey), Value: total episode count
   final Map<String, int> _totalEpisodeCounts = {};
 
+  // Storage error state (set when storage is unavailable)
+  String? _storageError;
+  String? get storageError => _storageError;
+
   DownloadProvider({required DownloadManagerService downloadManager}) : _downloadManager = downloadManager {
     // Listen to progress updates from the download manager
     _progressSubscription = _downloadManager.progressStream.listen(_onProgressUpdate);
@@ -67,6 +72,12 @@ class DownloadProvider extends ChangeNotifier {
 
   /// Ensures persisted downloads have been loaded from disk.
   Future<void> ensureInitialized() => _initFuture;
+
+  /// Clear storage error state
+  void clearStorageError() {
+    _storageError = null;
+    notifyListeners();
+  }
 
   /// Load all persisted downloads and metadata from the database/cache
   Future<void> _loadPersistedDownloads() async {
@@ -637,6 +648,10 @@ class DownloadProvider extends ChangeNotifier {
       } else {
         throw Exception('Cannot download ${metadata.type}');
       }
+    } on StorageUnavailableException {
+      _storageError = t.downloads.storageUnavailable;
+      notifyListeners();
+      return 0;
     } finally {
       // Always remove from queueing set, even on error
       _queueing.remove(globalKey);
@@ -960,6 +975,9 @@ class DownloadProvider extends ChangeNotifier {
       _metadata.remove(globalKey);
       _artworkPaths.remove(globalKey);
 
+      notifyListeners();
+    } on StorageUnavailableException {
+      _storageError = t.downloads.storageUnavailable;
       notifyListeners();
     } catch (e) {
       // Remove from deletion tracking on error

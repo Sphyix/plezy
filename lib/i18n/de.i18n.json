@@ -599,7 +599,8 @@
     "noDownloadsTree": "Keine Downloads",
     "pauseAll": "Alle pausieren",
     "resumeAll": "Alle fortsetzen",
-    "deleteAll": "Alle löschen"
+    "deleteAll": "Alle löschen",
+    "storageUnavailable": "Speicher nicht verfügbar. Bitte überprüfen Sie Ihr externes Laufwerk oder die Download-Speicherort-Einstellungen."
   },
   "playlists": {
     "title": "Wiedergabelisten",

@@ -699,7 +699,8 @@
     "noDownloadsTree": "Aucun téléchargement",
     "pauseAll": "Tout mettre en pause",
     "resumeAll": "Tout reprendre",
-    "deleteAll": "Tout supprimer"
+    "deleteAll": "Tout supprimer",
+    "storageUnavailable": "Stockage indisponible. Veuillez vérifier votre disque externe ou les paramètres d'emplacement de téléchargement."
   },
   "shaders": {
     "title": "Shaders",
