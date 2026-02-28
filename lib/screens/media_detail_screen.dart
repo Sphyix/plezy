@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import '../utils/global_key_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:plezy/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import '../widgets/collapsible_text.dart';
+import '../widgets/rating_bottom_sheet.dart';
 
 import '../focus/dpad_navigator.dart';
 import '../focus/focusable_wrapper.dart';
@@ -23,6 +25,7 @@ import '../utils/plex_image_helper.dart';
 import '../../services/plex_client.dart';
 import '../services/plex_api_cache.dart';
 import '../models/plex_metadata.dart';
+import '../models/plex_video_playback_data.dart';
 import '../utils/content_utils.dart';
 import '../utils/rating_utils.dart';
 import '../models/download_models.dart';
@@ -46,6 +49,7 @@ import '../mixins/watch_state_aware.dart';
 import '../mixins/deletion_aware.dart';
 import '../utils/watch_state_notifier.dart';
 import '../utils/deletion_notifier.dart';
+import 'metadata_edit_screen.dart';
 import 'season_detail_screen.dart';
 
 class MediaDetailScreen extends StatefulWidget {
@@ -61,8 +65,10 @@ class MediaDetailScreen extends StatefulWidget {
 class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAware, DeletionAware {
   List<PlexMetadata> _seasons = [];
   bool _isLoadingSeasons = false;
+  Completer<void>? _seasonsCompleter;
   PlexMetadata? _fullMetadata;
   PlexMetadata? _onDeckEpisode;
+  PlexVideoPlaybackData? _playbackData;
   bool _isLoadingMetadata = true;
   List<PlexMetadata>? _extras;
   late final ScrollController _scrollController;
@@ -75,6 +81,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
   int _focusedSeasonIndex = 0;
   late final FocusNode _seasonsFocusNode;
   late final FocusNode _playButtonFocusNode;
+  late final FocusNode _ratingChipFocusNode;
   Timer? _selectKeyTimer;
   bool _isSelectKeyDown = false;
   bool _longPressTriggered = false;
@@ -101,7 +108,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
   final _seasonsSectionKey = GlobalKey();
 
   String _toGlobalKey(String ratingKey, {String? serverId}) =>
-      '${serverId ?? widget.metadata.serverId ?? ''}:$ratingKey';
+      buildGlobalKey(serverId ?? widget.metadata.serverId ?? '', ratingKey);
 
   // WatchStateAware: watch the show/movie and all season ratingKeys
   @override
@@ -256,6 +263,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
     _seasonsFocusNode = FocusNode(debugLabel: 'seasons_row');
     _extrasFocusNode = FocusNode(debugLabel: 'extras_row');
     _playButtonFocusNode = FocusNode(debugLabel: 'play_button');
+    _ratingChipFocusNode = FocusNode(debugLabel: 'rating_chip');
     _overviewFocusNode = FocusNode(debugLabel: 'overview');
     _castFocusNode = FocusNode(debugLabel: 'cast_row');
     _loadFullMetadata();
@@ -275,6 +283,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
     _seasonsFocusNode.dispose();
     _extrasFocusNode.dispose();
     _playButtonFocusNode.dispose();
+    _ratingChipFocusNode.dispose();
     _overviewFocusNode.dispose();
     _castFocusNode.dispose();
     _castScrollController.dispose();
@@ -355,6 +364,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
           metadata: metadata,
           isOffline: widget.isOffline,
           onRefresh: _loadFullMetadata,
+          playbackData: _playbackData,
         );
       }
     }
@@ -416,7 +426,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
           if (!widget.isOffline)
             Consumer<DownloadProvider>(
               builder: (context, downloadProvider, _) {
-                final globalKey = '${metadata.serverId}:${metadata.ratingKey}';
+                final globalKey = metadata.globalKey;
                 final progress = downloadProvider.getProgress(globalKey);
                 final isQueueing = downloadProvider.isQueueing(globalKey);
 
@@ -699,6 +709,25 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
             iconSize: 20,
             style: IconButton.styleFrom(minimumSize: const Size(48, 48), maximumSize: const Size(48, 48)),
           ),
+          // Edit metadata button (hidden in offline mode)
+          if (!widget.isOffline) ...[
+            const SizedBox(width: 12),
+            IconButton.filledTonal(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MetadataEditScreen(metadata: metadata)),
+                );
+                if (mounted) {
+                  _loadFullMetadata();
+                }
+              },
+              icon: const AppIcon(Symbols.edit_rounded, fill: 1),
+              tooltip: t.metadataEdit.editMetadata,
+              iconSize: 20,
+              style: IconButton.styleFrom(minimumSize: const Size(48, 48), maximumSize: const Size(48, 48)),
+            ),
+          ],
         ],
       ),
     );
@@ -772,7 +801,93 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
         chips.add(_buildRatingChip(metadata.audienceRatingImage, metadata.audienceRating!, Symbols.people_rounded));
       }
     }
+
+    // User rating chip (tappable)
+    if (!widget.isOffline) {
+      chips.add(_buildUserRatingChip(metadata));
+    }
+
     return chips;
+  }
+
+  Widget _buildUserRatingChip(PlexMetadata metadata) {
+    final hasRating = metadata.userRating != null && metadata.userRating! > 0;
+    final starValue = hasRating ? metadata.userRating! / 2.0 : 0.0;
+
+    return FocusableWrapper(
+      focusNode: _ratingChipFocusNode,
+      onSelect: () => _showRatingDialog(metadata, starValue),
+      borderRadius: 100,
+      useBackgroundFocus: true,
+      onKeyEvent: (_, event) {
+        if (!event.isActionable) return KeyEventResult.ignored;
+        final key = event.logicalKey;
+        if (key.isDownKey) {
+          _playButtonFocusNode.requestFocus();
+          return KeyEventResult.handled;
+        }
+        if (key.isUpKey) {
+          return KeyEventResult.handled; // consume — nothing above
+        }
+        return KeyEventResult.ignored;
+      },
+      child: GestureDetector(
+        onTap: () => _showRatingDialog(metadata, starValue),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.8),
+            borderRadius: const BorderRadius.all(Radius.circular(100)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppIcon(
+                Symbols.star_rounded,
+                fill: hasRating ? 1 : 0,
+                color: hasRating
+                    ? Colors.amber
+                    : Theme.of(context).colorScheme.onSecondaryContainer,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                hasRating
+                    ? formatRating(starValue)
+                    : t.mediaMenu.rate,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showRatingDialog(PlexMetadata metadata, double currentStarValue) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => RatingBottomSheet(
+        currentRating: currentStarValue,
+        onRate: (stars) async {
+          final client = _getClientForMetadata(this.context);
+          if (client == null) return;
+          final plexRating = stars * 2.0; // Convert 0-5 stars to 0-10 scale
+          final success = await client.rateItem(metadata.ratingKey, plexRating);
+          if (success) _updateWatchState();
+        },
+        onClear: () async {
+          final client = _getClientForMetadata(this.context);
+          if (client == null) return;
+          final success = await client.rateItem(metadata.ratingKey, -1);
+          if (success) _updateWatchState();
+        },
+      ),
+    );
   }
 
   /// Build a combined RT chip showing critic + audience side by side.
@@ -854,6 +969,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
       final result = await client.getMetadataWithImagesAndOnDeck(widget.metadata.ratingKey);
       final metadata = result['metadata'] as PlexMetadata?;
       final onDeckEpisode = result['onDeckEpisode'] as PlexMetadata?;
+      final playbackData = result['playbackData'] as PlexVideoPlaybackData?;
 
       if (!mounted) return;
 
@@ -871,6 +987,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
         setState(() {
           _fullMetadata = metadataWithServerId;
           _onDeckEpisode = onDeckWithServerId;
+          _playbackData = playbackData;
           _isLoadingMetadata = false;
         });
 
@@ -909,6 +1026,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
   }
 
   Future<void> _loadSeasons() async {
+    _seasonsCompleter = Completer<void>();
     setState(() {
       _isLoadingSeasons = true;
     });
@@ -932,11 +1050,16 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
       setState(() {
         _isLoadingSeasons = false;
       });
+    } finally {
+      if (!(_seasonsCompleter?.isCompleted ?? true)) {
+        _seasonsCompleter?.complete();
+      }
     }
   }
 
   /// Load seasons from downloaded episodes (offline mode)
   void _loadSeasonsFromDownloads() {
+    _seasonsCompleter = Completer<void>();
     setState(() {
       _isLoadingSeasons = true;
     });
@@ -971,6 +1094,9 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
       _seasons = seasons;
       _isLoadingSeasons = false;
     });
+    if (!(_seasonsCompleter?.isCompleted ?? true)) {
+      _seasonsCompleter?.complete();
+    }
   }
 
   /// Load extras (trailers, behind-the-scenes, etc.)
@@ -1036,6 +1162,16 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
   KeyEventResult _handlePlayButtonKeyEvent(FocusNode _, KeyEvent event) {
     final key = event.logicalKey;
     if (!event.isActionable) return KeyEventResult.ignored;
+
+    // UP: focus the rating chip if available
+    if (key.isUpKey) {
+      if (!widget.isOffline) {
+        _ratingChipFocusNode.requestFocus();
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.handled;
+    }
+
     if (!key.isDownKey) return KeyEventResult.ignored;
 
     final metadata = _fullMetadata ?? widget.metadata;
@@ -1528,8 +1664,8 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
       }
 
       // Wait for seasons to finish loading if they're currently loading
-      while (_isLoadingSeasons) {
-        await Future.delayed(const Duration(milliseconds: 100));
+      if (_isLoadingSeasons && _seasonsCompleter != null) {
+        await _seasonsCompleter!.future.timeout(const Duration(seconds: 10), onTimeout: () {});
       }
 
       if (!mounted) return;
@@ -1727,14 +1863,17 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                       SizedBox(
                         height: headerHeight,
                         width: double.infinity,
-                        child: metadata.art != null
+                        child: (metadata.art != null || metadata.backgroundSquare != null)
                             ? Builder(
                                 builder: (context) {
+                                  final containerAspect = size.width / headerHeight;
+                                  final heroArtPath = metadata.heroArt(containerAspectRatio: containerAspect);
+
                                   // Check for offline local file first
                                   if (widget.isOffline && widget.metadata.serverId != null) {
                                     final localPath = context.read<DownloadProvider>().getArtworkLocalPath(
                                       widget.metadata.serverId!,
-                                      metadata.art,
+                                      heroArtPath,
                                     );
                                     if (localPath != null && File(localPath).existsSync()) {
                                       return Image.file(
@@ -1753,19 +1892,19 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                                   final dpr = PlexImageHelper.effectiveDevicePixelRatio(context);
                                   final imageUrl = PlexImageHelper.getOptimizedImageUrl(
                                     client: client,
-                                    thumbPath: metadata.art,
+                                    thumbPath: heroArtPath,
                                     maxWidth: mediaQuery.size.width,
                                     maxHeight: mediaQuery.size.height * 0.6,
                                     devicePixelRatio: dpr,
                                     imageType: ImageType.art,
                                   );
 
-                                  return CachedNetworkImage(
+                                  return blurArtwork(CachedNetworkImage(
                                     imageUrl: imageUrl,
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) => const PlaceholderContainer(),
                                     errorWidget: (context, url, error) => const PlaceholderContainer(),
-                                  );
+                                  ));
                                 },
                               )
                             : const PlaceholderContainer(),
@@ -1844,7 +1983,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                                           imageType: ImageType.logo,
                                         );
 
-                                        return CachedNetworkImage(
+                                        return blurArtwork(CachedNetworkImage(
                                           imageUrl: logoUrl,
                                           filterQuality: FilterQuality.medium,
                                           fit: BoxFit.contain,
@@ -1868,7 +2007,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                                           errorWidget: (context, url, error) {
                                             return _buildTitleText(context, metadata.title);
                                           },
-                                        );
+                                        ), sigma: 10, clip: false);
                                       },
                                     ),
                                   )
@@ -1937,7 +2076,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                                   duration: const Duration(milliseconds: 150),
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                                     border: Border.all(
                                       color: showFocus
                                           ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)
@@ -1945,16 +2084,18 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                                       width: 2,
                                     ),
                                   ),
-                                  child: isTv
-                                      ? Text(
-                                          metadata.summary!,
-                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.6),
-                                        )
-                                      : CollapsibleText(
-                                          text: metadata.summary!,
-                                          maxLines: isMobile ? 6 : 4,
-                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.6),
-                                        ),
+                                  child: () {
+                                    final summaryStyle =
+                                        Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.6);
+                                    if (isTv) {
+                                      return Text(metadata.summary!, style: summaryStyle);
+                                    }
+                                    return CollapsibleText(
+                                      text: metadata.summary!,
+                                      maxLines: isMobile ? 6 : 4,
+                                      style: summaryStyle,
+                                    );
+                                  }(),
                                 );
                               },
                             ),
@@ -2336,9 +2477,14 @@ class _SeasonCard extends StatefulWidget {
 
 class _SeasonCardState extends State<_SeasonCard> {
   final _contextMenuKey = GlobalKey<MediaContextMenuState>();
+  Offset? _tapPosition;
+
+  void _storeTapPosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
 
   void _showContextMenu() {
-    _contextMenuKey.currentState?.showContextMenu(context);
+    _contextMenuKey.currentState?.showContextMenu(context, position: _tapPosition);
   }
 
   @override
@@ -2363,6 +2509,10 @@ class _SeasonCardState extends State<_SeasonCard> {
             hint: "Tap to view ${widget.season.title}",
             child: InkWell(
               onTap: widget.onTap,
+              onTapDown: _storeTapPosition,
+              onLongPress: _showContextMenu,
+              onSecondaryTapDown: _storeTapPosition,
+              onSecondaryTap: _showContextMenu,
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(
@@ -2386,6 +2536,22 @@ class _SeasonCardState extends State<_SeasonCard> {
                               t.discover.episodeCount(count: widget.season.leafCount.toString()),
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                             ),
+                          if (widget.season.userRating != null && widget.season.userRating! > 0) ...[
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Padding(padding: EdgeInsets.only(top: 2), child: Icon(Symbols.star_rounded, size: 14, fill: 1, color: Colors.amber)),
+                                const SizedBox(width: 3),
+                                Text(
+                                  (widget.season.userRating! / 2) == (widget.season.userRating! / 2).truncateToDouble()
+                                      ? '${(widget.season.userRating! / 2).toInt()}'
+                                      : (widget.season.userRating! / 2).toStringAsFixed(1),
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ],
                           // Hide watch progress when offline (not tracked)
                           if (!widget.isOffline) ...[
                             const SizedBox(height: 8),
@@ -2473,3 +2639,4 @@ class _SeasonCardState extends State<_SeasonCard> {
     );
   }
 }
+

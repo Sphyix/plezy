@@ -38,6 +38,7 @@ _bmad*
 .pub-cache/
 .pub/
 /build/
+/debug-info/
 
 # Symbolication related
 app.*.symbols

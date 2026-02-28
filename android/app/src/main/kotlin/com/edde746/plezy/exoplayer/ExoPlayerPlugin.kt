@@ -1,6 +1,8 @@
 package com.edde746.plezy.exoplayer
 
 import android.app.Activity
+import android.app.ActivityManager
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.edde746.plezy.mpv.MpvPlayerCore
@@ -27,9 +29,11 @@ class ExoPlayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
     private var playerCore: ExoPlayerCore? = null
     private var mpvCore: MpvPlayerCore? = null  // MPV fallback player
     private var usingMpvFallback: Boolean = false
+    private var fallbackInProgress: Boolean = false
     private var activity: Activity? = null
     private var activityBinding: ActivityPluginBinding? = null
     private val nameToId = mutableMapOf<String, Int>()
+    private var configuredBufferSizeBytes: Int? = null
 
     // FlutterPlugin
 
@@ -63,6 +67,7 @@ class ExoPlayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
         mpvCore?.dispose()
         mpvCore = null
         usingMpvFallback = false
+        fallbackInProgress = false
         activity = null
         activityBinding = null
         Log.d(TAG, "Detached from activity")
@@ -96,7 +101,7 @@ class ExoPlayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
-            "initialize" -> handleInitialize(result)
+            "initialize" -> handleInitialize(call, result)
             "dispose" -> handleDispose(result)
             "open" -> handleOpen(call, result)
             "play" -> handlePlay(result)
@@ -119,13 +124,17 @@ class ExoPlayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
             )
             "getStats" -> handleGetStats(result)
             "getPlayerType" -> result.success(if (usingMpvFallback) "mpv" else "exoplayer")
+            "getHeapSize" -> {
+                val am = activity?.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+                result.success(am?.largeMemoryClass ?: 0)
+            }
             "setSubtitleStyle" -> handleSetSubtitleStyle(call, result)
             "observeProperty" -> handleObserveProperty(call, result)
             else -> result.notImplemented()
         }
     }
 
-    private fun handleInitialize(result: MethodChannel.Result) {
+    private fun handleInitialize(call: MethodCall, result: MethodChannel.Result) {
         val currentActivity = activity
         if (currentActivity == null) {
             result.error("NO_ACTIVITY", "Activity not available", null)
@@ -138,12 +147,15 @@ class ExoPlayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
             return
         }
 
+        val bufferSizeBytes = call.argument<Int>("bufferSizeBytes")
+        configuredBufferSizeBytes = bufferSizeBytes
+
         currentActivity.runOnUiThread {
             try {
                 playerCore = ExoPlayerCore(currentActivity).apply {
                     delegate = this@ExoPlayerPlugin
                 }
-                val success = playerCore?.initialize() ?: false
+                val success = playerCore?.initialize(bufferSizeBytes = bufferSizeBytes) ?: false
 
                 // Start hidden
                 playerCore?.setVisible(false)
@@ -159,14 +171,12 @@ class ExoPlayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
 
     private fun handleDispose(result: MethodChannel.Result) {
         activity?.runOnUiThread {
-            if (usingMpvFallback) {
-                mpvCore?.dispose()
-                mpvCore = null
-            } else {
-                playerCore?.dispose()
-                playerCore = null
-            }
+            playerCore?.dispose()
+            playerCore = null
+            mpvCore?.dispose()
+            mpvCore = null
             usingMpvFallback = false
+            fallbackInProgress = false
             Log.d(TAG, "Disposed")
             result.success(null)
         } ?: result.success(null)
@@ -561,7 +571,13 @@ class ExoPlayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
         positionMs: Long,
         errorMessage: String
     ): Boolean {
+        if (usingMpvFallback || fallbackInProgress) {
+            Log.w(TAG, "Fallback already active/in-progress, ignoring duplicate request")
+            return true
+        }
+
         val currentActivity = activity ?: return false
+        fallbackInProgress = true
 
         Log.i(TAG, "ExoPlayer error, switching to MPV fallback at ${positionMs}ms: $errorMessage")
 
@@ -570,62 +586,74 @@ class ExoPlayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler,
                 // Dispose ExoPlayer
                 playerCore?.dispose()
                 playerCore = null
+                mpvCore?.dispose()
+                mpvCore = null
 
                 // Create and initialize MPV
                 mpvCore = MpvPlayerCore(currentActivity).apply {
                     delegate = this@ExoPlayerPlugin
                 }
-                val success = mpvCore?.initialize() ?: false
+                mpvCore?.initialize { success ->
+                    if (!success) {
+                        fallbackInProgress = false
+                        Log.e(TAG, "Failed to initialize MPV fallback")
+                        onEvent("end-file", mapOf("reason" to "error", "message" to "Fallback failed: $errorMessage"))
+                        return@initialize
+                    }
 
-                if (!success) {
-                    Log.e(TAG, "Failed to initialize MPV fallback")
-                    onEvent("end-file", mapOf("reason" to "error", "message" to "Fallback failed: $errorMessage"))
-                    return@runOnUiThread
+                    usingMpvFallback = true
+                    fallbackInProgress = false
+
+                    // Configure basic MPV properties for Plex playback
+                    mpvCore?.setProperty("hwdec", "mediacodec,mediacodec-copy")
+                    mpvCore?.setProperty("vo", "gpu")
+                    mpvCore?.setProperty("ao", "audiotrack")
+
+                    // Forward user's buffer config to MPV fallback
+                    configuredBufferSizeBytes?.let { bytes ->
+                        if (bytes > 0) {
+                            mpvCore?.setProperty("demuxer-max-bytes", bytes.toString())
+                        }
+                    }
+
+                    // Setup property observers
+                    mpvCore?.observeProperty("time-pos", "double")
+                    mpvCore?.observeProperty("duration", "double")
+                    mpvCore?.observeProperty("pause", "flag")
+                    mpvCore?.observeProperty("paused-for-cache", "flag")
+                    mpvCore?.observeProperty("demuxer-cache-time", "double")
+                    mpvCore?.observeProperty("eof-reached", "flag")
+                    mpvCore?.observeProperty("track-list", "string")
+                    mpvCore?.observeProperty("aid", "string")
+                    mpvCore?.observeProperty("sid", "string")
+                    mpvCore?.observeProperty("volume", "double")
+                    mpvCore?.observeProperty("speed", "double")
+
+                    // Show the MPV surface
+                    mpvCore?.setVisible(true)
+
+                    // Load media at the same position
+                    val startSeconds = positionMs / 1000.0
+                    val options = mutableListOf<String>()
+                    options.add("start=$startSeconds")
+                    headers?.forEach { (key, value) ->
+                        options.add("http-header-fields-append=$key: $value")
+                    }
+                    val optionsStr = options.joinToString(",")
+                    // Convert content:// URIs to fdclose:// for MPV (SAF SD card downloads)
+                    val mpvUri = openContentFd(uri)?.let { "fdclose://$it" } ?: uri
+                    mpvCore?.command(arrayOf("loadfile", mpvUri, "replace", "-1", optionsStr))
+
+                    // Request audio focus
+                    mpvCore?.requestAudioFocus()
+
+                    // Emit backend-switched event so Flutter can show notification
+                    onEvent("backend-switched", null)
+
+                    Log.i(TAG, "Successfully switched to MPV fallback")
                 }
-
-                usingMpvFallback = true
-
-                // Configure basic MPV properties for Plex playback
-                mpvCore?.setProperty("hwdec", "auto")
-                mpvCore?.setProperty("vo", "gpu")
-                mpvCore?.setProperty("ao", "audiotrack")
-
-                // Setup property observers
-                mpvCore?.observeProperty("time-pos", "double")
-                mpvCore?.observeProperty("duration", "double")
-                mpvCore?.observeProperty("pause", "flag")
-                mpvCore?.observeProperty("paused-for-cache", "flag")
-                mpvCore?.observeProperty("demuxer-cache-time", "double")
-                mpvCore?.observeProperty("eof-reached", "flag")
-                mpvCore?.observeProperty("track-list", "string")
-                mpvCore?.observeProperty("aid", "string")
-                mpvCore?.observeProperty("sid", "string")
-                mpvCore?.observeProperty("volume", "double")
-                mpvCore?.observeProperty("speed", "double")
-
-                // Show the MPV surface
-                mpvCore?.setVisible(true)
-
-                // Load media at the same position
-                val startSeconds = positionMs / 1000.0
-                val options = mutableListOf<String>()
-                options.add("start=$startSeconds")
-                headers?.forEach { (key, value) ->
-                    options.add("http-header-fields-append=$key: $value")
-                }
-                val optionsStr = options.joinToString(",")
-                // Convert content:// URIs to fdclose:// for MPV (SAF SD card downloads)
-                val mpvUri = openContentFd(uri)?.let { "fdclose://$it" } ?: uri
-                mpvCore?.command(arrayOf("loadfile", mpvUri, "replace", "-1", optionsStr))
-
-                // Request audio focus
-                mpvCore?.requestAudioFocus()
-
-                // Emit backend-switched event so Flutter can show notification
-                onEvent("backend-switched", null)
-
-                Log.i(TAG, "Successfully switched to MPV fallback")
             } catch (e: Exception) {
+                fallbackInProgress = false
                 Log.e(TAG, "Failed to switch to MPV fallback", e)
                 onEvent("end-file", mapOf("reason" to "error", "message" to "Fallback failed: ${e.message}"))
             }

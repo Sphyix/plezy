@@ -4,10 +4,11 @@ import 'package:flutter/gestures.dart';
 import 'dart:io' show Platform;
 import 'package:window_manager/window_manager.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'screens/main_screen.dart';
 import 'screens/auth_screen.dart';
 import 'services/storage_service.dart';
-import 'services/macos_titlebar_service.dart';
+import 'services/macos_window_service.dart';
 import 'services/fullscreen_state_manager.dart';
 import 'services/settings_service.dart';
 import 'utils/platform_detector.dart';
@@ -24,8 +25,8 @@ import 'providers/playback_state_provider.dart';
 import 'providers/download_provider.dart';
 import 'providers/offline_mode_provider.dart';
 import 'providers/offline_watch_provider.dart';
-import 'providers/shader_provider.dart';
 import 'providers/companion_remote_provider.dart';
+import 'providers/shader_provider.dart';
 import 'watch_together/watch_together.dart';
 import 'services/multi_server_manager.dart';
 import 'services/offline_watch_sync_service.dart';
@@ -36,6 +37,7 @@ import 'services/server_registry.dart';
 import 'services/download_manager_service.dart';
 import 'services/pip_service.dart';
 import 'services/download_storage_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'services/plex_api_cache.dart';
 import 'database/app_database.dart';
 import 'utils/app_logger.dart';
@@ -45,6 +47,7 @@ import 'i18n/strings.g.dart';
 import 'focus/input_mode_tracker.dart';
 import 'focus/key_event_utils.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'utils/navigation_transitions.dart';
 
 // Workaround for Flutter bug #177992: iPadOS 26.1+ misinterprets fake touch events
 // at (0,0) as barrier taps, causing modals to dismiss immediately.
@@ -78,7 +81,8 @@ void main() async {
   await initializeDateFormatting(savedLocale.languageCode, null);
 
   // Configure image cache for large libraries
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 200 << 20; // 200MB
+  PaintingBinding.instance.imageCache.maximumSize = 2000; // default 1000
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 300 << 20; // 300MB
 
   // Initialize services in parallel where possible
   final futures = <Future<void>>[];
@@ -96,7 +100,7 @@ void main() async {
   }
 
   // Configure macOS window with custom titlebar (depends on window manager)
-  futures.add(MacOSTitlebarService.setupCustomTitlebar());
+  futures.add(MacOSWindowService.setupCustomTitlebar());
 
   // Initialize storage service
   futures.add(StorageService.getInstance());
@@ -133,7 +137,7 @@ void main() async {
 
 void _registerShaderLicenses() {
   LicenseRegistry.addLicense(() async* {
-    yield LicenseEntryWithLineBreaks(
+    yield const LicenseEntryWithLineBreaks(
       ['Anime4K'],
       'MIT License\n'
       '\n'
@@ -158,7 +162,7 @@ void _registerShaderLicenses() {
       'OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE '
       'SOFTWARE.',
     );
-    yield LicenseEntryWithLineBreaks(
+    yield const LicenseEntryWithLineBreaks(
       ['NVIDIA Image Scaling (NVScaler)'],
       'The MIT License (MIT)\n'
       '\n'
@@ -310,8 +314,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (context) => LibrariesProvider()),
         ChangeNotifierProvider(create: (context) => PlaybackStateProvider()),
         ChangeNotifierProvider(create: (context) => WatchTogetherProvider()),
-        ChangeNotifierProvider(create: (context) => ShaderProvider()),
         ChangeNotifierProvider(create: (context) => CompanionRemoteProvider()),
+        ChangeNotifierProvider(create: (context) => ShaderProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -366,30 +370,72 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
+  String _statusMessage = '';
+
   @override
   void initState() {
     super.initState();
     _loadSavedCredentials();
   }
 
+  void _setStatus(String message) {
+    if (mounted) setState(() => _statusMessage = message);
+  }
+
   Future<void> _loadSavedCredentials() async {
+    _setStatus(t.common.checkingNetwork);
+
     final storage = await StorageService.getInstance();
     final registry = ServerRegistry(storage);
 
-    // Refresh servers from API to get updated connection info (IPs may change)
-    await registry.refreshServersFromApi();
+    // Check network connectivity early to fast-path airplane mode.
+    // Timeout guards against connectivity_plus hanging on some Android TV devices after force-close.
+    final connectivityResult = await Connectivity().checkConnectivity().timeout(
+      const Duration(seconds: 3),
+      onTimeout: () => [ConnectivityResult.other],
+    );
+    final hasNetwork = !connectivityResult.contains(ConnectivityResult.none);
+
+    if (hasNetwork) {
+      _setStatus(t.common.refreshingServers);
+
+      // Refresh servers from API to get updated connection info (IPs may change).
+      // If the stored token is invalid (e.g. after removing a Plex profile PIN),
+      // redirect to AuthScreen so the user can re-authenticate.
+      final refreshResult = await registry.refreshServersFromApi();
+      if (refreshResult == ServerRefreshResult.authError) {
+        await storage.clearCredentials();
+        if (mounted) {
+          Navigator.pushReplacement(context, fadeRoute(const AuthScreen()));
+        }
+        return;
+      }
+    }
+
+    _setStatus(t.common.loadingServers);
 
     // Load all configured servers
     final servers = await registry.getServers();
 
     if (servers.isEmpty) {
       if (mounted) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AuthScreen()));
+        Navigator.pushReplacement(context, fadeRoute(const AuthScreen()));
       }
       return;
     }
 
     if (!mounted) return;
+
+    // No network — skip connection attempts and go straight to offline mode
+    if (!hasNetwork) {
+      _setStatus(t.common.startingOfflineMode);
+      await context.read<DownloadProvider>().ensureInitialized();
+      if (!mounted) return;
+      Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
+      return;
+    }
+
+    _setStatus(t.common.connectingToServers);
 
     try {
       final result = await ServerConnectionOrchestrator.connectAndInitialize(
@@ -409,40 +455,52 @@ class _SetupScreenState extends State<SetupScreen> {
           downloadProvider.resumeQueuedDownloads(result.firstClient!);
         });
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen(client: result.firstClient!)),
-        );
+        Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
       } else {
+        _setStatus(t.common.startingOfflineMode);
         await context.read<DownloadProvider>().ensureInitialized();
         if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainScreen(isOfflineMode: true)),
-        );
+        Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
       }
     } catch (e, stackTrace) {
       appLogger.e('Error during multi-server connection', error: e, stackTrace: stackTrace);
 
       if (mounted) {
+        _setStatus(t.common.startingOfflineMode);
         await context.read<DownloadProvider>().ensureInitialized();
         if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainScreen(isOfflineMode: true)),
-        );
+        Navigator.pushReplacement(context, fadeRoute(const MainScreen(isOfflineMode: true)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [const CircularProgressIndicator(), const SizedBox(height: 16), Text(t.common.loading)],
-        ),
+    return ColoredBox(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Stack(
+        children: [
+          // Icon dead-center, matching Android 12+ splash position.
+          // 192dp accounts for the 16% inset in ic_launcher.xml.
+          Center(child: SvgPicture.asset('assets/plezy_adaptive_foreground.svg', width: 288, height: 288)),
+          // Status text below center, independent of icon position.
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: MediaQuery.of(context).size.height * 0.5 - 140,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Text(
+                _statusMessage,
+                key: ValueKey(_statusMessage),
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

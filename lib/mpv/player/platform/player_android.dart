@@ -1,13 +1,15 @@
 import 'package:flutter/services.dart';
 
-import '../models.dart';
-import 'player_base.dart';
+import '../../models.dart';
+import '../player_base.dart';
 
 /// Android implementation of [Player] using ExoPlayer.
 /// Provides hardware-accelerated playback with ASS subtitle support via libass-android.
 class PlayerAndroid extends PlayerBase {
   static const _methodChannel = MethodChannel('com.plezy/exo_player');
   static const _eventChannel = EventChannel('com.plezy/exo_player/events');
+
+  int? _bufferSizeBytes;
 
   @override
   MethodChannel get methodChannel => _methodChannel;
@@ -46,7 +48,9 @@ class PlayerAndroid extends PlayerBase {
     if (initialized) return;
 
     try {
-      final result = await methodChannel.invokeMethod<bool>('initialize');
+      final result = await methodChannel.invokeMethod<bool>('initialize', {
+        'bufferSizeBytes': _bufferSizeBytes,
+      });
       initialized = result == true;
       if (!initialized) {
         throw Exception('Failed to initialize ExoPlayer');
@@ -181,6 +185,9 @@ class PlayerAndroid extends PlayerBase {
       case 'speed':
         await setRate(double.tryParse(value) ?? 1.0);
         break;
+      case 'demuxer-max-bytes':
+        _bufferSizeBytes = int.tryParse(value);
+        break;
       // Other properties are no-ops for ExoPlayer
     }
   }
@@ -225,6 +232,17 @@ class PlayerAndroid extends PlayerBase {
       return Map<String, dynamic>.from(result ?? {});
     } catch (e) {
       return {};
+    }
+  }
+
+  /// Get the device's large heap size in MB (Android only).
+  /// Returns 0 if unavailable.
+  static Future<int> getHeapSize() async {
+    try {
+      final result = await _methodChannel.invokeMethod<int>('getHeapSize');
+      return result ?? 0;
+    } catch (e) {
+      return 0;
     }
   }
 

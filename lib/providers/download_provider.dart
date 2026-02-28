@@ -183,7 +183,7 @@ class DownloadProvider extends ChangeNotifier {
     // Load show metadata
     final showRatingKey = episode.grandparentRatingKey;
     if (showRatingKey != null) {
-      final showGlobalKey = '$serverId:$showRatingKey';
+      final showGlobalKey = buildGlobalKey(serverId, showRatingKey);
       if (!_metadata.containsKey(showGlobalKey)) {
         final showMetadata = allMetadata[showGlobalKey];
         if (showMetadata != null) {
@@ -198,7 +198,7 @@ class DownloadProvider extends ChangeNotifier {
     // Load season metadata
     final seasonRatingKey = episode.parentRatingKey;
     if (seasonRatingKey != null) {
-      final seasonGlobalKey = '$serverId:$seasonRatingKey';
+      final seasonGlobalKey = buildGlobalKey(serverId, seasonRatingKey);
       if (!_metadata.containsKey(seasonGlobalKey)) {
         final seasonMetadata = allMetadata[seasonGlobalKey];
         if (seasonMetadata != null) {
@@ -281,7 +281,7 @@ class DownloadProvider extends ChangeNotifier {
         final showRatingKey = meta.grandparentRatingKey;
         if (showRatingKey != null && !shows.containsKey(showRatingKey)) {
           // Try to get stored show metadata first
-          final showGlobalKey = '${meta.serverId}:$showRatingKey';
+          final showGlobalKey = buildGlobalKey(meta.serverId!, showRatingKey);
           final storedShow = _metadata[showGlobalKey];
 
           if (storedShow != null && storedShow.type == 'show') {
@@ -395,7 +395,7 @@ class DownloadProvider extends ChangeNotifier {
     required List<DownloadProgress> episodes,
     required String entityType,
   }) {
-    final globalKey = '$serverId:$ratingKey';
+    final globalKey = buildGlobalKey(serverId, ratingKey);
 
     // DIAGNOSTIC: Check all sources of episode count
     final meta = _metadata[globalKey];
@@ -615,7 +615,7 @@ class DownloadProvider extends ChangeNotifier {
   /// For shows and seasons, fetches all child episodes and queues them.
   /// Returns the number of items queued.
   Future<int> queueDownload(PlexMetadata metadata, PlexClient client) async {
-    final globalKey = '${metadata.serverId}:${metadata.ratingKey}';
+    final globalKey = metadata.globalKey;
 
     // Check if downloads are blocked on cellular
     if (await DownloadManagerService.shouldBlockDownloadOnCellular()) {
@@ -661,7 +661,7 @@ class DownloadProvider extends ChangeNotifier {
 
   /// Queue a single movie or episode for download
   Future<void> _queueSingleDownload(PlexMetadata metadata, PlexClient client) async {
-    final globalKey = '${metadata.serverId}:${metadata.ratingKey}';
+    final globalKey = metadata.globalKey;
 
     // Don't re-queue if already downloading or completed
     if (_downloads.containsKey(globalKey)) {
@@ -671,8 +671,10 @@ class DownloadProvider extends ChangeNotifier {
       }
     }
 
-    // Fetch full metadata to get year, summary, clearLogo
-    // The metadata from getChildren() is summarized and missing these fields
+    // Always fetch full metadata before downloading.
+    // Hub items may have summary but the cache at /library/metadata/$ratingKey
+    // won't have the full API response (with Media/Part data needed for video URL)
+    // unless getMetadataWithImages has been called.
     PlexMetadata metadataToStore = metadata;
     try {
       final fullMetadata = await client.getMetadataWithImages(metadata.ratingKey);
@@ -709,7 +711,7 @@ class DownloadProvider extends ChangeNotifier {
     // Fetch and store show metadata if not already stored
     final showRatingKey = episode.grandparentRatingKey;
     if (showRatingKey != null) {
-      final showGlobalKey = '$serverId:$showRatingKey';
+      final showGlobalKey = buildGlobalKey(serverId, showRatingKey);
 
       // Try to use existing metadata (set when queueing an entire show)
       PlexMetadata? showMetadata = _metadata[showGlobalKey];
@@ -746,7 +748,7 @@ class DownloadProvider extends ChangeNotifier {
     // Fetch and store season metadata if not already stored
     final seasonRatingKey = episode.parentRatingKey;
     if (seasonRatingKey != null) {
-      final seasonGlobalKey = '$serverId:$seasonRatingKey';
+      final seasonGlobalKey = buildGlobalKey(serverId, seasonRatingKey);
       PlexMetadata? seasonMetadata = _metadata[seasonGlobalKey];
 
       if (seasonMetadata == null) {
@@ -780,7 +782,7 @@ class DownloadProvider extends ChangeNotifier {
 
   /// Queue all episodes from a TV show for download
   Future<int> _queueShowDownload(PlexMetadata show, PlexClient client) async {
-    final globalKey = '${show.serverId}:${show.ratingKey}';
+    final globalKey = show.globalKey;
     int count = 0;
     final seasons = await client.getChildren(show.ratingKey);
 
@@ -816,7 +818,7 @@ class DownloadProvider extends ChangeNotifier {
 
   /// Queue all episodes from a season for download
   Future<int> _queueSeasonDownload(PlexMetadata season, PlexClient client) async {
-    final globalKey = '${season.serverId}:${season.ratingKey}';
+    final globalKey = season.globalKey;
     int count = 0;
     final episodes = await client.getChildren(season.ratingKey);
 
@@ -895,7 +897,7 @@ class DownloadProvider extends ChangeNotifier {
       if (episode.type == 'episode') {
         final episodeWithServer = episode.serverId != null ? episode : episode.copyWith(serverId: season.serverId);
 
-        final episodeGlobalKey = '${episodeWithServer.serverId}:${episodeWithServer.ratingKey}';
+        final episodeGlobalKey = episodeWithServer.globalKey;
 
         // Only queue if NOT already downloaded or in progress
         final progress = _downloads[episodeGlobalKey];

@@ -1,6 +1,7 @@
 package com.edde746.plezy.exoplayer
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
@@ -36,6 +37,7 @@ import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -84,8 +86,11 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
     private var subtitleView: SubtitleView? = null
     private var assHandler: AssHandler? = null
     private var overlayLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    private var lastVideoSize: VideoSize? = null
     private var exoPlayer: ExoPlayer? = null
     private var trackSelector: DefaultTrackSelector? = null
+    private var tunnelingDisabledForCodec: Boolean = false
+    private var pendingStartPositionMs: Long = 0L
     var delegate: ExoPlayerDelegate? = null
     var isInitialized: Boolean = false
         private set
@@ -130,8 +135,7 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
                     exoPlayer?.pause()
                 }
             }
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 Log.d(TAG, "Audio focus lost transiently")
                 hasAudioFocus = false
                 if (isInitialized) {
@@ -139,12 +143,17 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
                     exoPlayer?.pause()
                 }
             }
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+                Log.d(TAG, "Audio focus lost transiently (can duck), continuing playback")
+                // Don't pause — let the system handle volume ducking for notifications
+            }
         }
     }
 
     private fun ensureFlutterOverlayOnTop() {
         val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
         contentView.post {
+            if (!isInitialized) return@post
             var flutterContainer: ViewGroup? = null
 
             for (i in 0 until contentView.childCount) {
@@ -202,7 +211,7 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
         }
     }
 
-    fun initialize(): Boolean {
+    fun initialize(bufferSizeBytes: Int? = null): Boolean {
         if (isInitialized) {
             Log.d(TAG, "Already initialized")
             return true
@@ -277,6 +286,12 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
             ensureFlutterOverlayOnTop()
             overlayLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
                 ensureFlutterOverlayOnTop()
+                // Recalculate surface size on layout change (orientation/PiP transitions)
+                lastVideoSize?.let { vs ->
+                    if (vs.width > 0 && vs.height > 0) {
+                        updateSurfaceViewSize(vs.width, vs.height, vs.pixelWidthHeightRatio)
+                    }
+                }
             }
             contentView.viewTreeObserver.addOnGlobalLayoutListener(overlayLayoutListener)
 
@@ -337,8 +352,38 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
 
             val wrappedRenderersFactory = AssRenderersFactory(handler, renderersFactory)
 
+            // Compute memory-aware buffer limits to prevent CCodec OOM crashes
+            val activityManager = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val memoryInfo = ActivityManager.MemoryInfo()
+            activityManager.getMemoryInfo(memoryInfo)
+            val availableMB = memoryInfo.availMem / (1024 * 1024)
+
+            val targetBufferBytes = if (bufferSizeBytes != null && bufferSizeBytes > 0) {
+                bufferSizeBytes
+            } else {
+                // Scale buffer to available memory to reduce hardware decoder pressure
+                when {
+                    availableMB <= 512 -> 30 * 1024 * 1024
+                    availableMB <= 1024 -> 50 * 1024 * 1024
+                    availableMB <= 2048 -> 60 * 1024 * 1024
+                    else -> 130 * 1024 * 1024
+                }
+            }
+
+            val loadControl = DefaultLoadControl.Builder().apply {
+                setTargetBufferBytes(targetBufferBytes)
+                setPrioritizeTimeOverSizeThresholds(false)
+                if (availableMB <= 2048) {
+                    setBufferDurationsMs(15_000, 50_000, 2_500, 5_000)
+                } else {
+                    setBufferDurationsMs(30_000, 60_000, 2_500, 5_000)
+                }
+            }.build()
+            Log.d(TAG, "Buffer: ${targetBufferBytes / 1024 / 1024}MB limit, available=${availableMB}MB")
+
             exoPlayer = ExoPlayer.Builder(activity)
                 .setTrackSelector(trackSelector!!)
+                .setLoadControl(loadControl)
                 .setAudioAttributes(audioAttributes, false) // We handle audio focus manually
                 .setMediaSourceFactory(mediaSourceFactory)
                 .setRenderersFactory(wrappedRenderersFactory)
@@ -465,6 +510,16 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
                 delegate?.onPropertyChange("paused-for-cache", true)
             }
             Player.STATE_READY -> {
+                // Restore start position if it was lost during track reselection
+                // (e.g. tunneling state change in onTracksChanged triggers renderer teardown)
+                if (pendingStartPositionMs > 0L) {
+                    val currentPos = exoPlayer?.currentPosition ?: 0L
+                    if (currentPos < 1000L) {
+                        Log.w(TAG, "Position lost during init (at ${currentPos}ms, expected ${pendingStartPositionMs}ms) — restoring")
+                        exoPlayer?.seekTo(pendingStartPositionMs)
+                    }
+                    pendingStartPositionMs = 0L
+                }
                 delegate?.onPropertyChange("paused-for-cache", false)
                 delegate?.onEvent("playback-restart", null)
                 emitTrackList()
@@ -478,6 +533,7 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
 
     override fun onTracksChanged(tracks: Tracks) {
         Log.d(TAG, "onTracksChanged")
+        evaluateAudioCodecForTunneling()
         emitTrackList()
     }
 
@@ -510,6 +566,7 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
         Log.d(TAG, "Video size changed: ${videoSize.width}x${videoSize.height}, ratio: ${videoSize.pixelWidthHeightRatio}")
+        lastVideoSize = videoSize
         updateSurfaceViewSize(videoSize.width, videoSize.height, videoSize.pixelWidthHeightRatio)
     }
 
@@ -662,6 +719,69 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
         delegate?.onPropertyChange("track-list", trackList)
     }
 
+    // Tunneling control — disabled when audio codec has no hardware decoder (requires FFmpeg)
+
+    private fun hasHardwareAudioDecoder(mimeType: String): Boolean {
+        try {
+            val codecList = android.media.MediaCodecList(android.media.MediaCodecList.REGULAR_CODECS)
+            for (info in codecList.codecInfos) {
+                if (info.isEncoder) continue
+                for (type in info.supportedTypes) {
+                    if (type.equals(mimeType, ignoreCase = true)) {
+                        val name = info.name
+                        if (!name.startsWith("OMX.google.") &&
+                            !name.startsWith("c2.android.") &&
+                            !name.contains(".sw.") &&
+                            !name.startsWith("c2.ffmpeg.")) {
+                            Log.d(TAG, "Found hardware audio decoder for $mimeType: $name")
+                            return true
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to query audio decoders for $mimeType: ${e.message}")
+        }
+        Log.d(TAG, "No hardware audio decoder for $mimeType — FFmpeg will handle it")
+        return false
+    }
+
+    private fun updateTunnelingState() {
+        val selector = trackSelector ?: return
+        val player = exoPlayer ?: return
+        val currentSpeed = player.playbackParameters.speed
+        val shouldTunnel = (currentSpeed == 1f) && !tunnelingDisabledForCodec
+        val currentTunneling = selector.parameters.tunnelingEnabled
+        if (shouldTunnel == currentTunneling) return  // No change needed
+        Log.d(TAG, "updateTunnelingState: tunneling $currentTunneling -> $shouldTunnel")
+        selector.setParameters(
+            selector.buildUponParameters()
+                .setTunnelingEnabled(shouldTunnel)
+        )
+        // Track reselection from setParameters() can reset position during initial load.
+        // Restore the pending start position if it hasn't been consumed yet.
+        if (pendingStartPositionMs > 0L) {
+            player.seekTo(pendingStartPositionMs)
+        }
+    }
+
+    private fun evaluateAudioCodecForTunneling() {
+        val player = exoPlayer ?: return
+        val selectedAudioGroup = player.currentTracks.groups.firstOrNull {
+            it.type == C.TRACK_TYPE_AUDIO && it.isSelected
+        } ?: return
+
+        val format = selectedAudioGroup.mediaTrackGroup.getFormat(0)
+        val mimeType = format.sampleMimeType ?: return
+
+        val newDisabled = !hasHardwareAudioDecoder(mimeType)
+        if (newDisabled != tunnelingDisabledForCodec) {
+            tunnelingDisabledForCodec = newDisabled
+            Log.i(TAG, "Audio codec ${format.codecs} ($mimeType): tunneling ${if (newDisabled) "DISABLED" else "enabled"}")
+            updateTunnelingState()
+        }
+    }
+
     // Public API
 
     fun open(uri: String, headers: Map<String, String>?, startPositionMs: Long, autoPlay: Boolean, isLive: Boolean = false) {
@@ -670,6 +790,8 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
         currentMediaUri = uri
         currentHeaders = headers
         externalSubtitles.clear()
+        tunnelingDisabledForCodec = false
+        pendingStartPositionMs = startPositionMs
 
         if (isLive) {
             // Live MKV streams lack Cues (seek index). FLAG_DISABLE_SEEK_FOR_CUES tells
@@ -747,14 +869,7 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
     fun setPlaybackSpeed(speed: Float) {
         val clampedSpeed = speed.coerceIn(0.25f, 4f)
         exoPlayer?.setPlaybackSpeed(clampedSpeed)
-
-        // Disable tunneling when speed != 1.0 — tunneled playback bypasses
-        // ExoPlayer's audio processors, silently ignoring speed changes.
-        trackSelector?.setParameters(
-            trackSelector!!.buildUponParameters()
-                .setTunnelingEnabled(clampedSpeed == 1f)
-        )
-
+        updateTunnelingState()
         delegate?.onPropertyChange("speed", speed.toDouble())
     }
 
@@ -771,9 +886,23 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
         val audioGroups = player.currentTracks.groups.filter { it.type == C.TRACK_TYPE_AUDIO }
         if (trackIndex >= 0 && trackIndex < audioGroups.size) {
             val group = audioGroups[trackIndex]
+
+            // Pre-evaluate the new track's codec for tunneling before applying the override,
+            // so tunneling state is set correctly in the same parameter update.
+            val format = group.mediaTrackGroup.getFormat(0)
+            val mimeType = format.sampleMimeType
+            if (mimeType != null) {
+                tunnelingDisabledForCodec = !hasHardwareAudioDecoder(mimeType)
+                Log.i(TAG, "Audio track switch to ${format.codecs} ($mimeType): tunneling ${if (tunnelingDisabledForCodec) "DISABLED" else "enabled"}")
+            }
+
+            val currentSpeed = player.playbackParameters.speed
+            val shouldTunnel = (currentSpeed == 1f) && !tunnelingDisabledForCodec
+
             selector.parameters = selector.buildUponParameters()
                 .setOverrideForType(TrackSelectionOverride(group.mediaTrackGroup, 0))
                 .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, false)
+                .setTunnelingEnabled(shouldTunnel)
                 .build()
 
             delegate?.onPropertyChange("aid", trackId)
@@ -979,7 +1108,6 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
                         .build()
                 )
                 .setOnAudioFocusChangeListener(audioFocusChangeListener, handler)
-                .setWillPauseWhenDucked(true)
                 .build()
 
             audioFocusRequest = focusRequest
@@ -1253,6 +1381,8 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
         abandonAudioFocus()
         audioManager = null
 
+        tunnelingDisabledForCodec = false
+        pendingStartPositionMs = 0L
         exoPlayer?.clearVideoSurface()
         exoPlayer?.removeListener(this)
         exoPlayer?.release()
@@ -1260,19 +1390,22 @@ class ExoPlayerCore(private val activity: Activity) : Player.Listener {
         trackSelector = null
         assHandler = null
 
-        surfaceView?.holder?.removeCallback(surfaceCallback)
+        val cb = surfaceCallback
+        val sv = surfaceView
         overlayLayoutListener?.let { listener ->
             val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
             contentView.viewTreeObserver.removeOnGlobalLayoutListener(listener)
         }
+        overlayLayoutListener = null
 
-        // Post view removal to next frame to avoid SurfaceControl race on render thread
-        val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
+        // Defer all view removal to avoid AOSP bug where
+        // dispatchWindowVisibilityChanged iterates stale children array
+        // when removeView() runs during an active performTraversals pass.
         val container = surfaceContainer
-        val subtitle = subtitleView
+        val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
         contentView.post {
+            sv?.holder?.removeCallback(cb)
             container?.let { contentView.removeView(it) }
-            subtitle?.let { contentView.removeView(it) }
         }
         surfaceContainer = null
         surfaceView = null

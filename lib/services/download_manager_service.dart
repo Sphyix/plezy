@@ -309,9 +309,47 @@ class DownloadManagerService {
         appLogger.i('Rescheduled ${rescheduled.length} killed download task(s)');
       }
 
+      // One-time migration: normalize stored file paths that may contain a
+      // doubled base-dir prefix from an earlier bug in the recovery callback.
+      // Re-run on v2 to also fix paths without a leading / that the v1 migration missed.
+      final prefs = (await SettingsService.getInstance()).prefs;
+      if ((prefs.getInt('download_paths_normalized_version') ?? 0) < 2) {
+        final allItems = await _database.select(_database.downloadedMedia).get();
+        var fixed = 0;
+        for (final item in allItems) {
+          if (item.videoFilePath != null) {
+            final vfp = item.videoFilePath!;
+            var normalized = await _storageService.toRelativePath(vfp);
+            // If toRelativePath didn't help, try extracting from downloads/ onward
+            // for paths that lack a leading / but contain nested base-dir fragments
+            if (normalized == vfp) {
+              final idx = vfp.indexOf('downloads/');
+              if (idx > 0) normalized = vfp.substring(idx);
+            }
+            appLogger.d('Path migration: videoFilePath="$vfp", normalized="$normalized"');
+            if (normalized != vfp) {
+              await _database.updateVideoFilePath(item.globalKey, normalized);
+              fixed++;
+            }
+          }
+          if (item.thumbPath != null) {
+            final tp = item.thumbPath!;
+            var normalized = await _storageService.toRelativePath(tp);
+            if (normalized == tp) {
+              final idx = tp.indexOf('downloads/');
+              if (idx > 0) normalized = tp.substring(idx);
+            }
+            if (normalized != tp) {
+              await _database.updateArtworkPaths(globalKey: item.globalKey, thumbPath: normalized);
+            }
+          }
+        }
+        if (fixed > 0) appLogger.i('Normalized $fixed corrupted download path(s)');
+        await prefs.setInt('download_paths_normalized_version', 2);
+      }
+
       // Scan drift for orphaned items stuck in 'downloading'
       final allDownloads = await _database.select(_database.downloadedMedia).get();
-
       for (final item in allDownloads) {
         if (item.status == DownloadStatus.downloading.index) {
           // Video already downloaded but post-processing didn't complete
@@ -430,7 +468,7 @@ class DownloadManagerService {
     bool downloadSubtitles = true,
     bool downloadArtwork = true,
   }) async {
-    final globalKey = '${metadata.serverId}:${metadata.ratingKey}';
+    final globalKey = metadata.globalKey;
 
     // Check if already downloading or completed
     final existing = await _database.getDownloadedMedia(globalKey);
@@ -451,9 +489,15 @@ class DownloadManagerService {
       status: DownloadStatus.queued.index,
     );
 
-    // Pin the already-cached API response for offline use
-    // (getMetadataWithImages was already called by download_provider, which cached with chapters/markers)
-    await _apiCache.pinForOffline(metadata.serverId!, metadata.ratingKey);
+    // Ensure metadata is in cache before pinning.
+    // Normally getMetadataWithImages already cached the full API response (with chapters/markers),
+    // but if the network failed during the provider's fetch, the cache entry may not exist.
+    final cached = await _apiCache.get(metadata.serverId!, '/library/metadata/${metadata.ratingKey}');
+    if (cached == null) {
+      await _cacheMetadataForOffline(metadata.serverId!, metadata.ratingKey, metadata);
+    } else {
+      await _apiCache.pinForOffline(metadata.serverId!, metadata.ratingKey);
+    }
 
     // Add to queue
     await _database.addToQueue(
@@ -508,11 +552,31 @@ class DownloadManagerService {
       final serverId = parsed.serverId;
       final ratingKey = parsed.ratingKey;
 
-      final metadata = await _apiCache.getMetadata(serverId, ratingKey);
-      if (metadata == null) throw Exception('Metadata not found in cache for $globalKey');
+      var metadata = await _apiCache.getMetadata(serverId, ratingKey);
+      if (metadata == null) {
+        // Cache miss — try re-fetching from server (cache may have been cleared between queue and prepare)
+        appLogger.w('Cache miss for $globalKey, attempting network re-fetch');
+        try {
+          final fetched = await client.getMetadataWithImages(ratingKey);
+          if (fetched != null) metadata = fetched.copyWith(serverId: serverId);
+        } catch (e) {
+          appLogger.w('Network re-fetch failed for $globalKey', error: e);
+        }
+        if (metadata == null) {
+          throw Exception('Metadata not found in cache and could not be fetched for $globalKey');
+        }
+      }
 
-      final playbackData = await client.getVideoPlaybackData(metadata.ratingKey);
-      if (playbackData.videoUrl == null) throw Exception('Could not get video URL');
+      var playbackData = await client.getVideoPlaybackData(metadata.ratingKey);
+      if (playbackData.videoUrl == null) {
+        // Cache may contain a synthetic entry (from _cacheMetadataForOffline) without
+        // Media/Part data. Force a fresh network fetch to populate the cache properly.
+        appLogger.w('No video URL from cache for $globalKey, retrying via network');
+        final fetched = await client.getMetadataWithImages(ratingKey);
+        if (fetched != null) metadata = fetched.copyWith(serverId: serverId);
+        playbackData = await client.getVideoPlaybackData(metadata.ratingKey);
+        if (playbackData.videoUrl == null) throw Exception('Could not get video URL for $globalKey');
+      }
 
       final ext = _getExtensionFromUrl(playbackData.videoUrl!) ?? 'mp4';
 
@@ -900,6 +964,11 @@ class DownloadManagerService {
         await _downloadSingleArtwork(serverId, metadata.art!, client);
       }
 
+      // Download square background art
+      if (metadata.backgroundSquare != null) {
+        await _downloadSingleArtwork(serverId, metadata.backgroundSquare!, client);
+      }
+
       // Store thumb reference in database (primary artwork for display)
       await _database.updateArtworkPaths(globalKey: globalKey, thumbPath: metadata.thumb);
 
@@ -960,6 +1029,11 @@ class DownloadManagerService {
     // Download background art
     if (metadata.art != null) {
       await _downloadSingleArtwork(serverId, metadata.art!, client);
+    }
+
+    // Download square background art
+    if (metadata.backgroundSquare != null) {
+      await _downloadSingleArtwork(serverId, metadata.backgroundSquare!, client);
     }
   }
 
@@ -1268,12 +1342,13 @@ class DownloadManagerService {
 
       if (metadata == null) {
         // Fallback: Try database record
-        final downloadRecord = await _database.getDownloadedMedia('$serverId:$ratingKey');
+        final gk = buildGlobalKey(serverId, ratingKey);
+        final downloadRecord = await _database.getDownloadedMedia(gk);
         if (downloadRecord?.videoFilePath != null) {
           await _deleteByFilePath(downloadRecord!);
           return;
         }
-        appLogger.w('Cannot delete - no metadata for $serverId:$ratingKey');
+        appLogger.w('Cannot delete - no metadata for $gk');
         return;
       }
 
@@ -1449,12 +1524,12 @@ class DownloadManagerService {
   }) async {
     for (int i = 0; i < episodes.length; i++) {
       final episode = episodes[i];
-      final episodeGlobalKey = '$serverId:${episode.ratingKey}';
+      final episodeGlobalKey = buildGlobalKey(serverId, episode.ratingKey);
 
       // Emit progress update
       _emitDeletionProgress(
         DeletionProgress(
-          globalKey: '$serverId:$parentKey',
+          globalKey: buildGlobalKey(serverId, parentKey),
           itemTitle: parentTitle,
           currentItem: i + 1,
           totalItems: episodes.length,
@@ -1567,7 +1642,7 @@ class DownloadManagerService {
     final otherEpisodes = await _database.getEpisodesBySeason(seasonKey);
 
     // Check if any episodes besides this one
-    return otherEpisodes.any((e) => e.globalKey != '${episode.serverId}:${episode.ratingKey}');
+    return otherEpisodes.any((e) => e.globalKey != episode.globalKey);
   }
 
   /// Check if show artwork is in use
@@ -1578,7 +1653,7 @@ class DownloadManagerService {
     final showEpisodes = await _database.getEpisodesByShow(showKey);
 
     // Check if any episodes belong to this show besides the current item
-    return showEpisodes.any((item) => item.globalKey != '${metadata.serverId}:${metadata.ratingKey}');
+    return showEpisodes.any((item) => item.globalKey != metadata.globalKey);
   }
 
   /// Find file with any extension
