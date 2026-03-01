@@ -197,8 +197,12 @@
     "maxVolumePercent": "${percent}%",
     "discordRichPresence": "Discord Rich Presence",
     "discordRichPresenceDescription": "Discord에서 시청 중인 콘텐츠 표시",
+    "autoPip": "자동 PIP 모드",
+    "autoPipDescription": "재생 중 앱을 나갈 때 자동으로 PIP 모드로 전환",
     "matchContentFrameRate": "콘텐츠 프레임 레이트 맞춤",
     "matchContentFrameRateDescription": "비디오 콘텐츠에 맞게 디스플레이 주사율을 조정하여 떨림을 줄이고 배터리를 절약합니다",
+    "tunneledPlayback": "Tunneled Playback",
+    "tunneledPlaybackDescription": "Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content",
     "requireProfileSelectionOnOpen": "앱 실행 시 프로필 선택",
     "requireProfileSelectionOnOpenDescription": "앱을 열 때마다 프로필 선택 화면을 표시합니다",
     "confirmExitOnBack": "종료 전 확인",
@@ -808,7 +812,8 @@
     "hdr": "HDR",
     "audioOutput": "오디오 출력",
     "performanceOverlay": "성능 오버레이",
-    "audioPassthrough": "오디오 패스스루"
+    "audioPassthrough": "오디오 패스스루",
+    "audioNormalization": "오디오 정규화"
   },
   "externalPlayer": {
     "title": "외부 플레이어",

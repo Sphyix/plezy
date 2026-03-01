@@ -197,8 +197,12 @@
     "maxVolumePercent": "${percent}%",
     "discordRichPresence": "Discord Rich Presence",
     "discordRichPresenceDescription": "Show what you're watching on Discord",
+    "autoPip": "Auto Picture-in-Picture",
+    "autoPipDescription": "Automatically enter picture-in-picture when leaving the app during playback",
     "matchContentFrameRate": "Match Content Frame Rate",
     "matchContentFrameRateDescription": "Adjust display refresh rate to match video content, reducing judder and saving battery",
+    "tunneledPlayback": "Tunneled Playback",
+    "tunneledPlaybackDescription": "Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content",
     "requireProfileSelectionOnOpen": "Ask for profile on app open",
     "requireProfileSelectionOnOpenDescription": "Show profile selection every time the app is opened",
     "confirmExitOnBack": "Confirm before exiting",
@@ -808,7 +812,8 @@
     "hdr": "HDR",
     "audioOutput": "Audio Output",
     "performanceOverlay": "Performance Overlay",
-    "audioPassthrough": "Audio Passthrough"
+    "audioPassthrough": "Audio Passthrough",
+    "audioNormalization": "Audio Normalization"
   },
   "externalPlayer": {
     "title": "External Player",

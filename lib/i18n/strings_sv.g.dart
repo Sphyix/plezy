@@ -316,8 +316,12 @@ class _TranslationsSettingsSv implements TranslationsSettingsEn {
 	@override String maxVolumePercent({required Object percent}) => '${percent}%';
 	@override String get discordRichPresence => 'Discord Rich Presence';
 	@override String get discordRichPresenceDescription => 'Visa vad du tittar på i Discord';
+	@override String get autoPip => 'Automatisk bild-i-bild';
+	@override String get autoPipDescription => 'Aktivera bild-i-bild automatiskt när appen lämnas under uppspelning';
 	@override String get matchContentFrameRate => 'Matcha innehållets bildfrekvens';
 	@override String get matchContentFrameRateDescription => 'Justera skärmens uppdateringsfrekvens för att matcha videoinnehållet, minskar hackighet och sparar batteri';
+	@override String get tunneledPlayback => 'Tunneled Playback';
+	@override String get tunneledPlaybackDescription => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content';
 	@override String get requireProfileSelectionOnOpen => 'Fråga efter profil vid appstart';
 	@override String get requireProfileSelectionOnOpenDescription => 'Visa profilval varje gång appen öppnas';
 	@override String get confirmExitOnBack => 'Bekräfta innan avslut';
@@ -1028,6 +1032,7 @@ class _TranslationsVideoSettingsSv implements TranslationsVideoSettingsEn {
 	@override String get audioOutput => 'Ljudutgång';
 	@override String get performanceOverlay => 'Prestandaöverlägg';
 	@override String get audioPassthrough => 'Ljudgenomkoppling';
+	@override String get audioNormalization => 'Ljudnormalisering';
 }
 
 // Path: externalPlayer
@@ -1485,6 +1490,8 @@ extension on TranslationsSv {
 			'settings.discordRichPresenceDescription' => 'Visa vad du tittar på i Discord',
 			'settings.matchContentFrameRate' => 'Matcha innehållets bildfrekvens',
 			'settings.matchContentFrameRateDescription' => 'Justera skärmens uppdateringsfrekvens för att matcha videoinnehållet, minskar hackighet och sparar batteri',
+			'settings.tunneledPlayback' => 'Tunneled Playback',
+			'settings.tunneledPlaybackDescription' => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content',
 			'settings.requireProfileSelectionOnOpen' => 'Fråga efter profil vid appstart',
 			'settings.requireProfileSelectionOnOpenDescription' => 'Visa profilval varje gång appen öppnas',
 			'settings.confirmExitOnBack' => 'Bekräfta innan avslut',
@@ -2023,6 +2030,7 @@ extension on TranslationsSv {
 			'videoSettings.audioOutput' => 'Ljudutgång',
 			'videoSettings.performanceOverlay' => 'Prestandaöverlägg',
 			'videoSettings.audioPassthrough' => 'Ljudgenomkoppling',
+			'videoSettings.audioNormalization' => 'Ljudnormalisering',
 			'externalPlayer.title' => 'Extern spelare',
 			'externalPlayer.useExternalPlayer' => 'Använd extern spelare',
 			'externalPlayer.useExternalPlayerDescription' => 'Öppna videor i en extern app istället för den inbyggda spelaren',

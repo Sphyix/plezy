@@ -316,8 +316,12 @@ class _TranslationsSettingsZh implements TranslationsSettingsEn {
 	@override String maxVolumePercent({required Object percent}) => '${percent}%';
 	@override String get discordRichPresence => 'Discord 动态状态';
 	@override String get discordRichPresenceDescription => '在 Discord 上显示您正在观看的内容';
+	@override String get autoPip => '自动画中画';
+	@override String get autoPipDescription => '在播放期间离开应用时自动进入画中画模式';
 	@override String get matchContentFrameRate => '匹配内容帧率';
 	@override String get matchContentFrameRateDescription => '调整显示刷新率以匹配视频内容，减少画面抖动并节省电量';
+	@override String get tunneledPlayback => 'Tunneled Playback';
+	@override String get tunneledPlaybackDescription => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content';
 	@override String get requireProfileSelectionOnOpen => '打开应用时询问配置文件';
 	@override String get requireProfileSelectionOnOpenDescription => '每次打开应用时显示配置文件选择';
 	@override String get confirmExitOnBack => '退出前确认';
@@ -1028,6 +1032,7 @@ class _TranslationsVideoSettingsZh implements TranslationsVideoSettingsEn {
 	@override String get audioOutput => '音频输出';
 	@override String get performanceOverlay => '性能监控';
 	@override String get audioPassthrough => '音频直通';
+	@override String get audioNormalization => '音频标准化';
 }
 
 // Path: externalPlayer
@@ -1485,6 +1490,8 @@ extension on TranslationsZh {
 			'settings.discordRichPresenceDescription' => '在 Discord 上显示您正在观看的内容',
 			'settings.matchContentFrameRate' => '匹配内容帧率',
 			'settings.matchContentFrameRateDescription' => '调整显示刷新率以匹配视频内容，减少画面抖动并节省电量',
+			'settings.tunneledPlayback' => 'Tunneled Playback',
+			'settings.tunneledPlaybackDescription' => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content',
 			'settings.requireProfileSelectionOnOpen' => '打开应用时询问配置文件',
 			'settings.requireProfileSelectionOnOpenDescription' => '每次打开应用时显示配置文件选择',
 			'settings.confirmExitOnBack' => '退出前确认',
@@ -2023,6 +2030,7 @@ extension on TranslationsZh {
 			'videoSettings.audioOutput' => '音频输出',
 			'videoSettings.performanceOverlay' => '性能监控',
 			'videoSettings.audioPassthrough' => '音频直通',
+			'videoSettings.audioNormalization' => '音频标准化',
 			'externalPlayer.title' => '外部播放器',
 			'externalPlayer.useExternalPlayer' => '使用外部播放器',
 			'externalPlayer.useExternalPlayerDescription' => '在外部应用中打开视频，而不是使用内置播放器',

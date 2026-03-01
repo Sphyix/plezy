@@ -64,7 +64,9 @@ class SettingsService extends BaseSharedPreferencesService {
   static const String _keyMpvConfigPresets = 'mpv_config_presets';
   static const String _keyMaxVolume = 'max_volume';
   static const String _keyEnableDiscordRPC = 'enable_discord_rpc';
+  static const String _keyAutoPip = 'auto_pip';
   static const String _keyMatchContentFrameRate = 'match_content_frame_rate';
+  static const String _keyTunneledPlayback = 'tunneled_playback';
   static const String _keyDefaultPlaybackSpeed = 'default_playback_speed';
   static const String _keyAutoPlayNextEpisode = 'auto_play_next_episode';
   static const String _keyUseExoPlayer = 'use_exoplayer';
@@ -79,6 +81,7 @@ class SettingsService extends BaseSharedPreferencesService {
   static const String _keyConfirmExitOnBack = 'confirm_exit_on_back';
   static const String _keyAmbientLighting = 'ambient_lighting';
   static const String _keyAudioPassthrough = 'audio_passthrough';
+  static const String _keyAudioNormalization = 'audio_normalization';
 
   SettingsService._();
 
@@ -983,6 +986,15 @@ class SettingsService extends BaseSharedPreferencesService {
     return prefs.getBool(_keyEnableDiscordRPC) ?? false; // Default disabled
   }
 
+  // Auto Picture-in-Picture (Android only)
+  Future<void> setAutoPip(bool enabled) async {
+    await prefs.setBool(_keyAutoPip, enabled);
+  }
+
+  bool getAutoPip() {
+    return prefs.getBool(_keyAutoPip) ?? true; // Default enabled
+  }
+
   // Match Content Frame Rate (Android only)
   Future<void> setMatchContentFrameRate(bool enabled) async {
     await prefs.setBool(_keyMatchContentFrameRate, enabled);
@@ -990,6 +1002,15 @@ class SettingsService extends BaseSharedPreferencesService {
 
   bool getMatchContentFrameRate() {
     return prefs.getBool(_keyMatchContentFrameRate) ?? false; // Default disabled
+  }
+
+  // Tunneled Playback (Android ExoPlayer only)
+  Future<void> setTunneledPlayback(bool enabled) async {
+    await prefs.setBool(_keyTunneledPlayback, enabled);
+  }
+
+  bool getTunneledPlayback() {
+    return prefs.getBool(_keyTunneledPlayback) ?? true; // Default: enabled
   }
 
   // Default Playback Speed (0.5 to 3.0)
@@ -1149,6 +1170,15 @@ class SettingsService extends BaseSharedPreferencesService {
     return prefs.getBool(_keyAudioPassthrough) ?? false;
   }
 
+  // Audio Normalization
+  Future<void> setAudioNormalization(bool enabled) async {
+    await prefs.setBool(_keyAudioNormalization, enabled);
+  }
+
+  bool getAudioNormalization() {
+    return prefs.getBool(_keyAudioNormalization) ?? false;
+  }
+
   // Reset all settings to defaults
   Future<void> resetAllSettings() async {
     await Future.wait([
@@ -1191,7 +1221,9 @@ class SettingsService extends BaseSharedPreferencesService {
       prefs.remove(_keyMpvConfigEntries),
       prefs.remove(_keyMpvConfigPresets),
       prefs.remove(_keyEnableDiscordRPC),
+      prefs.remove(_keyAutoPip),
       prefs.remove(_keyMatchContentFrameRate),
+      prefs.remove(_keyTunneledPlayback),
       prefs.remove(_keyDefaultPlaybackSpeed),
       prefs.remove(_keyAutoPlayNextEpisode),
       prefs.remove(_keyUseExoPlayer),
@@ -1206,6 +1238,7 @@ class SettingsService extends BaseSharedPreferencesService {
       prefs.remove(_keyConfirmExitOnBack),
       prefs.remove(_keyAmbientLighting),
       prefs.remove(_keyAudioPassthrough),
+      prefs.remove(_keyAudioNormalization),
       prefs.remove(_keyBufferSizeMigratedToAuto),
     ]);
   }

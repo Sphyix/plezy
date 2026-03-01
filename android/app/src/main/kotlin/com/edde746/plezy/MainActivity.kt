@@ -11,6 +11,8 @@ import android.content.res.Configuration
 import android.util.Rational
 import android.view.KeyEvent
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.RenderMode
@@ -19,6 +21,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import com.edde746.plezy.exoplayer.ExoPlayerPlugin
 import com.edde746.plezy.mpv.MpvPlayerPlugin
+import com.edde746.plezy.shared.ThemeHelper
 import com.edde746.plezy.watchnext.WatchNextPlugin
 import java.io.File
 
@@ -28,7 +31,11 @@ class MainActivity : FlutterActivity() {
     private val EXTERNAL_PLAYER_CHANNEL = "app.plezy/external_player"
     private val THEME_CHANNEL = "app.plezy/theme"
     private var watchNextPlugin: WatchNextPlugin? = null
-    private var cachedFlutterView: android.view.View? = null
+
+    // Auto PiP state
+    private var autoPipReady = false
+    private var autoPipWidth: Int = 16
+    private var autoPipHeight: Int = 9
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Apply persisted theme color to the window background before anything
@@ -36,17 +43,7 @@ class MainActivity : FlutterActivity() {
         // screen and Flutter's first frame for non-default themes (e.g. OLED).
         val prefs = getSharedPreferences("plezy_prefs", Context.MODE_PRIVATE)
         val savedTheme = prefs.getString("splash_theme", null)
-        if (savedTheme != null) {
-            val color = when (savedTheme) {
-                "oled" -> android.graphics.Color.BLACK
-                "dark" -> android.graphics.Color.parseColor("#0E0F12")
-                "light" -> android.graphics.Color.parseColor("#F7F7F8")
-                else -> null
-            }
-            if (color != null) {
-                window.decorView.setBackgroundColor(color)
-            }
-        }
+        ThemeHelper.themeColor(savedTheme)?.let { window.decorView.setBackgroundColor(it) }
 
         super.onCreate(savedInstanceState)
 
@@ -62,39 +59,39 @@ class MainActivity : FlutterActivity() {
             window.decorView.defaultFocusHighlightEnabled = false
         }
 
+        // Wrap the content view in a layout that intercepts DPAD key events
+        // before the IME input stage, which can consume DPAD direction events
+        // from virtual remotes before they reach Flutter's key handler.
+        val content = findViewById<ViewGroup>(android.R.id.content)
+        val wrapper = object : FrameLayout(this) {
+            override fun dispatchKeyEventPreIme(event: KeyEvent): Boolean {
+                when (event.keyCode) {
+                    KeyEvent.KEYCODE_DPAD_UP,
+                    KeyEvent.KEYCODE_DPAD_DOWN,
+                    KeyEvent.KEYCODE_DPAD_LEFT,
+                    KeyEvent.KEYCODE_DPAD_RIGHT,
+                    KeyEvent.KEYCODE_DPAD_CENTER -> {
+                        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        if (!imm.isAcceptingText) {
+                            super.dispatchKeyEvent(event)
+                            return true
+                        }
+                    }
+                }
+                return super.dispatchKeyEventPreIme(event)
+            }
+        }
+        while (content.childCount > 0) {
+            val child = content.getChildAt(0)
+            content.removeViewAt(0)
+            wrapper.addView(child)
+        }
+        content.addView(wrapper, ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT))
+
         // Handle Watch Next deep link from initial launch
         handleWatchNextIntent(intent)
-    }
-
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        // Ensure FlutterView has focus for DPAD events so they reach Flutter's
-        // key event system. Without this, Android's native focus navigation can
-        // consume DPAD direction events (especially from the Google TV virtual
-        // remote) before they reach Flutter.
-        when (event.keyCode) {
-            KeyEvent.KEYCODE_DPAD_UP,
-            KeyEvent.KEYCODE_DPAD_DOWN,
-            KeyEvent.KEYCODE_DPAD_LEFT,
-            KeyEvent.KEYCODE_DPAD_RIGHT,
-            KeyEvent.KEYCODE_DPAD_CENTER -> {
-                val fv = cachedFlutterView ?: findFlutterView(window.decorView)?.also { cachedFlutterView = it }
-                if (fv != null && !fv.hasFocus()) {
-                    fv.requestFocus()
-                }
-            }
-        }
-        return super.dispatchKeyEvent(event)
-    }
-
-    private fun findFlutterView(view: android.view.View): android.view.View? {
-        if (view.javaClass.name.contains("FlutterView")) return view
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                val found = findFlutterView(view.getChildAt(i))
-                if (found != null) return found
-            }
-        }
-        return null
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -186,15 +183,7 @@ class MainActivity : FlutterActivity() {
                     // Persist for next cold start & update window background now
                     getSharedPreferences("plezy_prefs", Context.MODE_PRIVATE)
                         .edit().putString("splash_theme", mode).apply()
-                    val color = when (mode) {
-                        "oled" -> android.graphics.Color.BLACK
-                        "dark" -> android.graphics.Color.parseColor("#0E0F12")
-                        "light" -> android.graphics.Color.parseColor("#F7F7F8")
-                        else -> null
-                    }
-                    if (color != null) {
-                        window.decorView.setBackgroundColor(color)
-                    }
+                    ThemeHelper.themeColor(mode)?.let { window.decorView.setBackgroundColor(it) }
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         val themeId = when (mode) {
@@ -227,15 +216,7 @@ class MainActivity : FlutterActivity() {
                         return@setMethodCallHandler
                     }
 
-                    // Check if PiP permission is granted via AppOpsManager
-                    val appOpsManager = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-                    val pipAllowed = appOpsManager.checkOpNoThrow(
-                        AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
-                        applicationInfo.uid,
-                        packageName
-                    ) == AppOpsManager.MODE_ALLOWED
-
-                    if (!pipAllowed) {
+                    if (!isPipPermissionGranted()) {
                         result.success(mapOf("success" to false, "errorCode" to "permission_disabled"))
                         return@setMethodCallHandler
                     }
@@ -243,31 +224,10 @@ class MainActivity : FlutterActivity() {
                     try {
                         val width = call.argument<Int>("width") ?: 16
                         val height = call.argument<Int>("height") ?: 9
-
-                        // Android PiP requires aspect ratio between 0.418410 (5:12) and 2.39 (12:5)
-                        val ratio = width.toFloat() / height.toFloat()
-                        val clampedWidth: Int
-                        val clampedHeight: Int
-
-                        when {
-                            ratio < 0.42f -> {
-                                // Too tall - clamp to minimum ratio (5:12)
-                                clampedWidth = 5
-                                clampedHeight = 12
-                            }
-                            ratio > 2.39f -> {
-                                // Too wide - clamp to maximum ratio (12:5)
-                                clampedWidth = 12
-                                clampedHeight = 5
-                            }
-                            else -> {
-                                clampedWidth = width
-                                clampedHeight = height
-                            }
-                        }
+                        val clamped = clampAspectRatio(width, height)
 
                         val params = PictureInPictureParams.Builder()
-                            .setAspectRatio(Rational(clampedWidth, clampedHeight))
+                            .setAspectRatio(Rational(clamped.first, clamped.second))
                             .build()
                         val success = enterPictureInPictureMode(params)
                         if (success) {
@@ -280,7 +240,25 @@ class MainActivity : FlutterActivity() {
                     } catch (e: Exception) {
                         result.success(mapOf("success" to false, "errorCode" to "unknown", "errorMessage" to (e.message ?: "Unknown error")))
                     }
-                } else -> result.notImplemented()
+                }
+                "setAutoPipReady" -> {
+                    autoPipReady = call.argument<Boolean>("ready") ?: false
+                    autoPipWidth = call.argument<Int>("width") ?: 16
+                    autoPipHeight = call.argument<Int>("height") ?: 9
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        try {
+                            val clamped = clampAspectRatio(autoPipWidth, autoPipHeight)
+                            val params = PictureInPictureParams.Builder()
+                                .setAspectRatio(Rational(clamped.first, clamped.second))
+                                .setAutoEnterEnabled(autoPipReady)
+                                .build()
+                            setPictureInPictureParams(params)
+                        } catch (_: Exception) {}
+                    }
+                    result.success(true)
+                }
+                else -> result.notImplemented()
             }
         }
     }
@@ -292,6 +270,44 @@ class MainActivity : FlutterActivity() {
         // Notify ExoPlayer plugin to resize video surface for PiP
         flutterEngine?.plugins?.get(ExoPlayerPlugin::class.java)?.let { plugin ->
             (plugin as? ExoPlayerPlugin)?.onPipModeChanged(isInPictureInPictureMode)
+        }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        // Auto PiP for API 26-30 (API 31+ uses setAutoEnterEnabled)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.S &&
+            autoPipReady && isPipPermissionGranted()) {
+            try {
+                // Notify Flutter to prepare video filter before PiP
+                flutterEngine?.dartExecutor?.binaryMessenger?.let { messenger ->
+                    MethodChannel(messenger, PIP_CHANNEL).invokeMethod("onAutoPipEntering", null)
+                }
+                val clamped = clampAspectRatio(autoPipWidth, autoPipHeight)
+                val params = PictureInPictureParams.Builder()
+                    .setAspectRatio(Rational(clamped.first, clamped.second))
+                    .build()
+                enterPictureInPictureMode(params)
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun isPipPermissionGranted(): Boolean {
+        val appOpsManager = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        return appOpsManager.checkOpNoThrow(
+            AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+            applicationInfo.uid,
+            packageName
+        ) == AppOpsManager.MODE_ALLOWED
+    }
+
+    private fun clampAspectRatio(width: Int, height: Int): Pair<Int, Int> {
+        val ratio = width.toFloat() / height.toFloat()
+        return when {
+            ratio < 0.42f -> Pair(5, 12)
+            ratio > 2.39f -> Pair(12, 5)
+            else -> Pair(width, height)
         }
     }
 }

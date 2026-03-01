@@ -694,11 +694,23 @@ class TranslationsSettingsEn {
 	/// en: 'Show what you're watching on Discord'
 	String get discordRichPresenceDescription => 'Show what you\'re watching on Discord';
 
+	/// en: 'Auto Picture-in-Picture'
+	String get autoPip => 'Auto Picture-in-Picture';
+
+	/// en: 'Automatically enter picture-in-picture when leaving the app during playback'
+	String get autoPipDescription => 'Automatically enter picture-in-picture when leaving the app during playback';
+
 	/// en: 'Match Content Frame Rate'
 	String get matchContentFrameRate => 'Match Content Frame Rate';
 
 	/// en: 'Adjust display refresh rate to match video content, reducing judder and saving battery'
 	String get matchContentFrameRateDescription => 'Adjust display refresh rate to match video content, reducing judder and saving battery';
+
+	/// en: 'Tunneled Playback'
+	String get tunneledPlayback => 'Tunneled Playback';
+
+	/// en: 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content'
+	String get tunneledPlaybackDescription => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content';
 
 	/// en: 'Ask for profile on app open'
 	String get requireProfileSelectionOnOpen => 'Ask for profile on app open';
@@ -2279,6 +2291,9 @@ class TranslationsVideoSettingsEn {
 
 	/// en: 'Audio Passthrough'
 	String get audioPassthrough => 'Audio Passthrough';
+
+	/// en: 'Audio Normalization'
+	String get audioNormalization => 'Audio Normalization';
 }
 
 // Path: externalPlayer
@@ -3089,8 +3104,12 @@ extension on Translations {
 			'settings.maxVolumePercent' => ({required Object percent}) => '${percent}%',
 			'settings.discordRichPresence' => 'Discord Rich Presence',
 			'settings.discordRichPresenceDescription' => 'Show what you\'re watching on Discord',
+			'settings.autoPip' => 'Auto Picture-in-Picture',
+			'settings.autoPipDescription' => 'Automatically enter picture-in-picture when leaving the app during playback',
 			'settings.matchContentFrameRate' => 'Match Content Frame Rate',
 			'settings.matchContentFrameRateDescription' => 'Adjust display refresh rate to match video content, reducing judder and saving battery',
+			'settings.tunneledPlayback' => 'Tunneled Playback',
+			'settings.tunneledPlaybackDescription' => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content',
 			'settings.requireProfileSelectionOnOpen' => 'Ask for profile on app open',
 			'settings.requireProfileSelectionOnOpenDescription' => 'Show profile selection every time the app is opened',
 			'settings.confirmExitOnBack' => 'Confirm before exiting',
@@ -3629,6 +3648,7 @@ extension on Translations {
 			'videoSettings.audioOutput' => 'Audio Output',
 			'videoSettings.performanceOverlay' => 'Performance Overlay',
 			'videoSettings.audioPassthrough' => 'Audio Passthrough',
+			'videoSettings.audioNormalization' => 'Audio Normalization',
 			'externalPlayer.title' => 'External Player',
 			'externalPlayer.useExternalPlayer' => 'Use External Player',
 			'externalPlayer.useExternalPlayerDescription' => 'Open videos in an external app instead of the built-in player',

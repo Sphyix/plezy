@@ -316,8 +316,12 @@ class _TranslationsSettingsFr implements TranslationsSettingsEn {
 	@override String maxVolumePercent({required Object percent}) => '${percent}%';
 	@override String get discordRichPresence => 'Discord Rich Presence';
 	@override String get discordRichPresenceDescription => 'Montrez ce que vous regardez sur Discord';
+	@override String get autoPip => 'Image dans l\'image automatique';
+	@override String get autoPipDescription => 'Activer automatiquement l\'image dans l\'image en quittant l\'application pendant la lecture';
 	@override String get matchContentFrameRate => 'Fréquence d\'images du contenu correspondant';
 	@override String get matchContentFrameRateDescription => 'Ajustez la fréquence de rafraîchissement de l\'écran en fonction du contenu vidéo, ce qui réduit les saccades et économise la batterie';
+	@override String get tunneledPlayback => 'Tunneled Playback';
+	@override String get tunneledPlaybackDescription => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content';
 	@override String get requireProfileSelectionOnOpen => 'Demander le profil à l\'ouverture';
 	@override String get requireProfileSelectionOnOpenDescription => 'Afficher la sélection de profil à chaque ouverture de l\'application';
 	@override String get confirmExitOnBack => 'Confirmer avant de quitter';
@@ -1028,6 +1032,7 @@ class _TranslationsVideoSettingsFr implements TranslationsVideoSettingsEn {
 	@override String get audioOutput => 'Sortie audio';
 	@override String get performanceOverlay => 'Superposition de performance';
 	@override String get audioPassthrough => 'Audio Pass-Through';
+	@override String get audioNormalization => 'Normalisation audio';
 }
 
 // Path: externalPlayer
@@ -1485,6 +1490,8 @@ extension on TranslationsFr {
 			'settings.discordRichPresenceDescription' => 'Montrez ce que vous regardez sur Discord',
 			'settings.matchContentFrameRate' => 'Fréquence d\'images du contenu correspondant',
 			'settings.matchContentFrameRateDescription' => 'Ajustez la fréquence de rafraîchissement de l\'écran en fonction du contenu vidéo, ce qui réduit les saccades et économise la batterie',
+			'settings.tunneledPlayback' => 'Tunneled Playback',
+			'settings.tunneledPlaybackDescription' => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content',
 			'settings.requireProfileSelectionOnOpen' => 'Demander le profil à l\'ouverture',
 			'settings.requireProfileSelectionOnOpenDescription' => 'Afficher la sélection de profil à chaque ouverture de l\'application',
 			'settings.confirmExitOnBack' => 'Confirmer avant de quitter',
@@ -2023,6 +2030,7 @@ extension on TranslationsFr {
 			'videoSettings.audioOutput' => 'Sortie audio',
 			'videoSettings.performanceOverlay' => 'Superposition de performance',
 			'videoSettings.audioPassthrough' => 'Audio Pass-Through',
+			'videoSettings.audioNormalization' => 'Normalisation audio',
 			'externalPlayer.title' => 'Lecteur externe',
 			'externalPlayer.useExternalPlayer' => 'Utiliser un lecteur externe',
 			'externalPlayer.useExternalPlayerDescription' => 'Ouvrir les vidéos dans une application externe au lieu du lecteur intégré',

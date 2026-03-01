@@ -197,8 +197,12 @@
     "maxVolumePercent": "${percent}%",
     "discordRichPresence": "Discord Rich Presence",
     "discordRichPresenceDescription": "Visa vad du tittar på i Discord",
+    "autoPip": "Automatisk bild-i-bild",
+    "autoPipDescription": "Aktivera bild-i-bild automatiskt när appen lämnas under uppspelning",
     "matchContentFrameRate": "Matcha innehållets bildfrekvens",
     "matchContentFrameRateDescription": "Justera skärmens uppdateringsfrekvens för att matcha videoinnehållet, minskar hackighet och sparar batteri",
+    "tunneledPlayback": "Tunneled Playback",
+    "tunneledPlaybackDescription": "Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content",
     "requireProfileSelectionOnOpen": "Fråga efter profil vid appstart",
     "requireProfileSelectionOnOpenDescription": "Visa profilval varje gång appen öppnas",
     "confirmExitOnBack": "Bekräfta innan avslut",
@@ -808,7 +812,8 @@
     "hdr": "HDR",
     "audioOutput": "Ljudutgång",
     "performanceOverlay": "Prestandaöverlägg",
-    "audioPassthrough": "Ljudgenomkoppling"
+    "audioPassthrough": "Ljudgenomkoppling",
+    "audioNormalization": "Ljudnormalisering"
   },
   "externalPlayer": {
     "title": "Extern spelare",

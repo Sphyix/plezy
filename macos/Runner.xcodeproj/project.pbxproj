@@ -831,7 +831,7 @@
 			repositoryURL = "https://github.com/edde746/MPVKit";
 			requirement = {
 				kind = revision;
-				revision = 2e887368b44ce1dc9e1649e7757ec62c2564e792;
+				revision = 86035ac4a2544e7a9b3cc0ffde5bef4549d4869a;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

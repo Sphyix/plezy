@@ -316,8 +316,12 @@ class _TranslationsSettingsKo implements TranslationsSettingsEn {
 	@override String maxVolumePercent({required Object percent}) => '${percent}%';
 	@override String get discordRichPresence => 'Discord Rich Presence';
 	@override String get discordRichPresenceDescription => 'Discord에서 시청 중인 콘텐츠 표시';
+	@override String get autoPip => '자동 PIP 모드';
+	@override String get autoPipDescription => '재생 중 앱을 나갈 때 자동으로 PIP 모드로 전환';
 	@override String get matchContentFrameRate => '콘텐츠 프레임 레이트 맞춤';
 	@override String get matchContentFrameRateDescription => '비디오 콘텐츠에 맞게 디스플레이 주사율을 조정하여 떨림을 줄이고 배터리를 절약합니다';
+	@override String get tunneledPlayback => 'Tunneled Playback';
+	@override String get tunneledPlaybackDescription => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content';
 	@override String get requireProfileSelectionOnOpen => '앱 실행 시 프로필 선택';
 	@override String get requireProfileSelectionOnOpenDescription => '앱을 열 때마다 프로필 선택 화면을 표시합니다';
 	@override String get confirmExitOnBack => '종료 전 확인';
@@ -1028,6 +1032,7 @@ class _TranslationsVideoSettingsKo implements TranslationsVideoSettingsEn {
 	@override String get audioOutput => '오디오 출력';
 	@override String get performanceOverlay => '성능 오버레이';
 	@override String get audioPassthrough => '오디오 패스스루';
+	@override String get audioNormalization => '오디오 정규화';
 }
 
 // Path: externalPlayer
@@ -1485,6 +1490,8 @@ extension on TranslationsKo {
 			'settings.discordRichPresenceDescription' => 'Discord에서 시청 중인 콘텐츠 표시',
 			'settings.matchContentFrameRate' => '콘텐츠 프레임 레이트 맞춤',
 			'settings.matchContentFrameRateDescription' => '비디오 콘텐츠에 맞게 디스플레이 주사율을 조정하여 떨림을 줄이고 배터리를 절약합니다',
+			'settings.tunneledPlayback' => 'Tunneled Playback',
+			'settings.tunneledPlaybackDescription' => 'Use hardware-accelerated video tunneling. Disable if you see a black screen with audio on HDR content',
 			'settings.requireProfileSelectionOnOpen' => '앱 실행 시 프로필 선택',
 			'settings.requireProfileSelectionOnOpenDescription' => '앱을 열 때마다 프로필 선택 화면을 표시합니다',
 			'settings.confirmExitOnBack' => '종료 전 확인',
@@ -2023,6 +2030,7 @@ extension on TranslationsKo {
 			'videoSettings.audioOutput' => '오디오 출력',
 			'videoSettings.performanceOverlay' => '성능 오버레이',
 			'videoSettings.audioPassthrough' => '오디오 패스스루',
+			'videoSettings.audioNormalization' => '오디오 정규화',
 			'externalPlayer.title' => '외부 플레이어',
 			'externalPlayer.useExternalPlayer' => '외부 플레이어 사용',
 			'externalPlayer.useExternalPlayerDescription' => '내장 플레이어 대신 외부 앱에서 동영상 열기',

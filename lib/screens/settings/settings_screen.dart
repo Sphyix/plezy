@@ -77,7 +77,9 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
   static const _kPlayerBackend = 'player_backend';
   static const _kExternalPlayer = 'external_player';
   static const _kHardwareDecoding = 'hardware_decoding';
+  static const _kAutoPip = 'auto_pip';
   static const _kMatchContentFrameRate = 'match_content_frame_rate';
+  static const _kTunneledPlayback = 'tunneled_playback';
   static const _kBufferSize = 'buffer_size';
   static const _kSubtitleStyling = 'subtitle_styling';
   static const _kMpvConfig = 'mpv_config';
@@ -120,7 +122,9 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
   bool _videoPlayerNavigationEnabled = false;
   int _maxVolume = 100;
   bool _enableDiscordRPC = false;
+  bool _autoPip = true;
   bool _matchContentFrameRate = false;
+  bool _tunneledPlayback = true;
   bool _useExoPlayer = true; // Android only: ExoPlayer vs MPV
   bool _requireProfileSelectionOnOpen = false;
   bool _useExternalPlayer = false;
@@ -194,7 +198,9 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
       _videoPlayerNavigationEnabled = _settingsService.getVideoPlayerNavigationEnabled();
       _maxVolume = _settingsService.getMaxVolume();
       _enableDiscordRPC = _settingsService.getEnableDiscordRPC();
+      _autoPip = _settingsService.getAutoPip();
       _matchContentFrameRate = _settingsService.getMatchContentFrameRate();
+      _tunneledPlayback = _settingsService.getTunneledPlayback();
       _useExoPlayer = _settingsService.getUseExoPlayer();
       _requireProfileSelectionOnOpen = _settingsService.getRequireProfileSelectionOnOpen();
       _useExternalPlayer = _settingsService.getUseExternalPlayer();
@@ -486,6 +492,20 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
           ),
           if (Platform.isAndroid)
             SwitchListTile(
+              focusNode: _focusTracker.get(_kAutoPip),
+              secondary: const AppIcon(Symbols.picture_in_picture_alt_rounded, fill: 1),
+              title: Text(t.settings.autoPip),
+              subtitle: Text(t.settings.autoPipDescription),
+              value: _autoPip,
+              onChanged: (value) async {
+                setState(() {
+                  _autoPip = value;
+                });
+                await _settingsService.setAutoPip(value);
+              },
+            ),
+          if (Platform.isAndroid)
+            SwitchListTile(
               focusNode: _focusTracker.get(_kMatchContentFrameRate),
               secondary: const AppIcon(Symbols.display_settings_rounded, fill: 1),
               title: Text(t.settings.matchContentFrameRate),
@@ -496,6 +516,20 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab {
                   _matchContentFrameRate = value;
                 });
                 await _settingsService.setMatchContentFrameRate(value);
+              },
+            ),
+          if (Platform.isAndroid && _useExoPlayer)
+            SwitchListTile(
+              focusNode: _focusTracker.get(_kTunneledPlayback),
+              secondary: const AppIcon(Symbols.tv_options_input_settings_rounded, fill: 1),
+              title: Text(t.settings.tunneledPlayback),
+              subtitle: Text(t.settings.tunneledPlaybackDescription),
+              value: _tunneledPlayback,
+              onChanged: (value) async {
+                setState(() {
+                  _tunneledPlayback = value;
+                });
+                await _settingsService.setTunneledPlayback(value);
               },
             ),
           ListTile(
