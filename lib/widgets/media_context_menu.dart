@@ -1080,19 +1080,32 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     final client = _getClientForItem();
 
     try {
-      // Intercept show/movie downloads for first-time series settings
-      final type = metadata.type.toLowerCase();
-      if (type == 'show' || type == 'movie') {
+      // Intercept downloads for first-time series settings (all media types)
+      final seriesRatingKey = switch (metadata.mediaType) {
+        PlexMediaType.show || PlexMediaType.movie => metadata.ratingKey,
+        PlexMediaType.episode => metadata.grandparentRatingKey,
+        PlexMediaType.season => metadata.parentRatingKey,
+        _ => null,
+      };
+
+      if (seriesRatingKey != null) {
         final serverId = metadata.serverId ?? client.serverId;
-        final globalKey = buildGlobalKey(serverId, metadata.ratingKey);
-        final existingSettings = downloadProvider.getSeriesSettingsForShow(globalKey);
+        final showGlobalKey = buildGlobalKey(serverId, seriesRatingKey);
+        final existingSettings = downloadProvider.getSeriesSettingsForShow(showGlobalKey);
 
         if (existingSettings == null) {
+          final seriesTitle = switch (metadata.mediaType) {
+            PlexMediaType.show || PlexMediaType.movie => metadata.title,
+            PlexMediaType.episode => metadata.grandparentTitle ?? metadata.title,
+            PlexMediaType.season => metadata.parentTitle ?? metadata.title,
+            _ => metadata.title,
+          };
+
           final settings = await SeriesSettingsDialog.show(
             context,
-            title: metadata.title,
+            title: seriesTitle,
             serverId: serverId,
-            ratingKey: metadata.ratingKey,
+            ratingKey: seriesRatingKey,
           );
           if (settings == null || !context.mounted) return;
           await downloadProvider.saveSeriesSettings(settings);

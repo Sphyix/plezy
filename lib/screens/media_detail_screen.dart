@@ -44,6 +44,7 @@ import '../widgets/app_bar_back_button.dart';
 import '../utils/desktop_window_padding.dart';
 import '../widgets/horizontal_scroll_with_arrows.dart';
 import '../widgets/media_context_menu.dart';
+import '../widgets/series_settings_dialog.dart';
 import '../widgets/placeholder_container.dart';
 import '../mixins/watch_state_aware.dart';
 import '../mixins/deletion_aware.dart';
@@ -508,18 +509,24 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                     onPressed: () async {
                       final client = _getClientForMetadata(context);
                       if (client == null) return;
-
-                      // Delete failed download and retry
-                      await downloadProvider.deleteDownload(globalKey);
                       try {
-                        await downloadProvider.queueDownload(metadata, client);
+                        final ready = await _ensureSeriesSettings(context, metadata, client, downloadProvider);
+                        if (!ready || !context.mounted) return;
 
+                        // Delete failed download and retry
+                        await downloadProvider.deleteDownload(globalKey);
+                        await downloadProvider.queueDownload(metadata, client);
                         if (context.mounted) {
                           showSuccessSnackBar(context, t.downloads.downloadQueued);
                         }
                       } on CellularDownloadBlockedException {
                         if (context.mounted) {
                           showErrorSnackBar(context, t.settings.cellularDownloadBlocked);
+                        }
+                      } catch (e) {
+                        appLogger.e('Failed to retry download', error: e);
+                        if (context.mounted) {
+                          showErrorSnackBar(context, t.messages.errorLoading(error: e.toString()));
                         }
                       }
                     },
@@ -555,8 +562,10 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                       } else if (retry && context.mounted) {
                         final client = _getClientForMetadata(context);
                         if (client == null) return;
-                        await downloadProvider.deleteDownload(globalKey);
                         try {
+                          final ready = await _ensureSeriesSettings(context, metadata, client, downloadProvider);
+                          if (!ready || !context.mounted) return;
+                          await downloadProvider.deleteDownload(globalKey);
                           await downloadProvider.queueDownload(metadata, client);
                           if (context.mounted) {
                             showSuccessSnackBar(context, t.downloads.downloadQueued);
@@ -564,6 +573,11 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                         } on CellularDownloadBlockedException {
                           if (context.mounted) {
                             showErrorSnackBar(context, t.settings.cellularDownloadBlocked);
+                          }
+                        } catch (e) {
+                          appLogger.e('Failed to retry download', error: e);
+                          if (context.mounted) {
+                            showErrorSnackBar(context, t.messages.errorLoading(error: e.toString()));
                           }
                         }
                       }
@@ -590,15 +604,28 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                     onPressed: () async {
                       final client = _getClientForMetadata(context);
                       if (client == null) return;
+                      try {
+                        final ready = await _ensureSeriesSettings(context, metadata, client, downloadProvider);
+                        if (!ready || !context.mounted) return;
 
-                      // Queue only the missing episodes
-                      final count = await downloadProvider.queueMissingEpisodes(metadata, client);
+                        // Queue only the missing episodes
+                        final count = await downloadProvider.queueMissingEpisodes(metadata, client);
 
-                      if (context.mounted) {
-                        final message = count > 0
-                            ? t.downloads.episodesQueued(count: count)
-                            : 'All episodes already downloaded';
-                        showAppSnackBar(context, message);
+                        if (context.mounted) {
+                          final message = count > 0
+                              ? t.downloads.episodesQueued(count: count)
+                              : 'All episodes already downloaded';
+                          showAppSnackBar(context, message);
+                        }
+                      } on CellularDownloadBlockedException {
+                        if (context.mounted) {
+                          showErrorSnackBar(context, t.settings.cellularDownloadBlocked);
+                        }
+                      } catch (e) {
+                        appLogger.e('Failed to queue missing episodes', error: e);
+                        if (context.mounted) {
+                          showErrorSnackBar(context, t.messages.errorLoading(error: e.toString()));
+                        }
                       }
                     },
                     tooltip: tooltip,
@@ -646,10 +673,23 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
                   onPressed: () async {
                     final client = _getClientForMetadata(context);
                     if (client == null) return;
-                    final count = await downloadProvider.queueDownload(metadata, client);
-                    if (context.mounted) {
-                      final message = count > 1 ? t.downloads.episodesQueued(count: count) : t.downloads.downloadQueued;
-                      showSuccessSnackBar(context, message);
+                    try {
+                      final ready = await _ensureSeriesSettings(context, metadata, client, downloadProvider);
+                      if (!ready || !context.mounted) return;
+                      final count = await downloadProvider.queueDownload(metadata, client);
+                      if (context.mounted) {
+                        final message = count > 1 ? t.downloads.episodesQueued(count: count) : t.downloads.downloadQueued;
+                        showSuccessSnackBar(context, message);
+                      }
+                    } on CellularDownloadBlockedException {
+                      if (context.mounted) {
+                        showErrorSnackBar(context, t.settings.cellularDownloadBlocked);
+                      }
+                    } catch (e) {
+                      appLogger.e('Failed to queue download', error: e);
+                      if (context.mounted) {
+                        showErrorSnackBar(context, t.messages.errorLoading(error: e.toString()));
+                      }
                     }
                   },
                   icon: const AppIcon(Symbols.download_rounded, fill: 1),
@@ -926,6 +966,43 @@ class _MediaDetailScreenState extends State<MediaDetailScreen> with WatchStateAw
       return null;
     }
     return context.getClientForServer(widget.metadata.serverId!);
+  }
+
+  /// Ensures series download settings exist before downloading.
+  /// Returns true if settings exist or were just configured; false if user cancelled.
+  Future<bool> _ensureSeriesSettings(BuildContext context, PlexMetadata metadata, PlexClient client, DownloadProvider downloadProvider) async {
+    final seriesRatingKey = switch (metadata.mediaType) {
+      PlexMediaType.show || PlexMediaType.movie => metadata.ratingKey,
+      PlexMediaType.episode => metadata.grandparentRatingKey,
+      PlexMediaType.season => metadata.parentRatingKey,
+      _ => null,
+    };
+
+    if (seriesRatingKey == null) return true;
+
+    final serverId = metadata.serverId ?? client.serverId;
+    final showGlobalKey = buildGlobalKey(serverId, seriesRatingKey);
+    final existingSettings = downloadProvider.getSeriesSettingsForShow(showGlobalKey);
+
+    if (existingSettings != null) return true;
+
+    final seriesTitle = switch (metadata.mediaType) {
+      PlexMediaType.show || PlexMediaType.movie => metadata.title,
+      PlexMediaType.episode => metadata.grandparentTitle ?? metadata.title,
+      PlexMediaType.season => metadata.parentTitle ?? metadata.title,
+      _ => metadata.title,
+    };
+
+    final settings = await SeriesSettingsDialog.show(
+      context,
+      title: seriesTitle,
+      serverId: serverId,
+      ratingKey: seriesRatingKey,
+    );
+    if (settings == null || !context.mounted) return false;
+    await downloadProvider.saveSeriesSettings(settings);
+    if (!context.mounted) return false;
+    return true;
   }
 
   Future<void> _loadFullMetadata() async {
