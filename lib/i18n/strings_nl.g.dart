@@ -859,6 +859,16 @@ class _TranslationsDownloadsNl implements TranslationsDownloadsEn {
 	@override String get resumeAll => 'Alles hervatten';
 	@override String get deleteAll => 'Alles verwijderen';
 	@override String get storageUnavailable => 'Opslag niet beschikbaar. Controleer uw externe schijf of downloadlocatie-instellingen.';
+	@override String get settingsDialogTitle => 'Downloadinstellingen';
+	@override String get qualityLabel => 'Kwaliteit';
+	@override String get qualityOriginal => 'Origineel';
+	@override String get downloadNewEpisodes => 'Nieuwe afleveringen downloaden';
+	@override String get downloadNewSeasons => 'Nieuwe seizoenen downloaden';
+	@override String get episodesLabel => 'Afleveringen';
+	@override String get retentionLabel => 'Bewaring';
+	@override String get maxEpisodesLabel => 'Max. afleveringen';
+	@override String get retentionDaysLabel => 'Bewaarperiode (dagen)';
+	@override String get unlimitedHint => 'Onbeperkt';
 }
 
 // Path: playlists
@@ -1488,6 +1498,8 @@ extension on TranslationsNl {
 			'settings.maxVolumePercent' => ({required Object percent}) => '${percent}%',
 			'settings.discordRichPresence' => 'Discord Rich Presence',
 			'settings.discordRichPresenceDescription' => 'Toon op Discord wat je aan het kijken bent',
+			'settings.autoPip' => 'Automatische beeld-in-beeld',
+			'settings.autoPipDescription' => 'Automatisch beeld-in-beeld activeren bij het verlaten van de app tijdens afspelen',
 			'settings.matchContentFrameRate' => 'Inhoudsframesnelheid afstemmen',
 			'settings.matchContentFrameRateDescription' => 'Pas de schermverversingssnelheid aan op de video-inhoud, vermindert haperingen en bespaart batterij',
 			'settings.tunneledPlayback' => 'Tunneled Playback',
@@ -1811,6 +1823,8 @@ extension on TranslationsNl {
 			'liveTv.channelNumber' => ({required Object number}) => 'Kanaal ${number}',
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.premiere' => 'NIEUW',
 			'liveTv.reloadGuide' => 'Gids herladen',
 			'liveTv.allChannels' => 'Alle zenders',
@@ -1823,8 +1837,6 @@ extension on TranslationsNl {
 			'liveTv.evening' => 'Avond',
 			'liveTv.lateNight' => 'Late avond',
 			'liveTv.whatsOn' => 'Nu op TV',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.watchChannel' => 'Kanaal bekijken',
 			'downloads.title' => 'Downloads',
 			'downloads.manage' => 'Beheren',
@@ -1845,6 +1857,16 @@ extension on TranslationsNl {
 			'downloads.resumeAll' => 'Alles hervatten',
 			'downloads.deleteAll' => 'Alles verwijderen',
 			'downloads.storageUnavailable' => 'Opslag niet beschikbaar. Controleer uw externe schijf of downloadlocatie-instellingen.',
+			'downloads.settingsDialogTitle' => 'Downloadinstellingen',
+			'downloads.qualityLabel' => 'Kwaliteit',
+			'downloads.qualityOriginal' => 'Origineel',
+			'downloads.downloadNewEpisodes' => 'Nieuwe afleveringen downloaden',
+			'downloads.downloadNewSeasons' => 'Nieuwe seizoenen downloaden',
+			'downloads.episodesLabel' => 'Afleveringen',
+			'downloads.retentionLabel' => 'Bewaring',
+			'downloads.maxEpisodesLabel' => 'Max. afleveringen',
+			'downloads.retentionDaysLabel' => 'Bewaarperiode (dagen)',
+			'downloads.unlimitedHint' => 'Onbeperkt',
 			'playlists.title' => 'Afspeellijsten',
 			'playlists.noPlaylists' => 'Geen afspeellijsten gevonden',
 			'playlists.create' => 'Afspeellijst maken',

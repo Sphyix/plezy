@@ -980,6 +980,16 @@ class _TranslationsDownloadsKo implements TranslationsDownloadsEn {
 	@override String get resumeAll => '모두 재개';
 	@override String get deleteAll => '모두 삭제';
 	@override String get storageUnavailable => '저장소를 사용할 수 없습니다. 외장 드라이브 또는 다운로드 위치 설정을 확인하세요.';
+	@override String get settingsDialogTitle => '다운로드 설정';
+	@override String get qualityLabel => '품질';
+	@override String get qualityOriginal => '원본';
+	@override String get downloadNewEpisodes => '새 에피소드 다운로드';
+	@override String get downloadNewSeasons => '새 시즌 다운로드';
+	@override String get episodesLabel => '에피소드';
+	@override String get retentionLabel => '보관';
+	@override String get maxEpisodesLabel => '최대 에피소드';
+	@override String get retentionDaysLabel => '보관 일수';
+	@override String get unlimitedHint => '무제한';
 }
 
 // Path: shaders
@@ -1488,6 +1498,8 @@ extension on TranslationsKo {
 			'settings.maxVolumePercent' => ({required Object percent}) => '${percent}%',
 			'settings.discordRichPresence' => 'Discord Rich Presence',
 			'settings.discordRichPresenceDescription' => 'Discord에서 시청 중인 콘텐츠 표시',
+			'settings.autoPip' => '자동 PIP 모드',
+			'settings.autoPipDescription' => '재생 중 앱을 나갈 때 자동으로 PIP 모드로 전환',
 			'settings.matchContentFrameRate' => '콘텐츠 프레임 레이트 맞춤',
 			'settings.matchContentFrameRateDescription' => '비디오 콘텐츠에 맞게 디스플레이 주사율을 조정하여 떨림을 줄이고 배터리를 절약합니다',
 			'settings.tunneledPlayback' => 'Tunneled Playback',
@@ -1811,6 +1823,8 @@ extension on TranslationsKo {
 			'liveTv.channelNumber' => ({required Object number}) => '채널 ${number}',
 			'liveTv.live' => '실시간',
 			'liveTv.hd' => 'HD',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.premiere' => '신규',
 			'liveTv.reloadGuide' => '편성표 새로고침',
 			'liveTv.allChannels' => '전체 채널',
@@ -1823,8 +1837,6 @@ extension on TranslationsKo {
 			'liveTv.evening' => '저녁',
 			'liveTv.lateNight' => '심야 방송',
 			'liveTv.whatsOn' => '지금 방송 중',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.watchChannel' => '채널 시청',
 			'collections.title' => '컬렉션',
 			'collections.collection' => '컬렉션',
@@ -1939,6 +1951,16 @@ extension on TranslationsKo {
 			'downloads.resumeAll' => '모두 재개',
 			'downloads.deleteAll' => '모두 삭제',
 			'downloads.storageUnavailable' => '저장소를 사용할 수 없습니다. 외장 드라이브 또는 다운로드 위치 설정을 확인하세요.',
+			'downloads.settingsDialogTitle' => '다운로드 설정',
+			'downloads.qualityLabel' => '품질',
+			'downloads.qualityOriginal' => '원본',
+			'downloads.downloadNewEpisodes' => '새 에피소드 다운로드',
+			'downloads.downloadNewSeasons' => '새 시즌 다운로드',
+			'downloads.episodesLabel' => '에피소드',
+			'downloads.retentionLabel' => '보관',
+			'downloads.maxEpisodesLabel' => '최대 에피소드',
+			'downloads.retentionDaysLabel' => '보관 일수',
+			'downloads.unlimitedHint' => '무제한',
 			'shaders.title' => '셰이더',
 			'shaders.noShaderDescription' => '비디오 향상 없음',
 			'shaders.nvscalerDescription' => '더 선명한 비디오를 위한 NVIDIA 이미지 스케일링',

@@ -709,7 +709,17 @@
     "pauseAll": "Pause all",
     "resumeAll": "Resume all",
     "deleteAll": "Delete all",
-    "storageUnavailable": "Storage unavailable. Please check your external drive or download location settings."
+    "storageUnavailable": "Storage unavailable. Please check your external drive or download location settings.",
+    "settingsDialogTitle": "Download Settings",
+    "qualityLabel": "Quality",
+    "qualityOriginal": "Original",
+    "downloadNewEpisodes": "Download new episodes",
+    "downloadNewSeasons": "Download new seasons",
+    "episodesLabel": "Episodes",
+    "retentionLabel": "Retention",
+    "maxEpisodesLabel": "Max episodes",
+    "retentionDaysLabel": "Retention days",
+    "unlimitedHint": "Unlimited"
   },
   "shaders": {
     "title": "Shaders",

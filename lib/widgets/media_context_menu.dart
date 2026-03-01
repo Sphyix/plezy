@@ -29,6 +29,8 @@ import '../widgets/file_info_bottom_sheet.dart';
 import '../widgets/focusable_list_tile.dart';
 import '../widgets/overlay_sheet.dart';
 import '../widgets/rating_bottom_sheet.dart';
+import '../utils/global_key_utils.dart';
+import '../widgets/series_settings_dialog.dart';
 import '../i18n/strings.g.dart';
 
 /// Helper class to store menu action data
@@ -1078,6 +1080,26 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     final client = _getClientForItem();
 
     try {
+      // Intercept show/movie downloads for first-time series settings
+      final type = metadata.type.toLowerCase();
+      if (type == 'show' || type == 'movie') {
+        final serverId = metadata.serverId ?? client.serverId;
+        final globalKey = buildGlobalKey(serverId, metadata.ratingKey);
+        final existingSettings = downloadProvider.getSeriesSettingsForShow(globalKey);
+
+        if (existingSettings == null) {
+          final settings = await SeriesSettingsDialog.show(
+            context,
+            title: metadata.title,
+            serverId: serverId,
+            ratingKey: metadata.ratingKey,
+          );
+          if (settings == null || !context.mounted) return;
+          await downloadProvider.saveSeriesSettings(settings);
+          if (!context.mounted) return;
+        }
+      }
+
       final count = await downloadProvider.queueDownload(metadata, client);
       if (context.mounted) {
         // Show appropriate message based on count

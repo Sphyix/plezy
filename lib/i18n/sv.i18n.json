@@ -609,7 +609,17 @@
     "pauseAll": "Pausa alla",
     "resumeAll": "Återuppta alla",
     "deleteAll": "Ta bort alla",
-    "storageUnavailable": "Lagring otillgänglig. Kontrollera din externa enhet eller inställningar för nedladdningsplats."
+    "storageUnavailable": "Lagring otillgänglig. Kontrollera din externa enhet eller inställningar för nedladdningsplats.",
+    "settingsDialogTitle": "Nedladdningsinställningar",
+    "qualityLabel": "Kvalitet",
+    "qualityOriginal": "Original",
+    "downloadNewEpisodes": "Ladda ner nya avsnitt",
+    "downloadNewSeasons": "Ladda ner nya säsonger",
+    "episodesLabel": "Avsnitt",
+    "retentionLabel": "Bevarande",
+    "maxEpisodesLabel": "Max avsnitt",
+    "retentionDaysLabel": "Lagringstid (dagar)",
+    "unlimitedHint": "Obegränsat"
   },
   "playlists": {
     "title": "Spellistor",

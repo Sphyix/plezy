@@ -980,6 +980,16 @@ class _TranslationsDownloadsEs implements TranslationsDownloadsEn {
 	@override String get resumeAll => 'Reanudar todo';
 	@override String get deleteAll => 'Eliminar todo';
 	@override String get storageUnavailable => 'Almacenamiento no disponible. Verifique su unidad externa o la configuración de ubicación de descargas.';
+	@override String get settingsDialogTitle => 'Configuración de descarga';
+	@override String get qualityLabel => 'Calidad';
+	@override String get qualityOriginal => 'Original';
+	@override String get downloadNewEpisodes => 'Descargar episodios nuevos';
+	@override String get downloadNewSeasons => 'Descargar temporadas nuevas';
+	@override String get episodesLabel => 'Episodios';
+	@override String get retentionLabel => 'Retención';
+	@override String get maxEpisodesLabel => 'Máx. episodios';
+	@override String get retentionDaysLabel => 'Días de retención';
+	@override String get unlimitedHint => 'Ilimitado';
 }
 
 // Path: shaders
@@ -1488,6 +1498,8 @@ extension on TranslationsEs {
 			'settings.maxVolumePercent' => ({required Object percent}) => '${percent}%',
 			'settings.discordRichPresence' => 'Presencia de Discord',
 			'settings.discordRichPresenceDescription' => 'Mostrar lo que estás viendo en Discord',
+			'settings.autoPip' => 'Imagen en imagen automática',
+			'settings.autoPipDescription' => 'Activar automáticamente imagen en imagen al salir de la app durante la reproducción',
 			'settings.matchContentFrameRate' => 'Ajustar frecuencia de actualización',
 			'settings.matchContentFrameRateDescription' => 'Ajustar la frecuencia de actualización de la pantalla para que coincida con el video, reduciendo tirones y ahorrando batería',
 			'settings.tunneledPlayback' => 'Tunneled Playback',
@@ -1811,6 +1823,8 @@ extension on TranslationsEs {
 			'liveTv.channelNumber' => ({required Object number}) => 'Canal ${number}',
 			'liveTv.live' => 'EN VIVO',
 			'liveTv.hd' => 'HD',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.premiere' => 'NUEVO',
 			'liveTv.reloadGuide' => 'Recargar guía',
 			'liveTv.allChannels' => 'Todos los canales',
@@ -1823,8 +1837,6 @@ extension on TranslationsEs {
 			'liveTv.evening' => 'Noche',
 			'liveTv.lateNight' => 'Trasnoche',
 			'liveTv.whatsOn' => 'En emisión',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.watchChannel' => 'Ver canal',
 			'collections.title' => 'Colecciones',
 			'collections.collection' => 'Colección',
@@ -1939,6 +1951,16 @@ extension on TranslationsEs {
 			'downloads.resumeAll' => 'Reanudar todo',
 			'downloads.deleteAll' => 'Eliminar todo',
 			'downloads.storageUnavailable' => 'Almacenamiento no disponible. Verifique su unidad externa o la configuración de ubicación de descargas.',
+			'downloads.settingsDialogTitle' => 'Configuración de descarga',
+			'downloads.qualityLabel' => 'Calidad',
+			'downloads.qualityOriginal' => 'Original',
+			'downloads.downloadNewEpisodes' => 'Descargar episodios nuevos',
+			'downloads.downloadNewSeasons' => 'Descargar temporadas nuevas',
+			'downloads.episodesLabel' => 'Episodios',
+			'downloads.retentionLabel' => 'Retención',
+			'downloads.maxEpisodesLabel' => 'Máx. episodios',
+			'downloads.retentionDaysLabel' => 'Días de retención',
+			'downloads.unlimitedHint' => 'Ilimitado',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Sin mejora de video',
 			'shaders.nvscalerDescription' => 'Escalado de imagen NVIDIA para un video más nítido',

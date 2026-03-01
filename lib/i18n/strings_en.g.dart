@@ -472,7 +472,7 @@ class TranslationsSettingsEn {
 	/// en: 'Hide Spoilers for Unwatched Episodes'
 	String get hideSpoilers => 'Hide Spoilers for Unwatched Episodes';
 
-	/// en: 'Blur thumbnails and hide descriptions for episodes you haven\'t watched yet'
+	/// en: 'Blur thumbnails and hide descriptions for episodes you haven't watched yet'
 	String get hideSpoilersDescription => 'Blur thumbnails and hide descriptions for episodes you haven\'t watched yet';
 
 	/// en: 'Player Backend'
@@ -2194,6 +2194,36 @@ class TranslationsDownloadsEn {
 
 	/// en: 'Storage unavailable. Please check your external drive or download location settings.'
 	String get storageUnavailable => 'Storage unavailable. Please check your external drive or download location settings.';
+
+	/// en: 'Download Settings'
+	String get settingsDialogTitle => 'Download Settings';
+
+	/// en: 'Quality'
+	String get qualityLabel => 'Quality';
+
+	/// en: 'Original'
+	String get qualityOriginal => 'Original';
+
+	/// en: 'Download new episodes'
+	String get downloadNewEpisodes => 'Download new episodes';
+
+	/// en: 'Download new seasons'
+	String get downloadNewSeasons => 'Download new seasons';
+
+	/// en: 'Episodes'
+	String get episodesLabel => 'Episodes';
+
+	/// en: 'Retention'
+	String get retentionLabel => 'Retention';
+
+	/// en: 'Max episodes'
+	String get maxEpisodesLabel => 'Max episodes';
+
+	/// en: 'Retention days'
+	String get retentionDaysLabel => 'Retention days';
+
+	/// en: 'Unlimited'
+	String get unlimitedHint => 'Unlimited';
 }
 
 // Path: shaders
@@ -2810,7 +2840,6 @@ class TranslationsCompanionRemotePairingEn {
 
 	/// en: 'Failed to connect: ${error}'
 	String failedToConnect({required Object error}) => 'Failed to connect: ${error}';
-
 }
 
 // Path: companionRemote.remote
@@ -3429,6 +3458,8 @@ extension on Translations {
 			'liveTv.channelNumber' => ({required Object number}) => 'Ch. ${number}',
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.premiere' => 'NEW',
 			'liveTv.reloadGuide' => 'Reload Guide',
 			'liveTv.allChannels' => 'All Channels',
@@ -3441,8 +3472,6 @@ extension on Translations {
 			'liveTv.evening' => 'Evening',
 			'liveTv.lateNight' => 'Late Night',
 			'liveTv.whatsOn' => 'What\'s On',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.watchChannel' => 'Watch Channel',
 			'collections.title' => 'Collections',
 			'collections.collection' => 'Collection',
@@ -3557,6 +3586,16 @@ extension on Translations {
 			'downloads.resumeAll' => 'Resume all',
 			'downloads.deleteAll' => 'Delete all',
 			'downloads.storageUnavailable' => 'Storage unavailable. Please check your external drive or download location settings.',
+			'downloads.settingsDialogTitle' => 'Download Settings',
+			'downloads.qualityLabel' => 'Quality',
+			'downloads.qualityOriginal' => 'Original',
+			'downloads.downloadNewEpisodes' => 'Download new episodes',
+			'downloads.downloadNewSeasons' => 'Download new seasons',
+			'downloads.episodesLabel' => 'Episodes',
+			'downloads.retentionLabel' => 'Retention',
+			'downloads.maxEpisodesLabel' => 'Max episodes',
+			'downloads.retentionDaysLabel' => 'Retention days',
+			'downloads.unlimitedHint' => 'Unlimited',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',

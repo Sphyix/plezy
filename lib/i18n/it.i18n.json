@@ -609,7 +609,17 @@
     "pauseAll": "Metti tutto in pausa",
     "resumeAll": "Riprendi tutto",
     "deleteAll": "Elimina tutto",
-    "storageUnavailable": "Archiviazione non disponibile. Controlla l'unità esterna o le impostazioni della posizione di download."
+    "storageUnavailable": "Archiviazione non disponibile. Controlla l'unità esterna o le impostazioni della posizione di download.",
+    "settingsDialogTitle": "Impostazioni download",
+    "qualityLabel": "Qualità",
+    "qualityOriginal": "Originale",
+    "downloadNewEpisodes": "Scarica nuovi episodi",
+    "downloadNewSeasons": "Scarica nuove stagioni",
+    "episodesLabel": "Episodi",
+    "retentionLabel": "Conservazione",
+    "maxEpisodesLabel": "Episodi max.",
+    "retentionDaysLabel": "Giorni di conservazione",
+    "unlimitedHint": "Illimitato"
   },
   "playlists": {
     "title": "Playlist",

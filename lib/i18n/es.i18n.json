@@ -709,7 +709,17 @@
     "pauseAll": "Pausar todo",
     "resumeAll": "Reanudar todo",
     "deleteAll": "Eliminar todo",
-    "storageUnavailable": "Almacenamiento no disponible. Verifique su unidad externa o la configuración de ubicación de descargas."
+    "storageUnavailable": "Almacenamiento no disponible. Verifique su unidad externa o la configuración de ubicación de descargas.",
+    "settingsDialogTitle": "Configuración de descarga",
+    "qualityLabel": "Calidad",
+    "qualityOriginal": "Original",
+    "downloadNewEpisodes": "Descargar episodios nuevos",
+    "downloadNewSeasons": "Descargar temporadas nuevas",
+    "episodesLabel": "Episodios",
+    "retentionLabel": "Retención",
+    "maxEpisodesLabel": "Máx. episodios",
+    "retentionDaysLabel": "Días de retención",
+    "unlimitedHint": "Ilimitado"
   },
   "shaders": {
     "title": "Shaders",

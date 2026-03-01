@@ -859,6 +859,16 @@ class _TranslationsDownloadsSv implements TranslationsDownloadsEn {
 	@override String get resumeAll => 'Återuppta alla';
 	@override String get deleteAll => 'Ta bort alla';
 	@override String get storageUnavailable => 'Lagring otillgänglig. Kontrollera din externa enhet eller inställningar för nedladdningsplats.';
+	@override String get settingsDialogTitle => 'Nedladdningsinställningar';
+	@override String get qualityLabel => 'Kvalitet';
+	@override String get qualityOriginal => 'Original';
+	@override String get downloadNewEpisodes => 'Ladda ner nya avsnitt';
+	@override String get downloadNewSeasons => 'Ladda ner nya säsonger';
+	@override String get episodesLabel => 'Avsnitt';
+	@override String get retentionLabel => 'Bevarande';
+	@override String get maxEpisodesLabel => 'Max avsnitt';
+	@override String get retentionDaysLabel => 'Lagringstid (dagar)';
+	@override String get unlimitedHint => 'Obegränsat';
 }
 
 // Path: playlists
@@ -1488,6 +1498,8 @@ extension on TranslationsSv {
 			'settings.maxVolumePercent' => ({required Object percent}) => '${percent}%',
 			'settings.discordRichPresence' => 'Discord Rich Presence',
 			'settings.discordRichPresenceDescription' => 'Visa vad du tittar på i Discord',
+			'settings.autoPip' => 'Automatisk bild-i-bild',
+			'settings.autoPipDescription' => 'Aktivera bild-i-bild automatiskt när appen lämnas under uppspelning',
 			'settings.matchContentFrameRate' => 'Matcha innehållets bildfrekvens',
 			'settings.matchContentFrameRateDescription' => 'Justera skärmens uppdateringsfrekvens för att matcha videoinnehållet, minskar hackighet och sparar batteri',
 			'settings.tunneledPlayback' => 'Tunneled Playback',
@@ -1811,6 +1823,8 @@ extension on TranslationsSv {
 			'liveTv.channelNumber' => ({required Object number}) => 'Kanal ${number}',
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.premiere' => 'NY',
 			'liveTv.reloadGuide' => 'Ladda om programguide',
 			'liveTv.allChannels' => 'Alla kanaler',
@@ -1823,8 +1837,6 @@ extension on TranslationsSv {
 			'liveTv.evening' => 'Kväll',
 			'liveTv.lateNight' => 'Sen kväll',
 			'liveTv.whatsOn' => 'På TV nu',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.watchChannel' => 'Titta på kanal',
 			'downloads.title' => 'Nedladdningar',
 			'downloads.manage' => 'Hantera',
@@ -1845,6 +1857,16 @@ extension on TranslationsSv {
 			'downloads.resumeAll' => 'Återuppta alla',
 			'downloads.deleteAll' => 'Ta bort alla',
 			'downloads.storageUnavailable' => 'Lagring otillgänglig. Kontrollera din externa enhet eller inställningar för nedladdningsplats.',
+			'downloads.settingsDialogTitle' => 'Nedladdningsinställningar',
+			'downloads.qualityLabel' => 'Kvalitet',
+			'downloads.qualityOriginal' => 'Original',
+			'downloads.downloadNewEpisodes' => 'Ladda ner nya avsnitt',
+			'downloads.downloadNewSeasons' => 'Ladda ner nya säsonger',
+			'downloads.episodesLabel' => 'Avsnitt',
+			'downloads.retentionLabel' => 'Bevarande',
+			'downloads.maxEpisodesLabel' => 'Max avsnitt',
+			'downloads.retentionDaysLabel' => 'Lagringstid (dagar)',
+			'downloads.unlimitedHint' => 'Obegränsat',
 			'playlists.title' => 'Spellistor',
 			'playlists.noPlaylists' => 'Inga spellistor hittades',
 			'playlists.create' => 'Skapa spellista',

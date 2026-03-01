@@ -609,7 +609,17 @@
     "pauseAll": "Alles pauzeren",
     "resumeAll": "Alles hervatten",
     "deleteAll": "Alles verwijderen",
-    "storageUnavailable": "Opslag niet beschikbaar. Controleer uw externe schijf of downloadlocatie-instellingen."
+    "storageUnavailable": "Opslag niet beschikbaar. Controleer uw externe schijf of downloadlocatie-instellingen.",
+    "settingsDialogTitle": "Downloadinstellingen",
+    "qualityLabel": "Kwaliteit",
+    "qualityOriginal": "Origineel",
+    "downloadNewEpisodes": "Nieuwe afleveringen downloaden",
+    "downloadNewSeasons": "Nieuwe seizoenen downloaden",
+    "episodesLabel": "Afleveringen",
+    "retentionLabel": "Bewaring",
+    "maxEpisodesLabel": "Max. afleveringen",
+    "retentionDaysLabel": "Bewaarperiode (dagen)",
+    "unlimitedHint": "Onbeperkt"
   },
   "playlists": {
     "title": "Afspeellijsten",

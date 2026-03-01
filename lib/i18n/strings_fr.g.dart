@@ -980,6 +980,16 @@ class _TranslationsDownloadsFr implements TranslationsDownloadsEn {
 	@override String get resumeAll => 'Tout reprendre';
 	@override String get deleteAll => 'Tout supprimer';
 	@override String get storageUnavailable => 'Stockage indisponible. Veuillez vérifier votre disque externe ou les paramètres d\'emplacement de téléchargement.';
+	@override String get settingsDialogTitle => 'Paramètres de téléchargement';
+	@override String get qualityLabel => 'Qualité';
+	@override String get qualityOriginal => 'Original';
+	@override String get downloadNewEpisodes => 'Télécharger les nouveaux épisodes';
+	@override String get downloadNewSeasons => 'Télécharger les nouvelles saisons';
+	@override String get episodesLabel => 'Épisodes';
+	@override String get retentionLabel => 'Rétention';
+	@override String get maxEpisodesLabel => 'Épisodes max.';
+	@override String get retentionDaysLabel => 'Jours de rétention';
+	@override String get unlimitedHint => 'Illimité';
 }
 
 // Path: shaders
@@ -1488,6 +1498,8 @@ extension on TranslationsFr {
 			'settings.maxVolumePercent' => ({required Object percent}) => '${percent}%',
 			'settings.discordRichPresence' => 'Discord Rich Presence',
 			'settings.discordRichPresenceDescription' => 'Montrez ce que vous regardez sur Discord',
+			'settings.autoPip' => 'Image dans l\'image automatique',
+			'settings.autoPipDescription' => 'Activer automatiquement l\'image dans l\'image en quittant l\'application pendant la lecture',
 			'settings.matchContentFrameRate' => 'Fréquence d\'images du contenu correspondant',
 			'settings.matchContentFrameRateDescription' => 'Ajustez la fréquence de rafraîchissement de l\'écran en fonction du contenu vidéo, ce qui réduit les saccades et économise la batterie',
 			'settings.tunneledPlayback' => 'Tunneled Playback',
@@ -1811,6 +1823,8 @@ extension on TranslationsFr {
 			'liveTv.channelNumber' => ({required Object number}) => 'Ch. ${number}',
 			'liveTv.live' => 'EN DIRECT',
 			'liveTv.hd' => 'HD',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.premiere' => 'NOUVEAU',
 			'liveTv.reloadGuide' => 'Recharger le guide',
 			'liveTv.allChannels' => 'Toutes les chaînes',
@@ -1823,8 +1837,6 @@ extension on TranslationsFr {
 			'liveTv.evening' => 'Soirée',
 			'liveTv.lateNight' => 'Nuit tardive',
 			'liveTv.whatsOn' => 'En ce moment',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.watchChannel' => 'Regarder la chaîne',
 			'collections.title' => 'Collections',
 			'collections.collection' => 'Collection',
@@ -1939,6 +1951,16 @@ extension on TranslationsFr {
 			'downloads.resumeAll' => 'Tout reprendre',
 			'downloads.deleteAll' => 'Tout supprimer',
 			'downloads.storageUnavailable' => 'Stockage indisponible. Veuillez vérifier votre disque externe ou les paramètres d\'emplacement de téléchargement.',
+			'downloads.settingsDialogTitle' => 'Paramètres de téléchargement',
+			'downloads.qualityLabel' => 'Qualité',
+			'downloads.qualityOriginal' => 'Original',
+			'downloads.downloadNewEpisodes' => 'Télécharger les nouveaux épisodes',
+			'downloads.downloadNewSeasons' => 'Télécharger les nouvelles saisons',
+			'downloads.episodesLabel' => 'Épisodes',
+			'downloads.retentionLabel' => 'Rétention',
+			'downloads.maxEpisodesLabel' => 'Épisodes max.',
+			'downloads.retentionDaysLabel' => 'Jours de rétention',
+			'downloads.unlimitedHint' => 'Illimité',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Aucune amélioration vidéo',
 			'shaders.nvscalerDescription' => 'Mise à l\'échelle NVIDIA pour une vidéo plus nette',

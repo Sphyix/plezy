@@ -609,7 +609,17 @@
     "pauseAll": "全部暂停",
     "resumeAll": "全部继续",
     "deleteAll": "全部删除",
-    "storageUnavailable": "存储不可用。请检查您的外部驱动器或下载位置设置。"
+    "storageUnavailable": "存储不可用。请检查您的外部驱动器或下载位置设置。",
+    "settingsDialogTitle": "下载设置",
+    "qualityLabel": "画质",
+    "qualityOriginal": "原始",
+    "downloadNewEpisodes": "下载新剧集",
+    "downloadNewSeasons": "下载新季",
+    "episodesLabel": "剧集",
+    "retentionLabel": "保留",
+    "maxEpisodesLabel": "最大剧集数",
+    "retentionDaysLabel": "保留天数",
+    "unlimitedHint": "无限制"
   },
   "playlists": {
     "title": "播放列表",

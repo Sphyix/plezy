@@ -859,6 +859,16 @@ class _TranslationsDownloadsZh implements TranslationsDownloadsEn {
 	@override String get resumeAll => '全部继续';
 	@override String get deleteAll => '全部删除';
 	@override String get storageUnavailable => '存储不可用。请检查您的外部驱动器或下载位置设置。';
+	@override String get settingsDialogTitle => '下载设置';
+	@override String get qualityLabel => '画质';
+	@override String get qualityOriginal => '原始';
+	@override String get downloadNewEpisodes => '下载新剧集';
+	@override String get downloadNewSeasons => '下载新季';
+	@override String get episodesLabel => '剧集';
+	@override String get retentionLabel => '保留';
+	@override String get maxEpisodesLabel => '最大剧集数';
+	@override String get retentionDaysLabel => '保留天数';
+	@override String get unlimitedHint => '无限制';
 }
 
 // Path: playlists
@@ -1488,6 +1498,8 @@ extension on TranslationsZh {
 			'settings.maxVolumePercent' => ({required Object percent}) => '${percent}%',
 			'settings.discordRichPresence' => 'Discord 动态状态',
 			'settings.discordRichPresenceDescription' => '在 Discord 上显示您正在观看的内容',
+			'settings.autoPip' => '自动画中画',
+			'settings.autoPipDescription' => '在播放期间离开应用时自动进入画中画模式',
 			'settings.matchContentFrameRate' => '匹配内容帧率',
 			'settings.matchContentFrameRateDescription' => '调整显示刷新率以匹配视频内容，减少画面抖动并节省电量',
 			'settings.tunneledPlayback' => 'Tunneled Playback',
@@ -1811,6 +1823,8 @@ extension on TranslationsZh {
 			'liveTv.channelNumber' => ({required Object number}) => '频道 ${number}',
 			'liveTv.live' => '直播',
 			'liveTv.hd' => '高清',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.premiere' => '新',
 			'liveTv.reloadGuide' => '重新加载节目指南',
 			'liveTv.allChannels' => '所有频道',
@@ -1823,8 +1837,6 @@ extension on TranslationsZh {
 			'liveTv.evening' => '晚上',
 			'liveTv.lateNight' => '深夜',
 			'liveTv.whatsOn' => '正在播出',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.watchChannel' => '观看频道',
 			'downloads.title' => '下载',
 			'downloads.manage' => '管理',
@@ -1845,6 +1857,16 @@ extension on TranslationsZh {
 			'downloads.resumeAll' => '全部继续',
 			'downloads.deleteAll' => '全部删除',
 			'downloads.storageUnavailable' => '存储不可用。请检查您的外部驱动器或下载位置设置。',
+			'downloads.settingsDialogTitle' => '下载设置',
+			'downloads.qualityLabel' => '画质',
+			'downloads.qualityOriginal' => '原始',
+			'downloads.downloadNewEpisodes' => '下载新剧集',
+			'downloads.downloadNewSeasons' => '下载新季',
+			'downloads.episodesLabel' => '剧集',
+			'downloads.retentionLabel' => '保留',
+			'downloads.maxEpisodesLabel' => '最大剧集数',
+			'downloads.retentionDaysLabel' => '保留天数',
+			'downloads.unlimitedHint' => '无限制',
 			'playlists.title' => '播放列表',
 			'playlists.noPlaylists' => '未找到播放列表',
 			'playlists.create' => '创建播放列表',

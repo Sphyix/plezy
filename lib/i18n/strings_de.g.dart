@@ -859,6 +859,16 @@ class _TranslationsDownloadsDe implements TranslationsDownloadsEn {
 	@override String get resumeAll => 'Alle fortsetzen';
 	@override String get deleteAll => 'Alle löschen';
 	@override String get storageUnavailable => 'Speicher nicht verfügbar. Bitte überprüfen Sie Ihr externes Laufwerk oder die Download-Speicherort-Einstellungen.';
+	@override String get settingsDialogTitle => 'Download-Einstellungen';
+	@override String get qualityLabel => 'Qualität';
+	@override String get qualityOriginal => 'Original';
+	@override String get downloadNewEpisodes => 'Neue Episoden herunterladen';
+	@override String get downloadNewSeasons => 'Neue Staffeln herunterladen';
+	@override String get episodesLabel => 'Episoden';
+	@override String get retentionLabel => 'Aufbewahrung';
+	@override String get maxEpisodesLabel => 'Max. Episoden';
+	@override String get retentionDaysLabel => 'Aufbewahrungstage';
+	@override String get unlimitedHint => 'Unbegrenzt';
 }
 
 // Path: playlists
@@ -1488,6 +1498,8 @@ extension on TranslationsDe {
 			'settings.maxVolumePercent' => ({required Object percent}) => '${percent}%',
 			'settings.discordRichPresence' => 'Discord Rich Presence',
 			'settings.discordRichPresenceDescription' => 'Zeige auf Discord, was du gerade schaust',
+			'settings.autoPip' => 'Automatisches Bild-in-Bild',
+			'settings.autoPipDescription' => 'Automatisch Bild-in-Bild aktivieren, wenn die App während der Wiedergabe verlassen wird',
 			'settings.matchContentFrameRate' => 'Inhalts-Bildrate anpassen',
 			'settings.matchContentFrameRateDescription' => 'Bildwiederholfrequenz des Displays an den Videoinhalt anpassen, reduziert Ruckeln und spart Akku',
 			'settings.tunneledPlayback' => 'Tunneled Playback',
@@ -1811,6 +1823,8 @@ extension on TranslationsDe {
 			'liveTv.channelNumber' => ({required Object number}) => 'Kanal ${number}',
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.premiere' => 'NEU',
 			'liveTv.reloadGuide' => 'Programmführer neu laden',
 			'liveTv.allChannels' => 'Alle Kanäle',
@@ -1823,8 +1837,6 @@ extension on TranslationsDe {
 			'liveTv.evening' => 'Abend',
 			'liveTv.lateNight' => 'Spätnacht',
 			'liveTv.whatsOn' => 'Jetzt im TV',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.watchChannel' => 'Kanal ansehen',
 			'downloads.title' => 'Downloads',
 			'downloads.manage' => 'Verwalten',
@@ -1845,6 +1857,16 @@ extension on TranslationsDe {
 			'downloads.resumeAll' => 'Alle fortsetzen',
 			'downloads.deleteAll' => 'Alle löschen',
 			'downloads.storageUnavailable' => 'Speicher nicht verfügbar. Bitte überprüfen Sie Ihr externes Laufwerk oder die Download-Speicherort-Einstellungen.',
+			'downloads.settingsDialogTitle' => 'Download-Einstellungen',
+			'downloads.qualityLabel' => 'Qualität',
+			'downloads.qualityOriginal' => 'Original',
+			'downloads.downloadNewEpisodes' => 'Neue Episoden herunterladen',
+			'downloads.downloadNewSeasons' => 'Neue Staffeln herunterladen',
+			'downloads.episodesLabel' => 'Episoden',
+			'downloads.retentionLabel' => 'Aufbewahrung',
+			'downloads.maxEpisodesLabel' => 'Max. Episoden',
+			'downloads.retentionDaysLabel' => 'Aufbewahrungstage',
+			'downloads.unlimitedHint' => 'Unbegrenzt',
 			'playlists.title' => 'Wiedergabelisten',
 			'playlists.noPlaylists' => 'Keine Wiedergabelisten gefunden',
 			'playlists.create' => 'Wiedergabeliste erstellen',

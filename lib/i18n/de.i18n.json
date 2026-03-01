@@ -609,7 +609,17 @@
     "pauseAll": "Alle pausieren",
     "resumeAll": "Alle fortsetzen",
     "deleteAll": "Alle löschen",
-    "storageUnavailable": "Speicher nicht verfügbar. Bitte überprüfen Sie Ihr externes Laufwerk oder die Download-Speicherort-Einstellungen."
+    "storageUnavailable": "Speicher nicht verfügbar. Bitte überprüfen Sie Ihr externes Laufwerk oder die Download-Speicherort-Einstellungen.",
+    "settingsDialogTitle": "Download-Einstellungen",
+    "qualityLabel": "Qualität",
+    "qualityOriginal": "Original",
+    "downloadNewEpisodes": "Neue Episoden herunterladen",
+    "downloadNewSeasons": "Neue Staffeln herunterladen",
+    "episodesLabel": "Episoden",
+    "retentionLabel": "Aufbewahrung",
+    "maxEpisodesLabel": "Max. Episoden",
+    "retentionDaysLabel": "Aufbewahrungstage",
+    "unlimitedHint": "Unbegrenzt"
   },
   "playlists": {
     "title": "Wiedergabelisten",

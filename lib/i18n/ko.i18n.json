@@ -709,7 +709,17 @@
     "pauseAll": "모두 일시정지",
     "resumeAll": "모두 재개",
     "deleteAll": "모두 삭제",
-    "storageUnavailable": "저장소를 사용할 수 없습니다. 외장 드라이브 또는 다운로드 위치 설정을 확인하세요."
+    "storageUnavailable": "저장소를 사용할 수 없습니다. 외장 드라이브 또는 다운로드 위치 설정을 확인하세요.",
+    "settingsDialogTitle": "다운로드 설정",
+    "qualityLabel": "품질",
+    "qualityOriginal": "원본",
+    "downloadNewEpisodes": "새 에피소드 다운로드",
+    "downloadNewSeasons": "새 시즌 다운로드",
+    "episodesLabel": "에피소드",
+    "retentionLabel": "보관",
+    "maxEpisodesLabel": "최대 에피소드",
+    "retentionDaysLabel": "보관 일수",
+    "unlimitedHint": "무제한"
   },
   "shaders": {
     "title": "셰이더",

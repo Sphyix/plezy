@@ -709,7 +709,17 @@
     "pauseAll": "Tout mettre en pause",
     "resumeAll": "Tout reprendre",
     "deleteAll": "Tout supprimer",
-    "storageUnavailable": "Stockage indisponible. Veuillez vérifier votre disque externe ou les paramètres d'emplacement de téléchargement."
+    "storageUnavailable": "Stockage indisponible. Veuillez vérifier votre disque externe ou les paramètres d'emplacement de téléchargement.",
+    "settingsDialogTitle": "Paramètres de téléchargement",
+    "qualityLabel": "Qualité",
+    "qualityOriginal": "Original",
+    "downloadNewEpisodes": "Télécharger les nouveaux épisodes",
+    "downloadNewSeasons": "Télécharger les nouvelles saisons",
+    "episodesLabel": "Épisodes",
+    "retentionLabel": "Rétention",
+    "maxEpisodesLabel": "Épisodes max.",
+    "retentionDaysLabel": "Jours de rétention",
+    "unlimitedHint": "Illimité"
   },
   "shaders": {
     "title": "Shaders",
