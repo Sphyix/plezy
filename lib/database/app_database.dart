@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'tables.dart';
 import '../models/download_models.dart';
@@ -12,12 +14,12 @@ import '../utils/global_key_utils.dart';
 part 'app_database.g.dart';
 
 // Simplified database with API cache for offline support
-@DriftDatabase(tables: [DownloadedMedia, DownloadQueue, ApiCache, OfflineWatchProgress])
+@DriftDatabase(tables: [DownloadedMedia, DownloadQueue, ApiCache, OfflineWatchProgress, DownloadSeriesSettings])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 8; // Added bgTaskId column to DownloadedMedia
+  int get schemaVersion => 10; // Added DownloadSeriesSettings table
 
   @override
   MigrationStrategy get migration {
@@ -36,6 +38,115 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(downloadedMedia, downloadedMedia.bgTaskId);
           } catch (e) {
             appLogger.w('bgTaskId column may already exist: $e');
+          }
+        }
+        if (from < 9) {
+          appLogger.i('Adding transcodeQuality column to DownloadQueue (v9 migration)');
+          try {
+            await m.addColumn(downloadQueue, downloadQueue.transcodeQuality);
+          } catch (e) {
+            appLogger.w('transcodeQuality column may already exist: $e');
+          }
+        }
+        if (from < 10) {
+          appLogger.i('Adding DownloadSeriesSettings table (v10 migration)');
+          try {
+            await m.createTable(downloadSeriesSettings);
+          } catch (e) {
+            appLogger.w('DownloadSeriesSettings table may already exist: $e');
+          }
+
+          // Backfill default settings for existing downloaded series
+          try {
+            final now = DateTime.now().millisecondsSinceEpoch;
+
+            // Get distinct serverId + grandparentRatingKey pairs from episodes
+            final episodePairs = await customSelect(
+              'SELECT DISTINCT server_id, grandparent_rating_key FROM downloaded_media '
+              "WHERE type = 'episode' AND grandparent_rating_key IS NOT NULL",
+            ).get();
+
+            // Get distinct serverId + ratingKey pairs from movies
+            final moviePairs = await customSelect(
+              'SELECT DISTINCT server_id, rating_key FROM downloaded_media '
+              "WHERE type = 'movie'",
+            ).get();
+
+            final backfillTotal = episodePairs.length + moviePairs.length;
+
+            for (final row in episodePairs) {
+              final serverId = row.read<String>('server_id');
+              final ratingKey = row.read<String>('grandparent_rating_key');
+              await into(downloadSeriesSettings).insert(
+                DownloadSeriesSettingsCompanion.insert(
+                  serverId: serverId,
+                  ratingKey: ratingKey,
+                  createdAt: now,
+                  updatedAt: now,
+                ),
+                mode: InsertMode.insertOrIgnore,
+              );
+            }
+
+            for (final row in moviePairs) {
+              final serverId = row.read<String>('server_id');
+              final ratingKey = row.read<String>('rating_key');
+              await into(downloadSeriesSettings).insert(
+                DownloadSeriesSettingsCompanion.insert(
+                  serverId: serverId,
+                  ratingKey: ratingKey,
+                  createdAt: now,
+                  updatedAt: now,
+                ),
+                mode: InsertMode.insertOrIgnore,
+              );
+            }
+
+            // Migrate existing per-item DownloadSettings from SharedPreferences
+            try {
+              final prefs = await SharedPreferences.getInstance();
+              final jsonString = prefs.getString('per_item_download_settings');
+              if (jsonString != null) {
+                final allSettings = json.decode(jsonString) as Map<String, dynamic>;
+                for (final entry in allSettings.entries) {
+                  final ratingKey = entry.key;
+                  final settingsMap = entry.value as Map<String, dynamic>;
+                  final transcodeQuality = settingsMap['transcodeQuality'] as String?;
+                  if (transcodeQuality != null) {
+                    // Find serverId(s) for this ratingKey from DownloadedMedia
+                    final serverRows = await customSelect(
+                      'SELECT DISTINCT server_id FROM downloaded_media WHERE rating_key = ? '
+                      "OR (grandparent_rating_key = ? AND type = 'episode')",
+                      variables: [Variable.withString(ratingKey), Variable.withString(ratingKey)],
+                    ).get();
+
+                    for (final serverRow in serverRows) {
+                      final serverId = serverRow.read<String>('server_id');
+                      await into(downloadSeriesSettings).insert(
+                        DownloadSeriesSettingsCompanion.insert(
+                          serverId: serverId,
+                          ratingKey: ratingKey,
+                          transcodeQuality: Value(transcodeQuality),
+                          createdAt: now,
+                          updatedAt: now,
+                        ),
+                        mode: InsertMode.replace,
+                      );
+                    }
+                  }
+                }
+                // Clear old SharedPreferences keys
+                await prefs.remove('per_item_download_settings');
+                await prefs.remove('last_used_download_settings');
+                appLogger.i('Migrated per-item download settings from SharedPreferences to Drift');
+              }
+            } catch (e) {
+              appLogger.w('Failed to migrate SharedPreferences download settings: $e');
+            }
+
+            appLogger.i('Backfilled $backfillTotal series with default settings (${episodePairs.length} shows, ${moviePairs.length} movies)');
+          } catch (e) {
+            appLogger.w('Failed to backfill series settings: $e');
           }
         }
       },

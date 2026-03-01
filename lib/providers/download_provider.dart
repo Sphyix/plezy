@@ -55,6 +55,9 @@ class DownloadProvider extends ChangeNotifier {
   // Key: globalKey (serverId:ratingKey), Value: total episode count
   final Map<String, int> _totalEpisodeCounts = {};
 
+  // Per-series download settings (keyed by globalKey: serverId:ratingKey)
+  final Map<String, SeriesDownloadSettings> _seriesSettings = {};
+
   // Storage error state (set when storage is unavailable)
   String? _storageError;
   String? get storageError => _storageError;
@@ -77,6 +80,32 @@ class DownloadProvider extends ChangeNotifier {
   void clearStorageError() {
     _storageError = null;
     notifyListeners();
+  }
+
+  // Series download settings accessors
+  Map<String, SeriesDownloadSettings> get seriesSettings => Map.unmodifiable(_seriesSettings);
+
+  SeriesDownloadSettings? getSeriesSettingsForShow(String globalKey) => _seriesSettings[globalKey];
+
+  Future<void> saveSeriesSettings(SeriesDownloadSettings settings) async {
+    final companion = settings.toDriftCompanion();
+    await _downloadManager.database.saveSeriesSettings(companion);
+    _seriesSettings[settings.globalKey] = settings;
+    notifyListeners();
+  }
+
+  Future<void> deleteSeriesSettings(String globalKey) async {
+    final parsed = parseGlobalKey(globalKey);
+    if (parsed != null) {
+      await _downloadManager.database.deleteSeriesSettings(parsed.serverId, parsed.ratingKey);
+    }
+    _seriesSettings.remove(globalKey);
+    notifyListeners();
+  }
+
+  bool isSeriesConfigured(String globalKey) {
+    final settings = _seriesSettings[globalKey];
+    return settings != null && settings.isConfigured;
   }
 
   /// Load all persisted downloads and metadata from the database/cache
@@ -132,9 +161,17 @@ class DownloadProvider extends ChangeNotifier {
       // Load total episode counts from SharedPreferences
       await _loadTotalEpisodeCounts();
 
+      // Load all series download settings from Drift
+      final allSeriesSettings = await _downloadManager.database.getAllSeriesSettings();
+      _seriesSettings.clear();
+      for (final item in allSeriesSettings) {
+        final settings = SeriesDownloadSettings.fromDriftItem(item);
+        _seriesSettings[settings.globalKey] = settings;
+      }
+
       appLogger.i(
         'Loaded ${_downloads.length} downloads, ${_metadata.length} metadata entries, '
-        'and ${_totalEpisodeCounts.length} episode counts',
+        '${_totalEpisodeCounts.length} episode counts, and ${_seriesSettings.length} series settings',
       );
       notifyListeners();
     } catch (e) {
@@ -697,8 +734,25 @@ class DownloadProvider extends ChangeNotifier {
     _downloads[globalKey] = DownloadProgress(globalKey: globalKey, status: DownloadStatus.queued);
     notifyListeners();
 
+    // Resolve transcodeQuality from per-series download settings (Drift-backed)
+    String? transcodeQuality;
+    if (metadataToStore.type == 'episode') {
+      final showKey = metadataToStore.grandparentRatingKey;
+      if (showKey != null && metadataToStore.serverId != null) {
+        final settingsGlobalKey = buildGlobalKey(metadataToStore.serverId!, showKey);
+        transcodeQuality = _seriesSettings[settingsGlobalKey]?.transcodeQuality;
+      }
+    } else if (metadataToStore.type == 'movie' && metadataToStore.serverId != null) {
+      final settingsGlobalKey = buildGlobalKey(metadataToStore.serverId!, metadataToStore.ratingKey);
+      transcodeQuality = _seriesSettings[settingsGlobalKey]?.transcodeQuality;
+    }
+
     // Actually trigger download via DownloadManagerService
-    await _downloadManager.queueDownload(metadata: metadataToStore, client: client);
+    await _downloadManager.queueDownload(
+      metadata: metadataToStore,
+      client: client,
+      transcodeQuality: transcodeQuality,
+    );
   }
 
   /// Fetch and store show and season metadata for an episode
@@ -928,7 +982,8 @@ class DownloadProvider extends ChangeNotifier {
   Future<void> resumeDownload(String globalKey, PlexClient client) async {
     final progress = _downloads[globalKey];
     if (progress != null && progress.status == DownloadStatus.paused) {
-      await _downloadManager.resumeDownload(globalKey, client);
+      final transcodeQuality = _resolveTranscodeQuality(globalKey);
+      await _downloadManager.resumeDownload(globalKey, client, transcodeQuality: transcodeQuality);
     }
   }
 
@@ -936,8 +991,26 @@ class DownloadProvider extends ChangeNotifier {
   Future<void> retryDownload(String globalKey, PlexClient client) async {
     final progress = _downloads[globalKey];
     if (progress != null && progress.status == DownloadStatus.failed) {
-      await _downloadManager.retryDownload(globalKey, client);
+      final transcodeQuality = _resolveTranscodeQuality(globalKey);
+      await _downloadManager.retryDownload(globalKey, client, transcodeQuality: transcodeQuality);
     }
+  }
+
+  /// Resolve transcodeQuality for a download from per-series settings (Drift-backed).
+  String? _resolveTranscodeQuality(String globalKey) {
+    final metadata = _metadata[globalKey];
+    if (metadata == null || metadata.serverId == null) return null;
+    if (metadata.type == 'episode') {
+      final showKey = metadata.grandparentRatingKey;
+      if (showKey != null) {
+        final settingsGlobalKey = buildGlobalKey(metadata.serverId!, showKey);
+        return _seriesSettings[settingsGlobalKey]?.transcodeQuality;
+      }
+    } else if (metadata.type == 'movie') {
+      final settingsGlobalKey = buildGlobalKey(metadata.serverId!, metadata.ratingKey);
+      return _seriesSettings[settingsGlobalKey]?.transcodeQuality;
+    }
+    return null;
   }
 
   /// Cancel a download

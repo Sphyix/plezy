@@ -27,6 +27,7 @@ class DownloadQueue extends Table {
   IntColumn get addedAt => integer()();
   BoolColumn get downloadSubtitles => boolean().withDefault(const Constant(true))();
   BoolColumn get downloadArtwork => boolean().withDefault(const Constant(true))();
+  TextColumn get transcodeQuality => text().nullable()();
 }
 
 @DataClassName('DownloadedMediaItem')
@@ -48,6 +49,22 @@ class DownloadedMedia extends Table {
   TextColumn get errorMessage => text().nullable()();
   IntColumn get retryCount => integer().withDefault(const Constant(0))();
   TextColumn get bgTaskId => text().nullable()();
+}
+
+@DataClassName('DownloadSeriesSettingsItem')
+class DownloadSeriesSettings extends Table {
+  TextColumn get serverId => text()();
+  TextColumn get ratingKey => text()();
+  TextColumn get transcodeQuality => text().nullable()();
+  BoolColumn get downloadNewEpisodes => boolean().withDefault(const Constant(false))();
+  BoolColumn get downloadNewSeasons => boolean().withDefault(const Constant(false))();
+  IntColumn get maxEpisodes => integer().withDefault(const Constant(0))();
+  IntColumn get retentionDays => integer().withDefault(const Constant(0))();
+  IntColumn get createdAt => integer()();
+  IntColumn get updatedAt => integer()();
+
+  @override
+  Set<Column> get primaryKey => {serverId, ratingKey};
 }
 
 /// Queue for offline watch progress and manual watch actions.

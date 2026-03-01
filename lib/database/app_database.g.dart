@@ -873,8 +873,17 @@ class $DownloadQueueTable extends DownloadQueue with TableInfo<$DownloadQueueTab
     defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("download_artwork" IN (0, 1))'),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _transcodeQualityMeta = const VerificationMeta('transcodeQuality');
   @override
-  List<GeneratedColumn> get $columns => [id, mediaGlobalKey, priority, addedAt, downloadSubtitles, downloadArtwork];
+  late final GeneratedColumn<String> transcodeQuality = GeneratedColumn<String>(
+    'transcode_quality',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, mediaGlobalKey, priority, addedAt, downloadSubtitles, downloadArtwork, transcodeQuality];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -915,6 +924,12 @@ class $DownloadQueueTable extends DownloadQueue with TableInfo<$DownloadQueueTab
         downloadArtwork.isAcceptableOrUnknown(data['download_artwork']!, _downloadArtworkMeta),
       );
     }
+    if (data.containsKey('transcode_quality')) {
+      context.handle(
+        _transcodeQualityMeta,
+        transcodeQuality.isAcceptableOrUnknown(data['transcode_quality']!, _transcodeQualityMeta),
+      );
+    }
     return context;
   }
 
@@ -939,6 +954,10 @@ class $DownloadQueueTable extends DownloadQueue with TableInfo<$DownloadQueueTab
         DriftSqlType.bool,
         data['${effectivePrefix}download_artwork'],
       )!,
+      transcodeQuality: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transcode_quality'],
+      ),
     );
   }
 
@@ -955,6 +974,7 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
   final int addedAt;
   final bool downloadSubtitles;
   final bool downloadArtwork;
+  final String? transcodeQuality;
   const DownloadQueueItem({
     required this.id,
     required this.mediaGlobalKey,
@@ -962,6 +982,7 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
     required this.addedAt,
     required this.downloadSubtitles,
     required this.downloadArtwork,
+    this.transcodeQuality,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -972,6 +993,9 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
     map['added_at'] = Variable<int>(addedAt);
     map['download_subtitles'] = Variable<bool>(downloadSubtitles);
     map['download_artwork'] = Variable<bool>(downloadArtwork);
+    if (!nullToAbsent || transcodeQuality != null) {
+      map['transcode_quality'] = Variable<String>(transcodeQuality);
+    }
     return map;
   }
 
@@ -983,6 +1007,7 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
       addedAt: Value(addedAt),
       downloadSubtitles: Value(downloadSubtitles),
       downloadArtwork: Value(downloadArtwork),
+      transcodeQuality: transcodeQuality == null && nullToAbsent ? const Value.absent() : Value(transcodeQuality),
     );
   }
 
@@ -995,6 +1020,7 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
       addedAt: serializer.fromJson<int>(json['addedAt']),
       downloadSubtitles: serializer.fromJson<bool>(json['downloadSubtitles']),
       downloadArtwork: serializer.fromJson<bool>(json['downloadArtwork']),
+      transcodeQuality: serializer.fromJson<String?>(json['transcodeQuality']),
     );
   }
   @override
@@ -1007,6 +1033,7 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
       'addedAt': serializer.toJson<int>(addedAt),
       'downloadSubtitles': serializer.toJson<bool>(downloadSubtitles),
       'downloadArtwork': serializer.toJson<bool>(downloadArtwork),
+      'transcodeQuality': serializer.toJson<String?>(transcodeQuality),
     };
   }
 
@@ -1017,6 +1044,7 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
     int? addedAt,
     bool? downloadSubtitles,
     bool? downloadArtwork,
+    Value<String?> transcodeQuality = const Value.absent(),
   }) => DownloadQueueItem(
     id: id ?? this.id,
     mediaGlobalKey: mediaGlobalKey ?? this.mediaGlobalKey,
@@ -1024,6 +1052,7 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
     addedAt: addedAt ?? this.addedAt,
     downloadSubtitles: downloadSubtitles ?? this.downloadSubtitles,
     downloadArtwork: downloadArtwork ?? this.downloadArtwork,
+    transcodeQuality: transcodeQuality.present ? transcodeQuality.value : this.transcodeQuality,
   );
   DownloadQueueItem copyWithCompanion(DownloadQueueCompanion data) {
     return DownloadQueueItem(
@@ -1033,6 +1062,7 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
       addedAt: data.addedAt.present ? data.addedAt.value : this.addedAt,
       downloadSubtitles: data.downloadSubtitles.present ? data.downloadSubtitles.value : this.downloadSubtitles,
       downloadArtwork: data.downloadArtwork.present ? data.downloadArtwork.value : this.downloadArtwork,
+      transcodeQuality: data.transcodeQuality.present ? data.transcodeQuality.value : this.transcodeQuality,
     );
   }
 
@@ -1044,13 +1074,14 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
           ..write('priority: $priority, ')
           ..write('addedAt: $addedAt, ')
           ..write('downloadSubtitles: $downloadSubtitles, ')
-          ..write('downloadArtwork: $downloadArtwork')
+          ..write('downloadArtwork: $downloadArtwork, ')
+          ..write('transcodeQuality: $transcodeQuality')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, mediaGlobalKey, priority, addedAt, downloadSubtitles, downloadArtwork);
+  int get hashCode => Object.hash(id, mediaGlobalKey, priority, addedAt, downloadSubtitles, downloadArtwork, transcodeQuality);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1060,7 +1091,8 @@ class DownloadQueueItem extends DataClass implements Insertable<DownloadQueueIte
           other.priority == this.priority &&
           other.addedAt == this.addedAt &&
           other.downloadSubtitles == this.downloadSubtitles &&
-          other.downloadArtwork == this.downloadArtwork);
+          other.downloadArtwork == this.downloadArtwork &&
+          other.transcodeQuality == this.transcodeQuality);
 }
 
 class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
@@ -1070,6 +1102,7 @@ class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
   final Value<int> addedAt;
   final Value<bool> downloadSubtitles;
   final Value<bool> downloadArtwork;
+  final Value<String?> transcodeQuality;
   const DownloadQueueCompanion({
     this.id = const Value.absent(),
     this.mediaGlobalKey = const Value.absent(),
@@ -1077,6 +1110,7 @@ class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
     this.addedAt = const Value.absent(),
     this.downloadSubtitles = const Value.absent(),
     this.downloadArtwork = const Value.absent(),
+    this.transcodeQuality = const Value.absent(),
   });
   DownloadQueueCompanion.insert({
     this.id = const Value.absent(),
@@ -1085,6 +1119,7 @@ class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
     required int addedAt,
     this.downloadSubtitles = const Value.absent(),
     this.downloadArtwork = const Value.absent(),
+    this.transcodeQuality = const Value.absent(),
   }) : mediaGlobalKey = Value(mediaGlobalKey),
        addedAt = Value(addedAt);
   static Insertable<DownloadQueueItem> custom({
@@ -1094,6 +1129,7 @@ class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
     Expression<int>? addedAt,
     Expression<bool>? downloadSubtitles,
     Expression<bool>? downloadArtwork,
+    Expression<String>? transcodeQuality,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1102,6 +1138,7 @@ class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
       if (addedAt != null) 'added_at': addedAt,
       if (downloadSubtitles != null) 'download_subtitles': downloadSubtitles,
       if (downloadArtwork != null) 'download_artwork': downloadArtwork,
+      if (transcodeQuality != null) 'transcode_quality': transcodeQuality,
     });
   }
 
@@ -1112,6 +1149,7 @@ class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
     Value<int>? addedAt,
     Value<bool>? downloadSubtitles,
     Value<bool>? downloadArtwork,
+    Value<String?>? transcodeQuality,
   }) {
     return DownloadQueueCompanion(
       id: id ?? this.id,
@@ -1120,6 +1158,7 @@ class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
       addedAt: addedAt ?? this.addedAt,
       downloadSubtitles: downloadSubtitles ?? this.downloadSubtitles,
       downloadArtwork: downloadArtwork ?? this.downloadArtwork,
+      transcodeQuality: transcodeQuality ?? this.transcodeQuality,
     );
   }
 
@@ -1144,6 +1183,9 @@ class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
     if (downloadArtwork.present) {
       map['download_artwork'] = Variable<bool>(downloadArtwork.value);
     }
+    if (transcodeQuality.present) {
+      map['transcode_quality'] = Variable<String>(transcodeQuality.value);
+    }
     return map;
   }
 
@@ -1155,7 +1197,8 @@ class DownloadQueueCompanion extends UpdateCompanion<DownloadQueueItem> {
           ..write('priority: $priority, ')
           ..write('addedAt: $addedAt, ')
           ..write('downloadSubtitles: $downloadSubtitles, ')
-          ..write('downloadArtwork: $downloadArtwork')
+          ..write('downloadArtwork: $downloadArtwork, ')
+          ..write('transcodeQuality: $transcodeQuality')
           ..write(')'))
         .toString();
   }
@@ -2050,6 +2093,507 @@ class OfflineWatchProgressCompanion extends UpdateCompanion<OfflineWatchProgress
   }
 }
 
+class $DownloadSeriesSettingsTable extends DownloadSeriesSettings
+    with TableInfo<$DownloadSeriesSettingsTable, DownloadSeriesSettingsItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DownloadSeriesSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _serverIdMeta = const VerificationMeta('serverId');
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ratingKeyMeta = const VerificationMeta('ratingKey');
+  @override
+  late final GeneratedColumn<String> ratingKey = GeneratedColumn<String>(
+    'rating_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _transcodeQualityMeta = const VerificationMeta('transcodeQuality');
+  @override
+  late final GeneratedColumn<String> transcodeQuality = GeneratedColumn<String>(
+    'transcode_quality',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _downloadNewEpisodesMeta = const VerificationMeta('downloadNewEpisodes');
+  @override
+  late final GeneratedColumn<bool> downloadNewEpisodes = GeneratedColumn<bool>(
+    'download_new_episodes',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("download_new_episodes" IN (0, 1))'),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _downloadNewSeasonsMeta = const VerificationMeta('downloadNewSeasons');
+  @override
+  late final GeneratedColumn<bool> downloadNewSeasons = GeneratedColumn<bool>(
+    'download_new_seasons',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("download_new_seasons" IN (0, 1))'),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _maxEpisodesMeta = const VerificationMeta('maxEpisodes');
+  @override
+  late final GeneratedColumn<int> maxEpisodes = GeneratedColumn<int>(
+    'max_episodes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _retentionDaysMeta = const VerificationMeta('retentionDays');
+  @override
+  late final GeneratedColumn<int> retentionDays = GeneratedColumn<int>(
+    'retention_days',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    serverId,
+    ratingKey,
+    transcodeQuality,
+    downloadNewEpisodes,
+    downloadNewSeasons,
+    maxEpisodes,
+    retentionDays,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'download_series_settings';
+  @override
+  VerificationContext validateIntegrity(Insertable<DownloadSeriesSettingsItem> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('server_id')) {
+      context.handle(_serverIdMeta, serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta));
+    } else if (isInserting) {
+      context.missing(_serverIdMeta);
+    }
+    if (data.containsKey('rating_key')) {
+      context.handle(_ratingKeyMeta, ratingKey.isAcceptableOrUnknown(data['rating_key']!, _ratingKeyMeta));
+    } else if (isInserting) {
+      context.missing(_ratingKeyMeta);
+    }
+    if (data.containsKey('transcode_quality')) {
+      context.handle(
+        _transcodeQualityMeta,
+        transcodeQuality.isAcceptableOrUnknown(data['transcode_quality']!, _transcodeQualityMeta),
+      );
+    }
+    if (data.containsKey('download_new_episodes')) {
+      context.handle(
+        _downloadNewEpisodesMeta,
+        downloadNewEpisodes.isAcceptableOrUnknown(data['download_new_episodes']!, _downloadNewEpisodesMeta),
+      );
+    }
+    if (data.containsKey('download_new_seasons')) {
+      context.handle(
+        _downloadNewSeasonsMeta,
+        downloadNewSeasons.isAcceptableOrUnknown(data['download_new_seasons']!, _downloadNewSeasonsMeta),
+      );
+    }
+    if (data.containsKey('max_episodes')) {
+      context.handle(_maxEpisodesMeta, maxEpisodes.isAcceptableOrUnknown(data['max_episodes']!, _maxEpisodesMeta));
+    }
+    if (data.containsKey('retention_days')) {
+      context.handle(
+        _retentionDaysMeta,
+        retentionDays.isAcceptableOrUnknown(data['retention_days']!, _retentionDaysMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {serverId, ratingKey};
+  @override
+  DownloadSeriesSettingsItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DownloadSeriesSettingsItem(
+      serverId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}server_id'])!,
+      ratingKey: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}rating_key'])!,
+      transcodeQuality: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transcode_quality'],
+      ),
+      downloadNewEpisodes: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}download_new_episodes'],
+      )!,
+      downloadNewSeasons: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}download_new_seasons'],
+      )!,
+      maxEpisodes: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}max_episodes'])!,
+      retentionDays: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}retention_days'])!,
+      createdAt: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $DownloadSeriesSettingsTable createAlias(String alias) {
+    return $DownloadSeriesSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class DownloadSeriesSettingsItem extends DataClass implements Insertable<DownloadSeriesSettingsItem> {
+  final String serverId;
+  final String ratingKey;
+  final String? transcodeQuality;
+  final bool downloadNewEpisodes;
+  final bool downloadNewSeasons;
+  final int maxEpisodes;
+  final int retentionDays;
+  final int createdAt;
+  final int updatedAt;
+  const DownloadSeriesSettingsItem({
+    required this.serverId,
+    required this.ratingKey,
+    this.transcodeQuality,
+    required this.downloadNewEpisodes,
+    required this.downloadNewSeasons,
+    required this.maxEpisodes,
+    required this.retentionDays,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['server_id'] = Variable<String>(serverId);
+    map['rating_key'] = Variable<String>(ratingKey);
+    if (!nullToAbsent || transcodeQuality != null) {
+      map['transcode_quality'] = Variable<String>(transcodeQuality);
+    }
+    map['download_new_episodes'] = Variable<bool>(downloadNewEpisodes);
+    map['download_new_seasons'] = Variable<bool>(downloadNewSeasons);
+    map['max_episodes'] = Variable<int>(maxEpisodes);
+    map['retention_days'] = Variable<int>(retentionDays);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  DownloadSeriesSettingsCompanion toCompanion(bool nullToAbsent) {
+    return DownloadSeriesSettingsCompanion(
+      serverId: Value(serverId),
+      ratingKey: Value(ratingKey),
+      transcodeQuality: transcodeQuality == null && nullToAbsent ? const Value.absent() : Value(transcodeQuality),
+      downloadNewEpisodes: Value(downloadNewEpisodes),
+      downloadNewSeasons: Value(downloadNewSeasons),
+      maxEpisodes: Value(maxEpisodes),
+      retentionDays: Value(retentionDays),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory DownloadSeriesSettingsItem.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DownloadSeriesSettingsItem(
+      serverId: serializer.fromJson<String>(json['serverId']),
+      ratingKey: serializer.fromJson<String>(json['ratingKey']),
+      transcodeQuality: serializer.fromJson<String?>(json['transcodeQuality']),
+      downloadNewEpisodes: serializer.fromJson<bool>(json['downloadNewEpisodes']),
+      downloadNewSeasons: serializer.fromJson<bool>(json['downloadNewSeasons']),
+      maxEpisodes: serializer.fromJson<int>(json['maxEpisodes']),
+      retentionDays: serializer.fromJson<int>(json['retentionDays']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'serverId': serializer.toJson<String>(serverId),
+      'ratingKey': serializer.toJson<String>(ratingKey),
+      'transcodeQuality': serializer.toJson<String?>(transcodeQuality),
+      'downloadNewEpisodes': serializer.toJson<bool>(downloadNewEpisodes),
+      'downloadNewSeasons': serializer.toJson<bool>(downloadNewSeasons),
+      'maxEpisodes': serializer.toJson<int>(maxEpisodes),
+      'retentionDays': serializer.toJson<int>(retentionDays),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  DownloadSeriesSettingsItem copyWith({
+    String? serverId,
+    String? ratingKey,
+    Value<String?> transcodeQuality = const Value.absent(),
+    bool? downloadNewEpisodes,
+    bool? downloadNewSeasons,
+    int? maxEpisodes,
+    int? retentionDays,
+    int? createdAt,
+    int? updatedAt,
+  }) => DownloadSeriesSettingsItem(
+    serverId: serverId ?? this.serverId,
+    ratingKey: ratingKey ?? this.ratingKey,
+    transcodeQuality: transcodeQuality.present ? transcodeQuality.value : this.transcodeQuality,
+    downloadNewEpisodes: downloadNewEpisodes ?? this.downloadNewEpisodes,
+    downloadNewSeasons: downloadNewSeasons ?? this.downloadNewSeasons,
+    maxEpisodes: maxEpisodes ?? this.maxEpisodes,
+    retentionDays: retentionDays ?? this.retentionDays,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  DownloadSeriesSettingsItem copyWithCompanion(DownloadSeriesSettingsCompanion data) {
+    return DownloadSeriesSettingsItem(
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      ratingKey: data.ratingKey.present ? data.ratingKey.value : this.ratingKey,
+      transcodeQuality: data.transcodeQuality.present ? data.transcodeQuality.value : this.transcodeQuality,
+      downloadNewEpisodes: data.downloadNewEpisodes.present ? data.downloadNewEpisodes.value : this.downloadNewEpisodes,
+      downloadNewSeasons: data.downloadNewSeasons.present ? data.downloadNewSeasons.value : this.downloadNewSeasons,
+      maxEpisodes: data.maxEpisodes.present ? data.maxEpisodes.value : this.maxEpisodes,
+      retentionDays: data.retentionDays.present ? data.retentionDays.value : this.retentionDays,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DownloadSeriesSettingsItem(')
+          ..write('serverId: $serverId, ')
+          ..write('ratingKey: $ratingKey, ')
+          ..write('transcodeQuality: $transcodeQuality, ')
+          ..write('downloadNewEpisodes: $downloadNewEpisodes, ')
+          ..write('downloadNewSeasons: $downloadNewSeasons, ')
+          ..write('maxEpisodes: $maxEpisodes, ')
+          ..write('retentionDays: $retentionDays, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    serverId,
+    ratingKey,
+    transcodeQuality,
+    downloadNewEpisodes,
+    downloadNewSeasons,
+    maxEpisodes,
+    retentionDays,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DownloadSeriesSettingsItem &&
+          other.serverId == this.serverId &&
+          other.ratingKey == this.ratingKey &&
+          other.transcodeQuality == this.transcodeQuality &&
+          other.downloadNewEpisodes == this.downloadNewEpisodes &&
+          other.downloadNewSeasons == this.downloadNewSeasons &&
+          other.maxEpisodes == this.maxEpisodes &&
+          other.retentionDays == this.retentionDays &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class DownloadSeriesSettingsCompanion extends UpdateCompanion<DownloadSeriesSettingsItem> {
+  final Value<String> serverId;
+  final Value<String> ratingKey;
+  final Value<String?> transcodeQuality;
+  final Value<bool> downloadNewEpisodes;
+  final Value<bool> downloadNewSeasons;
+  final Value<int> maxEpisodes;
+  final Value<int> retentionDays;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const DownloadSeriesSettingsCompanion({
+    this.serverId = const Value.absent(),
+    this.ratingKey = const Value.absent(),
+    this.transcodeQuality = const Value.absent(),
+    this.downloadNewEpisodes = const Value.absent(),
+    this.downloadNewSeasons = const Value.absent(),
+    this.maxEpisodes = const Value.absent(),
+    this.retentionDays = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DownloadSeriesSettingsCompanion.insert({
+    required String serverId,
+    required String ratingKey,
+    this.transcodeQuality = const Value.absent(),
+    this.downloadNewEpisodes = const Value.absent(),
+    this.downloadNewSeasons = const Value.absent(),
+    this.maxEpisodes = const Value.absent(),
+    this.retentionDays = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : serverId = Value(serverId),
+       ratingKey = Value(ratingKey),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<DownloadSeriesSettingsItem> custom({
+    Expression<String>? serverId,
+    Expression<String>? ratingKey,
+    Expression<String>? transcodeQuality,
+    Expression<bool>? downloadNewEpisodes,
+    Expression<bool>? downloadNewSeasons,
+    Expression<int>? maxEpisodes,
+    Expression<int>? retentionDays,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (serverId != null) 'server_id': serverId,
+      if (ratingKey != null) 'rating_key': ratingKey,
+      if (transcodeQuality != null) 'transcode_quality': transcodeQuality,
+      if (downloadNewEpisodes != null) 'download_new_episodes': downloadNewEpisodes,
+      if (downloadNewSeasons != null) 'download_new_seasons': downloadNewSeasons,
+      if (maxEpisodes != null) 'max_episodes': maxEpisodes,
+      if (retentionDays != null) 'retention_days': retentionDays,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DownloadSeriesSettingsCompanion copyWith({
+    Value<String>? serverId,
+    Value<String>? ratingKey,
+    Value<String?>? transcodeQuality,
+    Value<bool>? downloadNewEpisodes,
+    Value<bool>? downloadNewSeasons,
+    Value<int>? maxEpisodes,
+    Value<int>? retentionDays,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return DownloadSeriesSettingsCompanion(
+      serverId: serverId ?? this.serverId,
+      ratingKey: ratingKey ?? this.ratingKey,
+      transcodeQuality: transcodeQuality ?? this.transcodeQuality,
+      downloadNewEpisodes: downloadNewEpisodes ?? this.downloadNewEpisodes,
+      downloadNewSeasons: downloadNewSeasons ?? this.downloadNewSeasons,
+      maxEpisodes: maxEpisodes ?? this.maxEpisodes,
+      retentionDays: retentionDays ?? this.retentionDays,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (ratingKey.present) {
+      map['rating_key'] = Variable<String>(ratingKey.value);
+    }
+    if (transcodeQuality.present) {
+      map['transcode_quality'] = Variable<String>(transcodeQuality.value);
+    }
+    if (downloadNewEpisodes.present) {
+      map['download_new_episodes'] = Variable<bool>(downloadNewEpisodes.value);
+    }
+    if (downloadNewSeasons.present) {
+      map['download_new_seasons'] = Variable<bool>(downloadNewSeasons.value);
+    }
+    if (maxEpisodes.present) {
+      map['max_episodes'] = Variable<int>(maxEpisodes.value);
+    }
+    if (retentionDays.present) {
+      map['retention_days'] = Variable<int>(retentionDays.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DownloadSeriesSettingsCompanion(')
+          ..write('serverId: $serverId, ')
+          ..write('ratingKey: $ratingKey, ')
+          ..write('transcodeQuality: $transcodeQuality, ')
+          ..write('downloadNewEpisodes: $downloadNewEpisodes, ')
+          ..write('downloadNewSeasons: $downloadNewSeasons, ')
+          ..write('maxEpisodes: $maxEpisodes, ')
+          ..write('retentionDays: $retentionDays, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2057,10 +2601,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DownloadQueueTable downloadQueue = $DownloadQueueTable(this);
   late final $ApiCacheTable apiCache = $ApiCacheTable(this);
   late final $OfflineWatchProgressTable offlineWatchProgress = $OfflineWatchProgressTable(this);
+  late final $DownloadSeriesSettingsTable downloadSeriesSettings = $DownloadSeriesSettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables => allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [downloadedMedia, downloadQueue, apiCache, offlineWatchProgress];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [downloadedMedia, downloadQueue, apiCache, offlineWatchProgress, downloadSeriesSettings];
 }
 
 typedef $$DownloadedMediaTableCreateCompanionBuilder =
@@ -2953,6 +3498,230 @@ typedef $$OfflineWatchProgressTableProcessedTableManager =
       OfflineWatchProgressItem,
       PrefetchHooks Function()
     >;
+typedef $$DownloadSeriesSettingsTableCreateCompanionBuilder =
+    DownloadSeriesSettingsCompanion Function({
+      required String serverId,
+      required String ratingKey,
+      Value<String?> transcodeQuality,
+      Value<bool> downloadNewEpisodes,
+      Value<bool> downloadNewSeasons,
+      Value<int> maxEpisodes,
+      Value<int> retentionDays,
+      required int createdAt,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$DownloadSeriesSettingsTableUpdateCompanionBuilder =
+    DownloadSeriesSettingsCompanion Function({
+      Value<String> serverId,
+      Value<String> ratingKey,
+      Value<String?> transcodeQuality,
+      Value<bool> downloadNewEpisodes,
+      Value<bool> downloadNewSeasons,
+      Value<int> maxEpisodes,
+      Value<int> retentionDays,
+      Value<int> createdAt,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$DownloadSeriesSettingsTableFilterComposer extends Composer<_$AppDatabase, $DownloadSeriesSettingsTable> {
+  $$DownloadSeriesSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get ratingKey =>
+      $composableBuilder(column: $table.ratingKey, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get transcodeQuality =>
+      $composableBuilder(column: $table.transcodeQuality, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get downloadNewEpisodes =>
+      $composableBuilder(column: $table.downloadNewEpisodes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get downloadNewSeasons =>
+      $composableBuilder(column: $table.downloadNewSeasons, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get maxEpisodes =>
+      $composableBuilder(column: $table.maxEpisodes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get retentionDays =>
+      $composableBuilder(column: $table.retentionDays, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$DownloadSeriesSettingsTableOrderingComposer extends Composer<_$AppDatabase, $DownloadSeriesSettingsTable> {
+  $$DownloadSeriesSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get ratingKey =>
+      $composableBuilder(column: $table.ratingKey, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get transcodeQuality =>
+      $composableBuilder(column: $table.transcodeQuality, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get downloadNewEpisodes =>
+      $composableBuilder(column: $table.downloadNewEpisodes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get downloadNewSeasons =>
+      $composableBuilder(column: $table.downloadNewSeasons, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get maxEpisodes =>
+      $composableBuilder(column: $table.maxEpisodes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get retentionDays =>
+      $composableBuilder(column: $table.retentionDays, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$DownloadSeriesSettingsTableAnnotationComposer extends Composer<_$AppDatabase, $DownloadSeriesSettingsTable> {
+  $$DownloadSeriesSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get serverId => $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get ratingKey => $composableBuilder(column: $table.ratingKey, builder: (column) => column);
+
+  GeneratedColumn<String> get transcodeQuality =>
+      $composableBuilder(column: $table.transcodeQuality, builder: (column) => column);
+
+  GeneratedColumn<bool> get downloadNewEpisodes =>
+      $composableBuilder(column: $table.downloadNewEpisodes, builder: (column) => column);
+
+  GeneratedColumn<bool> get downloadNewSeasons =>
+      $composableBuilder(column: $table.downloadNewSeasons, builder: (column) => column);
+
+  GeneratedColumn<int> get maxEpisodes => $composableBuilder(column: $table.maxEpisodes, builder: (column) => column);
+
+  GeneratedColumn<int> get retentionDays =>
+      $composableBuilder(column: $table.retentionDays, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt => $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt => $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$DownloadSeriesSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DownloadSeriesSettingsTable,
+          DownloadSeriesSettingsItem,
+          $$DownloadSeriesSettingsTableFilterComposer,
+          $$DownloadSeriesSettingsTableOrderingComposer,
+          $$DownloadSeriesSettingsTableAnnotationComposer,
+          $$DownloadSeriesSettingsTableCreateCompanionBuilder,
+          $$DownloadSeriesSettingsTableUpdateCompanionBuilder,
+          (
+            DownloadSeriesSettingsItem,
+            BaseReferences<_$AppDatabase, $DownloadSeriesSettingsTable, DownloadSeriesSettingsItem>,
+          ),
+          DownloadSeriesSettingsItem,
+          PrefetchHooks Function()
+        > {
+  $$DownloadSeriesSettingsTableTableManager(_$AppDatabase db, $DownloadSeriesSettingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$DownloadSeriesSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$DownloadSeriesSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$DownloadSeriesSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> serverId = const Value.absent(),
+                Value<String> ratingKey = const Value.absent(),
+                Value<String?> transcodeQuality = const Value.absent(),
+                Value<bool> downloadNewEpisodes = const Value.absent(),
+                Value<bool> downloadNewSeasons = const Value.absent(),
+                Value<int> maxEpisodes = const Value.absent(),
+                Value<int> retentionDays = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DownloadSeriesSettingsCompanion(
+                serverId: serverId,
+                ratingKey: ratingKey,
+                transcodeQuality: transcodeQuality,
+                downloadNewEpisodes: downloadNewEpisodes,
+                downloadNewSeasons: downloadNewSeasons,
+                maxEpisodes: maxEpisodes,
+                retentionDays: retentionDays,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String serverId,
+                required String ratingKey,
+                Value<String?> transcodeQuality = const Value.absent(),
+                Value<bool> downloadNewEpisodes = const Value.absent(),
+                Value<bool> downloadNewSeasons = const Value.absent(),
+                Value<int> maxEpisodes = const Value.absent(),
+                Value<int> retentionDays = const Value.absent(),
+                required int createdAt,
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => DownloadSeriesSettingsCompanion.insert(
+                serverId: serverId,
+                ratingKey: ratingKey,
+                transcodeQuality: transcodeQuality,
+                downloadNewEpisodes: downloadNewEpisodes,
+                downloadNewSeasons: downloadNewSeasons,
+                maxEpisodes: maxEpisodes,
+                retentionDays: retentionDays,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DownloadSeriesSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DownloadSeriesSettingsTable,
+      DownloadSeriesSettingsItem,
+      $$DownloadSeriesSettingsTableFilterComposer,
+      $$DownloadSeriesSettingsTableOrderingComposer,
+      $$DownloadSeriesSettingsTableAnnotationComposer,
+      $$DownloadSeriesSettingsTableCreateCompanionBuilder,
+      $$DownloadSeriesSettingsTableUpdateCompanionBuilder,
+      (DownloadSeriesSettingsItem, BaseReferences<_$AppDatabase, $DownloadSeriesSettingsTable, DownloadSeriesSettingsItem>),
+      DownloadSeriesSettingsItem,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2963,4 +3732,6 @@ class $AppDatabaseManager {
   $$ApiCacheTableTableManager get apiCache => $$ApiCacheTableTableManager(_db, _db.apiCache);
   $$OfflineWatchProgressTableTableManager get offlineWatchProgress =>
       $$OfflineWatchProgressTableTableManager(_db, _db.offlineWatchProgress);
+  $$DownloadSeriesSettingsTableTableManager get downloadSeriesSettings =>
+      $$DownloadSeriesSettingsTableTableManager(_db, _db.downloadSeriesSettings);
 }
