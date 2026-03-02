@@ -1020,6 +1020,50 @@ class DownloadProvider extends ChangeNotifier {
     return queuedCount;
   }
 
+  /// Get season globalKeys with existing downloads for a show.
+  /// Used when downloadNewSeasons is OFF to restrict auto-download to tracked seasons.
+  Set<String> _getDownloadedSeasonKeys(String showGlobalKey) {
+    final parsed = parseGlobalKey(showGlobalKey);
+    if (parsed == null) return {};
+
+    final seasonKeys = <String>{};
+    for (final entry in _downloads.entries) {
+      // Only count active downloads (not failed/cancelled)
+      if (entry.value.status == DownloadStatus.failed || entry.value.status == DownloadStatus.cancelled) continue;
+
+      final episodeMeta = _metadata[entry.key];
+      if (episodeMeta == null) continue;
+      if (episodeMeta.serverId != parsed.serverId) continue;
+      if (episodeMeta.grandparentRatingKey != parsed.ratingKey) continue;
+
+      if (episodeMeta.parentRatingKey != null) {
+        seasonKeys.add(buildGlobalKey(parsed.serverId, episodeMeta.parentRatingKey!));
+      }
+    }
+    return seasonKeys;
+  }
+
+  /// Queue missing episodes only for seasons with existing downloads.
+  /// Used when downloadNewSeasons is OFF but downloadNewEpisodes is ON.
+  Future<int> _queueMissingEpisodesForTrackedSeasons(String showGlobalKey, PlexClient client) async {
+    final trackedSeasonKeys = _getDownloadedSeasonKeys(showGlobalKey);
+    if (trackedSeasonKeys.isEmpty) {
+      appLogger.d('Auto-download: No tracked seasons for $showGlobalKey');
+      return 0;
+    }
+
+    int totalQueued = 0;
+    for (final seasonKey in trackedSeasonKeys) {
+      final seasonMeta = _metadata[seasonKey];
+      if (seasonMeta == null) {
+        appLogger.w('Auto-download: No metadata for tracked season $seasonKey, skipping');
+        continue;
+      }
+      totalQueued += await _queueMissingSeasonEpisodes(seasonMeta, client);
+    }
+    return totalQueued;
+  }
+
   /// Pause a download (works for both downloading and queued items)
   Future<void> pauseDownload(String globalKey) async {
     final progress = _downloads[globalKey];
@@ -1204,7 +1248,14 @@ class DownloadProvider extends ChangeNotifier {
 
       futures.add(
         _withShowRefreshMutex(settings.globalKey, () async {
-          final queued = await queueMissingEpisodes(showMetadata, client);
+          int queued;
+          if (settings.downloadNewSeasons) {
+            appLogger.d('Auto-download: ${showMetadata.title} — all seasons mode');
+            queued = await queueMissingEpisodes(showMetadata, client);
+          } else {
+            appLogger.d('Auto-download: ${showMetadata.title} — tracked seasons only mode');
+            queued = await _queueMissingEpisodesForTrackedSeasons(settings.globalKey, client);
+          }
           if (queued > 0) {
             appLogger.i('Auto-download: Queued $queued new episodes for ${showMetadata.title}');
           }
