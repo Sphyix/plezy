@@ -692,22 +692,28 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
               // Summary row — shows quality badge next to completion count
               if (canExpand) ...[
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _getNodeSummary(),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                if (qualityLabel != null)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _getNodeSummary(),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
                         ),
                       ),
-                    ),
-                    if (qualityLabel != null) ...[
                       const SizedBox(width: 8),
                       _buildQualityBadge(theme, qualityLabel),
                     ],
-                  ],
-                ),
+                  )
+                else
+                  Text(
+                    _getNodeSummary(),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
               ],
 
               // Progress bar for active downloads
