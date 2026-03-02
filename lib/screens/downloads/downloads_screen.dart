@@ -72,9 +72,14 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
     }
 
     if (confirmed) {
-      await provider.executeRetentionTrim(trims);
-      if (mounted) {
-        showSnackBar(context, t.downloads.retentionTrimComplete);
+      try {
+        await provider.executeRetentionTrim(trims);
+        if (mounted) {
+          showSnackBar(context, t.downloads.retentionTrimComplete);
+        }
+      } catch (e) {
+        debugPrint('Retention trim failed: $e');
+        provider.clearPendingRetentionTrims();
       }
     } else {
       provider.clearPendingRetentionTrims();

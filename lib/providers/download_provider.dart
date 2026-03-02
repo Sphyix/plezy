@@ -1303,11 +1303,14 @@ class DownloadProvider extends ChangeNotifier {
     appLogger.i('Auto-download: Complete');
 
     // Evaluate retention policies after auto-download completes
-    final trims = await evaluateRetentionPolicies();
-    if (trims.isNotEmpty) {
-      _pendingRetentionTrims = trims;
-      appLogger.i('Retention: ${trims.length} shows have episodes exceeding limits');
-      notifyListeners();
+    // Skip if already pending from startup evaluation (avoids redundant DB queries)
+    if (_pendingRetentionTrims == null) {
+      final trims = await evaluateRetentionPolicies();
+      if (trims.isNotEmpty) {
+        _pendingRetentionTrims = trims;
+        appLogger.i('Retention: ${trims.length} shows have episodes exceeding limits');
+        notifyListeners();
+      }
     }
   }
 
@@ -1396,7 +1399,11 @@ class DownloadProvider extends ChangeNotifier {
   Future<void> executeRetentionTrim(List<RetentionTrimResult> trims) async {
     for (final trim in trims) {
       for (final episodeKey in trim.episodeGlobalKeys) {
-        await deleteDownload(episodeKey);
+        try {
+          await deleteDownload(episodeKey);
+        } catch (e) {
+          appLogger.w('Retention trim: failed to delete $episodeKey', error: e);
+        }
       }
     }
     _pendingRetentionTrims = null;
