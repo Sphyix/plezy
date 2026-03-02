@@ -746,7 +746,8 @@
     "retentionTrimComplete": "Nettoyage de rétention terminé",
     "retentionCleanupProgress": "Nettoyage... (${current} sur ${total} épisodes)",
     "emptyShowNoEpisodes": "Aucun épisode — paramètres conservés",
-    "removeEmptyShow": "Supprimer"
+    "removeEmptyShow": "Supprimer",
+    "pauseAllSkippedTranscoding": "${count} élément(s) en transcodage ignoré(s) — les téléchargements en transcodage ne peuvent pas être mis en pause"
   },
   "shaders": {
     "title": "Shaders",

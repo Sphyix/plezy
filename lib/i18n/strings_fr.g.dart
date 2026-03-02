@@ -1017,6 +1017,7 @@ class _TranslationsDownloadsFr implements TranslationsDownloadsEn {
 	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Nettoyage... (${current} sur ${total} épisodes)';
 	@override String get emptyShowNoEpisodes => 'Aucun épisode — paramètres conservés';
 	@override String get removeEmptyShow => 'Supprimer';
+	@override String pauseAllSkippedTranscoding({required Object count}) => '${count} élément(s) en transcodage ignoré(s) — les téléchargements en transcodage ne peuvent pas être mis en pause';
 }
 
 // Path: shaders
@@ -2015,6 +2016,7 @@ extension on TranslationsFr {
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Nettoyage... (${current} sur ${total} épisodes)',
 			'downloads.emptyShowNoEpisodes' => 'Aucun épisode — paramètres conservés',
 			'downloads.removeEmptyShow' => 'Supprimer',
+			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => '${count} élément(s) en transcodage ignoré(s) — les téléchargements en transcodage ne peuvent pas être mis en pause',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Aucune amélioration vidéo',
 			'shaders.nvscalerDescription' => 'Mise à l\'échelle NVIDIA pour une vidéo plus nette',

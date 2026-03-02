@@ -646,7 +646,8 @@
     "retentionTrimComplete": "Rensning av lagringsregler klar",
     "retentionCleanupProgress": "Rensar... (${current} av ${total} avsnitt)",
     "emptyShowNoEpisodes": "Inga avsnitt — inställningar bevarade",
-    "removeEmptyShow": "Ta bort"
+    "removeEmptyShow": "Ta bort",
+    "pauseAllSkippedTranscoding": "Hoppade över ${count} omkodningsobjekt — omkodningsnedladdningar kan inte pausas"
   },
   "playlists": {
     "title": "Spellistor",

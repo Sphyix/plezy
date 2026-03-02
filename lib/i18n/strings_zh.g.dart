@@ -896,6 +896,7 @@ class _TranslationsDownloadsZh implements TranslationsDownloadsEn {
 	@override String retentionCleanupProgress({required Object total, required Object current}) => '清理中... (共 ${total} 集，已完成 ${current} 集)';
 	@override String get emptyShowNoEpisodes => '无剧集 — 设置已保留';
 	@override String get removeEmptyShow => '移除';
+	@override String pauseAllSkippedTranscoding({required Object count}) => '跳过了 ${count} 个正在转码的项目 — 转码下载无法暂停';
 }
 
 // Path: playlists
@@ -1921,6 +1922,7 @@ extension on TranslationsZh {
 			'downloads.retentionCleanupProgress' => ({required Object total, required Object current}) => '清理中... (共 ${total} 集，已完成 ${current} 集)',
 			'downloads.emptyShowNoEpisodes' => '无剧集 — 设置已保留',
 			'downloads.removeEmptyShow' => '移除',
+			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => '跳过了 ${count} 个正在转码的项目 — 转码下载无法暂停',
 			'playlists.title' => '播放列表',
 			'playlists.noPlaylists' => '未找到播放列表',
 			'playlists.create' => '创建播放列表',

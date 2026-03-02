@@ -746,7 +746,8 @@
     "retentionTrimComplete": "Limpieza de retención completada",
     "retentionCleanupProgress": "Limpiando... (${current} de ${total} episodios)",
     "emptyShowNoEpisodes": "Sin episodios — configuración conservada",
-    "removeEmptyShow": "Eliminar"
+    "removeEmptyShow": "Eliminar",
+    "pauseAllSkippedTranscoding": "Se omitieron ${count} elemento(s) en transcodificación — las descargas en transcodificación no se pueden pausar"
   },
   "shaders": {
     "title": "Shaders",

@@ -1017,6 +1017,7 @@ class _TranslationsDownloadsKo implements TranslationsDownloadsEn {
 	@override String retentionCleanupProgress({required Object total, required Object current}) => '정리 중... (${total}개 중 ${current}개 에피소드)';
 	@override String get emptyShowNoEpisodes => '에피소드 없음 — 설정 보존됨';
 	@override String get removeEmptyShow => '제거';
+	@override String pauseAllSkippedTranscoding({required Object count}) => '트랜스코딩 중인 ${count}개 항목 건너뜀 — 트랜스코딩 다운로드는 일시정지할 수 없습니다';
 }
 
 // Path: shaders
@@ -2015,6 +2016,7 @@ extension on TranslationsKo {
 			'downloads.retentionCleanupProgress' => ({required Object total, required Object current}) => '정리 중... (${total}개 중 ${current}개 에피소드)',
 			'downloads.emptyShowNoEpisodes' => '에피소드 없음 — 설정 보존됨',
 			'downloads.removeEmptyShow' => '제거',
+			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => '트랜스코딩 중인 ${count}개 항목 건너뜀 — 트랜스코딩 다운로드는 일시정지할 수 없습니다',
 			'shaders.title' => '셰이더',
 			'shaders.noShaderDescription' => '비디오 향상 없음',
 			'shaders.nvscalerDescription' => '더 선명한 비디오를 위한 NVIDIA 이미지 스케일링',

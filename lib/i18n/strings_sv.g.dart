@@ -896,6 +896,7 @@ class _TranslationsDownloadsSv implements TranslationsDownloadsEn {
 	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Rensar... (${current} av ${total} avsnitt)';
 	@override String get emptyShowNoEpisodes => 'Inga avsnitt — inställningar bevarade';
 	@override String get removeEmptyShow => 'Ta bort';
+	@override String pauseAllSkippedTranscoding({required Object count}) => 'Hoppade över ${count} omkodningsobjekt — omkodningsnedladdningar kan inte pausas';
 }
 
 // Path: playlists
@@ -1921,6 +1922,7 @@ extension on TranslationsSv {
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Rensar... (${current} av ${total} avsnitt)',
 			'downloads.emptyShowNoEpisodes' => 'Inga avsnitt — inställningar bevarade',
 			'downloads.removeEmptyShow' => 'Ta bort',
+			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => 'Hoppade över ${count} omkodningsobjekt — omkodningsnedladdningar kan inte pausas',
 			'playlists.title' => 'Spellistor',
 			'playlists.noPlaylists' => 'Inga spellistor hittades',
 			'playlists.create' => 'Skapa spellista',

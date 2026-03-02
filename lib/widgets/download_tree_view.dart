@@ -7,6 +7,7 @@ import '../models/download_models.dart';
 import '../models/plex_metadata.dart';
 import '../utils/content_utils.dart';
 import '../utils/dialogs.dart';
+import '../utils/snackbar_helper.dart';
 import '../utils/global_key_utils.dart';
 
 /// Represents a node in the download tree
@@ -395,12 +396,14 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
     );
   }
 
-  /// Pause all active (downloading and queued) children of a container node
-  void _pauseAllChildren(DownloadTreeNode node) {
-    final keys = _getActiveChildKeys(node);
-    for (final key in keys) {
+  /// Pause all active (downloading and queued) children of a container node,
+  /// skipping items that are actively transcoding. Returns the number of skipped items.
+  int _pauseAllChildren(DownloadTreeNode node) {
+    final (:pausable, :skipped) = _getActiveChildKeys(node);
+    for (final key in pausable) {
       widget.onPause?.call(key);
     }
+    return skipped;
   }
 
   /// Resume all paused children of a container node
@@ -411,17 +414,25 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
     }
   }
 
-  /// Get all active (downloading or queued) child keys from a container node
-  List<String> _getActiveChildKeys(DownloadTreeNode node) {
-    final List<String> keys = [];
+  /// Get all active (downloading or queued) child keys from a container node,
+  /// split into pausable keys (not transcoding) and a count of skipped transcoding items.
+  ({List<String> pausable, int skipped}) _getActiveChildKeys(DownloadTreeNode node) {
+    final List<String> pausable = [];
+    int skipped = 0;
     for (final child in node.children) {
       if (child.hasChildren) {
-        keys.addAll(_getActiveChildKeys(child));
+        final result = _getActiveChildKeys(child);
+        pausable.addAll(result.pausable);
+        skipped += result.skipped;
       } else if (child.status == DownloadStatus.downloading || child.status == DownloadStatus.queued) {
-        keys.add(child.key);
+        if (child.downloadProgress?.isTranscoding == true) {
+          skipped++;
+        } else {
+          pausable.add(child.key);
+        }
       }
     }
-    return keys;
+    return (pausable: pausable, skipped: skipped);
   }
 
   /// Get all paused child keys from a container node
@@ -510,7 +521,7 @@ class _DownloadTreeItem extends StatefulWidget {
   final VoidCallback? onBack;
   final FocusNode? rowFocusNode;
   final bool autofocus;
-  final void Function(DownloadTreeNode) pauseAllChildren;
+  final int Function(DownloadTreeNode) pauseAllChildren;
   final void Function(DownloadTreeNode) resumeAllChildren;
   final void Function(DownloadTreeNode) deleteAllChildren;
   final Map<String, SeriesDownloadSettings> seriesSettings;
@@ -1021,7 +1032,12 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
         _buildActionButton(
           icon: Symbols.pause_rounded,
           tooltip: t.downloads.pauseAll,
-          onPressed: () => widget.pauseAllChildren(widget.node),
+          onPressed: () {
+            final skipped = widget.pauseAllChildren(widget.node);
+            if (skipped > 0) {
+              showAppSnackBar(context, t.downloads.pauseAllSkippedTranscoding(count: skipped));
+            }
+          },
           buttonIndex: buttonIndex++,
         ),
       );

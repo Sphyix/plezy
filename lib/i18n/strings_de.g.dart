@@ -896,6 +896,7 @@ class _TranslationsDownloadsDe implements TranslationsDownloadsEn {
 	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Bereinigung... (${current} von ${total} Episoden)';
 	@override String get emptyShowNoEpisodes => 'Keine Episoden — Einstellungen erhalten';
 	@override String get removeEmptyShow => 'Entfernen';
+	@override String pauseAllSkippedTranscoding({required Object count}) => '${count} transcodierende(s) Element(e) übersprungen — Transcoding-Downloads können nicht pausiert werden';
 }
 
 // Path: playlists
@@ -1921,6 +1922,7 @@ extension on TranslationsDe {
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Bereinigung... (${current} von ${total} Episoden)',
 			'downloads.emptyShowNoEpisodes' => 'Keine Episoden — Einstellungen erhalten',
 			'downloads.removeEmptyShow' => 'Entfernen',
+			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => '${count} transcodierende(s) Element(e) übersprungen — Transcoding-Downloads können nicht pausiert werden',
 			'playlists.title' => 'Wiedergabelisten',
 			'playlists.noPlaylists' => 'Keine Wiedergabelisten gefunden',
 			'playlists.create' => 'Wiedergabeliste erstellen',

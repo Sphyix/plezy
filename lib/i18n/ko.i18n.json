@@ -746,7 +746,8 @@
     "retentionTrimComplete": "보관 정리 완료",
     "retentionCleanupProgress": "정리 중... (${total}개 중 ${current}개 에피소드)",
     "emptyShowNoEpisodes": "에피소드 없음 — 설정 보존됨",
-    "removeEmptyShow": "제거"
+    "removeEmptyShow": "제거",
+    "pauseAllSkippedTranscoding": "트랜스코딩 중인 ${count}개 항목 건너뜀 — 트랜스코딩 다운로드는 일시정지할 수 없습니다"
   },
   "shaders": {
     "title": "셰이더",

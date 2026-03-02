@@ -748,7 +748,8 @@
     "retentionTrimComplete": "Retention cleanup complete",
     "retentionCleanupProgress": "Cleaning up... (${current} of ${total} episodes)",
     "emptyShowNoEpisodes": "No episodes — settings preserved",
-    "removeEmptyShow": "Remove"
+    "removeEmptyShow": "Remove",
+    "pauseAllSkippedTranscoding": "Skipped ${count} transcoding item(s) — transcoding downloads cannot be paused"
   },
   "shaders": {
     "title": "Shaders",

@@ -646,7 +646,8 @@
     "retentionTrimComplete": "Pulizia della conservazione completata",
     "retentionCleanupProgress": "Pulizia in corso... (${current} di ${total} episodi)",
     "emptyShowNoEpisodes": "Nessun episodio — impostazioni conservate",
-    "removeEmptyShow": "Rimuovi"
+    "removeEmptyShow": "Rimuovi",
+    "pauseAllSkippedTranscoding": "${count} elemento/i in transcodifica ignorato/i — i download in transcodifica non possono essere messi in pausa"
   },
   "playlists": {
     "title": "Playlist",
