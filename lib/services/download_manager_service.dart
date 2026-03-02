@@ -1402,8 +1402,6 @@ class DownloadManagerService {
   /// Cancel a download
   Future<void> cancelDownload(String globalKey) async {
     _stopTranscodePolling(globalKey);
-    // Validate storage availability for consistency
-    await _validateStorageOrThrow();
 
     final cancelCtx = _pendingDownloadContext.remove(globalKey);
     if (cancelCtx?.transcodeSessionId != null) {

@@ -9,7 +9,6 @@ import '../utils/app_logger.dart';
 import '../utils/formatters.dart';
 import 'settings_service.dart';
 import 'saf_storage_service.dart';
-import '../utils/app_logger.dart';
 
 class DownloadStorageService {
   static DownloadStorageService? _instance;
