@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:plezy/widgets/app_icon.dart';
@@ -7,6 +8,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:flutter/services.dart';
 import 'package:os_media_controls/os_media_controls.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -418,6 +420,29 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
       if (bufferSizeMB > 0) {
         final bufferSizeBytes = bufferSizeMB * 1024 * 1024;
         await player!.setProperty('demuxer-max-bytes', bufferSizeBytes.toString());
+        // Set back-buffer to 1/4 of forward buffer
+        final backBytes = bufferSizeBytes ~/ 4;
+        await player!.setProperty('demuxer-max-back-bytes', backBytes.toString());
+      }
+      if (Platform.isAndroid) {
+        // Cap demuxer buffers based on device heap to prevent OOM crashes.
+        // Without limits, mpv defaults can consume 225MB+ just for demuxer
+        // buffering, which combined with decoded frames and GPU textures
+        // exhausts the process address space on memory-constrained devices.
+        final heapMB = await PlayerAndroid.getHeapSize();
+        if (heapMB > 0) {
+          final autoBackMB = heapMB <= 256 ? 16 : (heapMB <= 512 ? 32 : 48);
+          if (bufferSizeMB == 0) {
+            // Auto mode: cap both forward and back buffer based on heap
+            final autoForwardMB = heapMB <= 256 ? 32 : (heapMB <= 512 ? 64 : 100);
+            await player!.setProperty('demuxer-max-bytes', '${autoForwardMB * 1024 * 1024}');
+            await player!.setProperty('demuxer-max-back-bytes', '${autoBackMB * 1024 * 1024}');
+          } else {
+            // Manual mode: cap back-buffer relative to heap if 1/4 ratio is too high
+            final maxBackBytes = min(bufferSizeMB * 1024 * 1024 ~/ 4, autoBackMB * 1024 * 1024);
+            await player!.setProperty('demuxer-max-back-bytes', maxBackBytes.toString());
+          }
+        }
       }
       await player!.setProperty('msg-level', debugLoggingEnabled ? 'all=debug' : 'all=error');
       await player!.setLogLevel(debugLoggingEnabled ? 'v' : 'warn');
@@ -557,6 +582,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
       _playbackRestartSubscription = player!.streams.playbackRestart.listen((_) async {
         if (!_hasFirstFrame.value) {
           _hasFirstFrame.value = true;
+          Sentry.addBreadcrumb(Breadcrumb(message: 'First frame ready', category: 'player'));
 
           // Apply frame rate matching on Android if enabled
           if (Platform.isAndroid && settingsService.getMatchContentFrameRate()) {
@@ -624,6 +650,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
       // Set MPV video-sync mode for smoother playback when display is synced
       await player!.setProperty('video-sync', 'display-tempo');
 
+      Sentry.addBreadcrumb(Breadcrumb(message: 'Frame rate matching: ${fps}fps', category: 'player'));
       appLogger.d('Frame rate matching: Set display to ${fps}fps (duration: ${durationMs}ms)');
     } catch (e) {
       appLogger.w('Failed to apply frame rate matching', error: e);
@@ -637,6 +664,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
     try {
       await player!.clearVideoFrameRate();
       await player!.setProperty('video-sync', 'audio');
+      Sentry.addBreadcrumb(Breadcrumb(message: 'Frame rate matching cleared', category: 'player'));
       appLogger.d('Frame rate matching: Cleared, restored default display mode');
     } catch (e) {
       appLogger.d('Failed to clear frame rate matching', error: e);
@@ -882,9 +910,12 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
 
       if (episodes.isEmpty) return;
 
-      // Sort by season then episode number
+      // Sort by season then episode number, with Season 0 (Specials) at the end
       final sorted = List<PlexMetadata>.from(episodes)
         ..sort((a, b) {
+          final aIsSpecial = (a.parentIndex ?? 0) == 0;
+          final bIsSpecial = (b.parentIndex ?? 0) == 0;
+          if (aIsSpecial != bIsSpecial) return aIsSpecial ? 1 : -1;
           final seasonCmp = (a.parentIndex ?? 0).compareTo(b.parentIndex ?? 0);
           if (seasonCmp != 0) return seasonCmp;
           return (a.index ?? 0).compareTo(b.index ?? 0);
@@ -1740,6 +1771,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
       }
     }
 
+    Sentry.addBreadcrumb(Breadcrumb(message: 'Player dispose', category: 'player'));
     player?.dispose();
     if (_activeRatingKey == widget.metadata.ratingKey) {
       _activeRatingKey = null;

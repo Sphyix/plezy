@@ -270,6 +270,8 @@ class _TranslationsSettingsZh implements TranslationsSettingsEn {
 	@override String get keyboardShortcutsDescription => '自定义键盘快捷键';
 	@override String get videoPlayerNavigation => '视频播放器导航';
 	@override String get videoPlayerNavigationDescription => '使用方向键导航视频播放器控件';
+	@override String get crashReporting => '崩溃报告';
+	@override String get crashReportingDescription => '发送崩溃报告以帮助改进应用';
 	@override String get debugLogging => '调试日志';
 	@override String get debugLoggingDescription => '启用详细日志记录以便故障排除';
 	@override String get viewLogs => '查看日志';
@@ -1454,6 +1456,8 @@ extension on TranslationsZh {
 			'settings.keyboardShortcutsDescription' => '自定义键盘快捷键',
 			'settings.videoPlayerNavigation' => '视频播放器导航',
 			'settings.videoPlayerNavigationDescription' => '使用方向键导航视频播放器控件',
+			'settings.crashReporting' => '崩溃报告',
+			'settings.crashReportingDescription' => '发送崩溃报告以帮助改进应用',
 			'settings.debugLogging' => '调试日志',
 			'settings.debugLoggingDescription' => '启用详细日志记录以便故障排除',
 			'settings.viewLogs' => '查看日志',
@@ -1823,6 +1827,8 @@ extension on TranslationsZh {
 			'liveTv.nowPlaying' => '正在播放',
 			'liveTv.noPrograms' => '没有可用的节目数据',
 			'liveTv.channelNumber' => ({required Object number}) => '频道 ${number}',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.live' => '直播',
 			'liveTv.hd' => '高清',
 			_ => null,

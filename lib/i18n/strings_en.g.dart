@@ -556,6 +556,12 @@ class TranslationsSettingsEn {
 	/// en: 'Use arrow keys to navigate video player controls'
 	String get videoPlayerNavigationDescription => 'Use arrow keys to navigate video player controls';
 
+	/// en: 'Crash Reporting'
+	String get crashReporting => 'Crash Reporting';
+
+	/// en: 'Send crash reports to help improve the app'
+	String get crashReportingDescription => 'Send crash reports to help improve the app';
+
 	/// en: 'Debug Logging'
 	String get debugLogging => 'Debug Logging';
 
@@ -3093,6 +3099,8 @@ extension on Translations {
 			'settings.keyboardShortcutsDescription' => 'Customize keyboard shortcuts',
 			'settings.videoPlayerNavigation' => 'Video Player Navigation',
 			'settings.videoPlayerNavigationDescription' => 'Use arrow keys to navigate video player controls',
+			'settings.crashReporting' => 'Crash Reporting',
+			'settings.crashReportingDescription' => 'Send crash reports to help improve the app',
 			'settings.debugLogging' => 'Debug Logging',
 			'settings.debugLoggingDescription' => 'Enable detailed logging for troubleshooting',
 			'settings.viewLogs' => 'View Logs',
@@ -3462,6 +3470,8 @@ extension on Translations {
 			'liveTv.nowPlaying' => 'Now Playing',
 			'liveTv.noPrograms' => 'No program data available',
 			'liveTv.channelNumber' => ({required Object number}) => 'Ch. ${number}',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
 			_ => null,

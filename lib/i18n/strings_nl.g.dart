@@ -270,6 +270,8 @@ class _TranslationsSettingsNl implements TranslationsSettingsEn {
 	@override String get keyboardShortcutsDescription => 'Pas toetsenbord sneltoetsen aan';
 	@override String get videoPlayerNavigation => 'Videospeler navigatie';
 	@override String get videoPlayerNavigationDescription => 'Gebruik pijltjestoetsen om door de videospeler bediening te navigeren';
+	@override String get crashReporting => 'Crashrapportage';
+	@override String get crashReportingDescription => 'Crashrapporten verzenden om de app te verbeteren';
 	@override String get debugLogging => 'Debug logging';
 	@override String get debugLoggingDescription => 'Schakel gedetailleerde logging in voor probleemoplossing';
 	@override String get viewLogs => 'Bekijk logs';
@@ -1454,6 +1456,8 @@ extension on TranslationsNl {
 			'settings.keyboardShortcutsDescription' => 'Pas toetsenbord sneltoetsen aan',
 			'settings.videoPlayerNavigation' => 'Videospeler navigatie',
 			'settings.videoPlayerNavigationDescription' => 'Gebruik pijltjestoetsen om door de videospeler bediening te navigeren',
+			'settings.crashReporting' => 'Crashrapportage',
+			'settings.crashReportingDescription' => 'Crashrapporten verzenden om de app te verbeteren',
 			'settings.debugLogging' => 'Debug logging',
 			'settings.debugLoggingDescription' => 'Schakel gedetailleerde logging in voor probleemoplossing',
 			'settings.viewLogs' => 'Bekijk logs',
@@ -1823,6 +1827,8 @@ extension on TranslationsNl {
 			'liveTv.nowPlaying' => 'Nu aan het afspelen',
 			'liveTv.noPrograms' => 'Geen programmagegevens beschikbaar',
 			'liveTv.channelNumber' => ({required Object number}) => 'Kanaal ${number}',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
 			_ => null,

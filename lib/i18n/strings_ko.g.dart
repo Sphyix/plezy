@@ -270,6 +270,8 @@ class _TranslationsSettingsKo implements TranslationsSettingsEn {
 	@override String get keyboardShortcutsDescription => '사용자 정의 키보드 단축키';
 	@override String get videoPlayerNavigation => '비디오 플레이어 탐색';
 	@override String get videoPlayerNavigationDescription => '방향 키를 사용하여 비디오 플레이어 컨트롤 탐색';
+	@override String get crashReporting => '충돌 보고';
+	@override String get crashReportingDescription => '앱 개선을 위해 충돌 보고서 전송';
 	@override String get debugLogging => '디버그 로깅';
 	@override String get debugLoggingDescription => '문제 해결을 위해 상세 로깅 활성화';
 	@override String get viewLogs => '로그 보기';
@@ -1454,6 +1456,8 @@ extension on TranslationsKo {
 			'settings.keyboardShortcutsDescription' => '사용자 정의 키보드 단축키',
 			'settings.videoPlayerNavigation' => '비디오 플레이어 탐색',
 			'settings.videoPlayerNavigationDescription' => '방향 키를 사용하여 비디오 플레이어 컨트롤 탐색',
+			'settings.crashReporting' => '충돌 보고',
+			'settings.crashReportingDescription' => '앱 개선을 위해 충돌 보고서 전송',
 			'settings.debugLogging' => '디버그 로깅',
 			'settings.debugLoggingDescription' => '문제 해결을 위해 상세 로깅 활성화',
 			'settings.viewLogs' => '로그 보기',
@@ -1823,6 +1827,8 @@ extension on TranslationsKo {
 			'liveTv.nowPlaying' => '현재 재생 중',
 			'liveTv.noPrograms' => '프로그램 데이터가 없습니다',
 			'liveTv.channelNumber' => ({required Object number}) => '채널 ${number}',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.live' => '실시간',
 			'liveTv.hd' => 'HD',
 			_ => null,

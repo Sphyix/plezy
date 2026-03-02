@@ -270,6 +270,8 @@ class _TranslationsSettingsIt implements TranslationsSettingsEn {
 	@override String get keyboardShortcutsDescription => 'Personalizza le scorciatoie da tastiera';
 	@override String get videoPlayerNavigation => 'Navigazione del lettore video';
 	@override String get videoPlayerNavigationDescription => 'Usa i tasti freccia per navigare nei controlli del lettore video';
+	@override String get crashReporting => 'Segnalazione errori';
+	@override String get crashReportingDescription => 'Invia segnalazioni di errori per migliorare l\'app';
 	@override String get debugLogging => 'Log di debug';
 	@override String get debugLoggingDescription => 'Abilita il logging dettagliato per la risoluzione dei problemi';
 	@override String get viewLogs => 'Visualizza log';
@@ -1454,6 +1456,8 @@ extension on TranslationsIt {
 			'settings.keyboardShortcutsDescription' => 'Personalizza le scorciatoie da tastiera',
 			'settings.videoPlayerNavigation' => 'Navigazione del lettore video',
 			'settings.videoPlayerNavigationDescription' => 'Usa i tasti freccia per navigare nei controlli del lettore video',
+			'settings.crashReporting' => 'Segnalazione errori',
+			'settings.crashReportingDescription' => 'Invia segnalazioni di errori per migliorare l\'app',
 			'settings.debugLogging' => 'Log di debug',
 			'settings.debugLoggingDescription' => 'Abilita il logging dettagliato per la risoluzione dei problemi',
 			'settings.viewLogs' => 'Visualizza log',
@@ -1823,6 +1827,8 @@ extension on TranslationsIt {
 			'liveTv.nowPlaying' => 'In riproduzione',
 			'liveTv.noPrograms' => 'Nessun dato di programma disponibile',
 			'liveTv.channelNumber' => ({required Object number}) => 'Canale ${number}',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.live' => 'IN DIRETTA',
 			'liveTv.hd' => 'HD',
 			_ => null,

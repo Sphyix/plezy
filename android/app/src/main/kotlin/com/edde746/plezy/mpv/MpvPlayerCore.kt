@@ -62,10 +62,10 @@ class MpvPlayerCore(private val activity: Activity) :
     private var flutterOverlayApplied = false
 
     private fun ensureFlutterOverlayOnTop() {
-        if (flutterOverlayApplied) return
+        if (disposing || flutterOverlayApplied) return
         val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
         contentView.post {
-            if (!isInitialized) return@post
+            if (disposing || !isInitialized) return@post
             val container = FlutterOverlayHelper.findFlutterContainer(contentView, surfaceContainer)
                 ?: return@post
             if (contentView.getChildAt(contentView.childCount - 1) == container) {
@@ -242,7 +242,7 @@ class MpvPlayerCore(private val activity: Activity) :
         MPVLib.setOptionString("vd-lavc-film-grain", "cpu")
 
         // Audio configuration
-        MPVLib.setOptionString("ao", "audiotrack")
+        MPVLib.setOptionString("ao", "audiotrack,opensles")
     }
 
     // Audio Focus
@@ -446,10 +446,9 @@ class MpvPlayerCore(private val activity: Activity) :
     }
 
     fun setVisible(visible: Boolean) {
+        if (disposing) return
         activity.runOnUiThread {
-            // Set visibility on the container, not the SurfaceView directly.
-            // This allows the SurfaceView surface to be created even when hidden,
-            // which is required with RenderMode.texture (TextureView mode).
+            if (disposing) return@runOnUiThread
             surfaceContainer?.visibility = if (visible) View.VISIBLE else View.INVISIBLE
             Log.d(TAG, "setVisible($visible)")
         }
@@ -471,13 +470,17 @@ class MpvPlayerCore(private val activity: Activity) :
 
     // Cleanup
 
-    fun dispose() {
-        if (disposing) return
+    fun dispose(onComplete: (() -> Unit)? = null) {
+        if (disposing) {
+            onComplete?.invoke()
+            return
+        }
         disposing = true
         Log.d(TAG, "Disposing")
 
         // Shutdown command executor
         commandExecutor.shutdown()
+        handler.removeCallbacksAndMessages(null)
 
         // Clean up frame rate and audio focus
         frameRateManager?.clearVideoFrameRate()
@@ -510,15 +513,19 @@ class MpvPlayerCore(private val activity: Activity) :
         contentView.post {
             sv?.holder?.removeCallback(this)
             container?.let { contentView.removeView(it) }
+            surfaceContainer = null
+            surfaceView = null
         }
-        surfaceContainer = null
-        surfaceView = null
         pendingSurface = null
         isInitialized = false
 
         // Run native destroy on background thread to avoid ANR —
         // MPVLib.destroy() blocks on pthread_cond_wait while mpv's
         // internal threads (lua, demux, vo) shut down.
+        // The completion callback is posted to the main thread so the
+        // caller (MpvPlayerPlugin) can defer result.success() until
+        // native resources are fully released, preventing a new mpv
+        // instance from being created while the old one still holds memory.
         if (nativeReady) {
             Thread {
                 synchronized(mpvLock) {
@@ -531,7 +538,10 @@ class MpvPlayerCore(private val activity: Activity) :
                     }
                 }
                 Log.d(TAG, "Disposed (native)")
+                onComplete?.let { Handler(Looper.getMainLooper()).post(it) }
             }.start()
+        } else {
+            onComplete?.invoke()
         }
     }
 }
