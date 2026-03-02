@@ -994,6 +994,19 @@ class _TranslationsDownloadsKo implements TranslationsDownloadsEn {
 	@override String get unlimitedHint => '무제한';
 	@override String get settings => '설정';
 	@override String get save => '저장';
+	@override String get confirmChangesTitle => '변경 사항 확인';
+	@override String get confirmSave => '변경 사항 저장';
+	@override String qualityWarningToTranscode({required Object quality}) => '품질이 ${quality}(으)로 변경됩니다. 파일이 재인코딩되어 공간은 절약되지만 품질이 낮아집니다.';
+	@override String get qualityWarningToOriginal => '품질이 원본으로 변경됩니다. 파일이 최대 해상도로 다운로드되어 더 많은 저장 공간을 사용합니다.';
+	@override String qualityWarningChanged({required Object oldQuality, required Object newQuality}) => '품질이 ${oldQuality}에서 ${newQuality}(으)로 변경됩니다.';
+	@override String get settingsSaved => '설정이 저장되었습니다';
+	@override String get changeEpisodesOn => '새 에피소드 다운로드: 활성화';
+	@override String get changeEpisodesOff => '새 에피소드 다운로드: 비활성화';
+	@override String get changeSeasonsOn => '새 시즌 다운로드: 활성화';
+	@override String get changeSeasonsOff => '새 시즌 다운로드: 비활성화';
+	@override String changeMaxEpisodes({required Object value}) => '최대 에피소드: ${value}';
+	@override String changeRetentionDays({required Object value}) => '보관 일수: ${value}';
+	@override String get noChanges => '변경 사항 없음';
 }
 
 // Path: shaders
@@ -1831,8 +1844,6 @@ extension on TranslationsKo {
 		} ?? switch (path) {
 			'liveTv.live' => '실시간',
 			'liveTv.hd' => 'HD',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.premiere' => '신규',
 			'liveTv.reloadGuide' => '편성표 새로고침',
 			'liveTv.allChannels' => '전체 채널',
@@ -1971,6 +1982,19 @@ extension on TranslationsKo {
 			'downloads.unlimitedHint' => '무제한',
 			'downloads.settings' => '설정',
 			'downloads.save' => '저장',
+			'downloads.confirmChangesTitle' => '변경 사항 확인',
+			'downloads.confirmSave' => '변경 사항 저장',
+			'downloads.qualityWarningToTranscode' => ({required Object quality}) => '품질이 ${quality}(으)로 변경됩니다. 파일이 재인코딩되어 공간은 절약되지만 품질이 낮아집니다.',
+			'downloads.qualityWarningToOriginal' => '품질이 원본으로 변경됩니다. 파일이 최대 해상도로 다운로드되어 더 많은 저장 공간을 사용합니다.',
+			'downloads.qualityWarningChanged' => ({required Object oldQuality, required Object newQuality}) => '품질이 ${oldQuality}에서 ${newQuality}(으)로 변경됩니다.',
+			'downloads.settingsSaved' => '설정이 저장되었습니다',
+			'downloads.changeEpisodesOn' => '새 에피소드 다운로드: 활성화',
+			'downloads.changeEpisodesOff' => '새 에피소드 다운로드: 비활성화',
+			'downloads.changeSeasonsOn' => '새 시즌 다운로드: 활성화',
+			'downloads.changeSeasonsOff' => '새 시즌 다운로드: 비활성화',
+			'downloads.changeMaxEpisodes' => ({required Object value}) => '최대 에피소드: ${value}',
+			'downloads.changeRetentionDays' => ({required Object value}) => '보관 일수: ${value}',
+			'downloads.noChanges' => '변경 사항 없음',
 			'shaders.title' => '셰이더',
 			'shaders.noShaderDescription' => '비디오 향상 없음',
 			'shaders.nvscalerDescription' => '더 선명한 비디오를 위한 NVIDIA 이미지 스케일링',

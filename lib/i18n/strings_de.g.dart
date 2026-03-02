@@ -873,6 +873,19 @@ class _TranslationsDownloadsDe implements TranslationsDownloadsEn {
 	@override String get unlimitedHint => 'Unbegrenzt';
 	@override String get settings => 'Einstellungen';
 	@override String get save => 'Speichern';
+	@override String get confirmChangesTitle => 'Änderungen bestätigen';
+	@override String get confirmSave => 'Änderungen speichern';
+	@override String qualityWarningToTranscode({required Object quality}) => 'Qualität wird auf ${quality} geändert. Dateien werden neu kodiert, was Speicherplatz spart, aber die Qualität verringert.';
+	@override String get qualityWarningToOriginal => 'Qualität wird auf Original geändert. Dateien werden in voller Auflösung heruntergeladen und benötigen mehr Speicherplatz.';
+	@override String qualityWarningChanged({required Object oldQuality, required Object newQuality}) => 'Qualität wird von ${oldQuality} auf ${newQuality} geändert.';
+	@override String get settingsSaved => 'Einstellungen gespeichert';
+	@override String get changeEpisodesOn => 'Neue Episoden herunterladen: aktiviert';
+	@override String get changeEpisodesOff => 'Neue Episoden herunterladen: deaktiviert';
+	@override String get changeSeasonsOn => 'Neue Staffeln herunterladen: aktiviert';
+	@override String get changeSeasonsOff => 'Neue Staffeln herunterladen: deaktiviert';
+	@override String changeMaxEpisodes({required Object value}) => 'Max. Episoden: ${value}';
+	@override String changeRetentionDays({required Object value}) => 'Aufbewahrungstage: ${value}';
+	@override String get noChanges => 'Keine Änderungen erkannt';
 }
 
 // Path: playlists
@@ -1831,8 +1844,6 @@ extension on TranslationsDe {
 		} ?? switch (path) {
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.premiere' => 'NEU',
 			'liveTv.reloadGuide' => 'Programmführer neu laden',
 			'liveTv.allChannels' => 'Alle Kanäle',
@@ -1877,6 +1888,19 @@ extension on TranslationsDe {
 			'downloads.unlimitedHint' => 'Unbegrenzt',
 			'downloads.settings' => 'Einstellungen',
 			'downloads.save' => 'Speichern',
+			'downloads.confirmChangesTitle' => 'Änderungen bestätigen',
+			'downloads.confirmSave' => 'Änderungen speichern',
+			'downloads.qualityWarningToTranscode' => ({required Object quality}) => 'Qualität wird auf ${quality} geändert. Dateien werden neu kodiert, was Speicherplatz spart, aber die Qualität verringert.',
+			'downloads.qualityWarningToOriginal' => 'Qualität wird auf Original geändert. Dateien werden in voller Auflösung heruntergeladen und benötigen mehr Speicherplatz.',
+			'downloads.qualityWarningChanged' => ({required Object oldQuality, required Object newQuality}) => 'Qualität wird von ${oldQuality} auf ${newQuality} geändert.',
+			'downloads.settingsSaved' => 'Einstellungen gespeichert',
+			'downloads.changeEpisodesOn' => 'Neue Episoden herunterladen: aktiviert',
+			'downloads.changeEpisodesOff' => 'Neue Episoden herunterladen: deaktiviert',
+			'downloads.changeSeasonsOn' => 'Neue Staffeln herunterladen: aktiviert',
+			'downloads.changeSeasonsOff' => 'Neue Staffeln herunterladen: deaktiviert',
+			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Max. Episoden: ${value}',
+			'downloads.changeRetentionDays' => ({required Object value}) => 'Aufbewahrungstage: ${value}',
+			'downloads.noChanges' => 'Keine Änderungen erkannt',
 			'playlists.title' => 'Wiedergabelisten',
 			'playlists.noPlaylists' => 'Keine Wiedergabelisten gefunden',
 			'playlists.create' => 'Wiedergabeliste erstellen',

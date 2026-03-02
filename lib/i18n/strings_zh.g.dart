@@ -873,6 +873,19 @@ class _TranslationsDownloadsZh implements TranslationsDownloadsEn {
 	@override String get unlimitedHint => '无限制';
 	@override String get settings => '设置';
 	@override String get save => '保存';
+	@override String get confirmChangesTitle => '确认更改';
+	@override String get confirmSave => '保存更改';
+	@override String qualityWarningToTranscode({required Object quality}) => '画质将更改为${quality}。文件将重新编码，节省空间但降低画质。';
+	@override String get qualityWarningToOriginal => '画质将更改为原始画质。文件将以完整分辨率下载，占用更多存储空间。';
+	@override String qualityWarningChanged({required Object oldQuality, required Object newQuality}) => '画质将从${oldQuality}更改为${newQuality}。';
+	@override String get settingsSaved => '设置已保存';
+	@override String get changeEpisodesOn => '下载新剧集：已启用';
+	@override String get changeEpisodesOff => '下载新剧集：已禁用';
+	@override String get changeSeasonsOn => '下载新季：已启用';
+	@override String get changeSeasonsOff => '下载新季：已禁用';
+	@override String changeMaxEpisodes({required Object value}) => '最大剧集数：${value}';
+	@override String changeRetentionDays({required Object value}) => '保留天数：${value}';
+	@override String get noChanges => '未检测到更改';
 }
 
 // Path: playlists
@@ -1831,8 +1844,6 @@ extension on TranslationsZh {
 		} ?? switch (path) {
 			'liveTv.live' => '直播',
 			'liveTv.hd' => '高清',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.premiere' => '新',
 			'liveTv.reloadGuide' => '重新加载节目指南',
 			'liveTv.allChannels' => '所有频道',
@@ -1877,6 +1888,19 @@ extension on TranslationsZh {
 			'downloads.unlimitedHint' => '无限制',
 			'downloads.settings' => '设置',
 			'downloads.save' => '保存',
+			'downloads.confirmChangesTitle' => '确认更改',
+			'downloads.confirmSave' => '保存更改',
+			'downloads.qualityWarningToTranscode' => ({required Object quality}) => '画质将更改为${quality}。文件将重新编码，节省空间但降低画质。',
+			'downloads.qualityWarningToOriginal' => '画质将更改为原始画质。文件将以完整分辨率下载，占用更多存储空间。',
+			'downloads.qualityWarningChanged' => ({required Object oldQuality, required Object newQuality}) => '画质将从${oldQuality}更改为${newQuality}。',
+			'downloads.settingsSaved' => '设置已保存',
+			'downloads.changeEpisodesOn' => '下载新剧集：已启用',
+			'downloads.changeEpisodesOff' => '下载新剧集：已禁用',
+			'downloads.changeSeasonsOn' => '下载新季：已启用',
+			'downloads.changeSeasonsOff' => '下载新季：已禁用',
+			'downloads.changeMaxEpisodes' => ({required Object value}) => '最大剧集数：${value}',
+			'downloads.changeRetentionDays' => ({required Object value}) => '保留天数：${value}',
+			'downloads.noChanges' => '未检测到更改',
 			'playlists.title' => '播放列表',
 			'playlists.noPlaylists' => '未找到播放列表',
 			'playlists.create' => '创建播放列表',

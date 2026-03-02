@@ -4,6 +4,7 @@ import '../i18n/strings.g.dart';
 import '../models/download_models.dart';
 import '../services/plex_client.dart';
 import '../widgets/focusable_list_tile.dart';
+import '../widgets/settings_save_confirm_dialog.dart';
 
 class SeriesSettingsDialog extends StatefulWidget {
   final String title;
@@ -236,8 +237,13 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
     ];
   }
 
-  void _onDownloadPressed() {
-    final settings = SeriesDownloadSettings.defaults(
+  void _onDownloadPressed() async {
+    // Auto-correction: if downloadNewEpisodes is ON but no meaningful episode option is set, correct to OFF (FR27)
+    if (_downloadNewEpisodes && _maxEpisodes == 0 && !_downloadNewSeasons) {
+      _downloadNewEpisodes = false;
+    }
+
+    final newSettings = SeriesDownloadSettings.defaults(
       serverId: widget.serverId,
       ratingKey: widget.ratingKey,
     ).copyWith(
@@ -248,6 +254,38 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
       maxEpisodes: _maxEpisodes,
       retentionDays: _retentionDays,
     );
-    Navigator.pop(context, settings);
+
+    // First-time flow: no confirmation needed
+    if (widget.initialSettings == null) {
+      Navigator.pop(context, newSettings);
+      return;
+    }
+
+    // Edit mode: check for changes
+    if (!_hasChanges(widget.initialSettings!, newSettings)) {
+      Navigator.pop(context, null);
+      return;
+    }
+
+    // Show confirmation dialog
+    final confirmed = await SettingsSaveConfirmDialog.show(
+      context,
+      oldSettings: widget.initialSettings!,
+      newSettings: newSettings,
+    );
+    if (!mounted) return;
+
+    if (confirmed == true) {
+      Navigator.pop(context, newSettings);
+    }
+    // If cancelled, stay in dialog (don't pop)
+  }
+
+  bool _hasChanges(SeriesDownloadSettings old, SeriesDownloadSettings new_) {
+    return old.transcodeQuality != new_.transcodeQuality ||
+        old.downloadNewEpisodes != new_.downloadNewEpisodes ||
+        old.downloadNewSeasons != new_.downloadNewSeasons ||
+        old.maxEpisodes != new_.maxEpisodes ||
+        old.retentionDays != new_.retentionDays;
   }
 }

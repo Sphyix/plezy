@@ -14,6 +14,7 @@ import '../../widgets/focusable_tab_chip.dart';
 import '../../widgets/focusable_media_card.dart';
 import '../../widgets/media_grid_delegate.dart';
 import '../../widgets/download_tree_view.dart';
+import '../../utils/snackbar_helper.dart';
 import '../../widgets/series_settings_dialog.dart';
 import '../main_screen.dart';
 import '../libraries/state_messages.dart';
@@ -213,7 +214,18 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
                                 );
                                 if (!context.mounted) return;
                                 if (result != null) {
+                                  final qualityChanged = existingSettings?.transcodeQuality != result.transcodeQuality;
+                                  // Save-before-requeue: persist to Drift first
                                   await downloadProvider.saveSeriesSettings(result);
+                                  // Requeue pending downloads if quality changed
+                                  if (qualityChanged) {
+                                    final client = serverProvider.serverManager.getClient(serverId);
+                                    if (client != null) {
+                                      await downloadProvider.requeueDownloadsForSeries(globalKey, client);
+                                    }
+                                  }
+                                  if (!context.mounted) return;
+                                  showSuccessSnackBar(context, t.downloads.settingsSaved);
                                 }
                               } catch (e) {
                                 debugPrint('Error opening series settings: $e');

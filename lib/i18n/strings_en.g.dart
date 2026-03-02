@@ -2236,6 +2236,45 @@ class TranslationsDownloadsEn {
 
 	/// en: 'Save'
 	String get save => 'Save';
+
+	/// en: 'Confirm Changes'
+	String get confirmChangesTitle => 'Confirm Changes';
+
+	/// en: 'Save Changes'
+	String get confirmSave => 'Save Changes';
+
+	/// en: 'Quality will change to ${quality}. Files will be re-encoded, saving space but reducing quality.'
+	String qualityWarningToTranscode({required Object quality}) => 'Quality will change to ${quality}. Files will be re-encoded, saving space but reducing quality.';
+
+	/// en: 'Quality will change to Original. Files will be downloaded at full resolution, using more storage.'
+	String get qualityWarningToOriginal => 'Quality will change to Original. Files will be downloaded at full resolution, using more storage.';
+
+	/// en: 'Quality will change from ${oldQuality} to ${newQuality}.'
+	String qualityWarningChanged({required Object oldQuality, required Object newQuality}) => 'Quality will change from ${oldQuality} to ${newQuality}.';
+
+	/// en: 'Settings saved'
+	String get settingsSaved => 'Settings saved';
+
+	/// en: 'Download new episodes: enabled'
+	String get changeEpisodesOn => 'Download new episodes: enabled';
+
+	/// en: 'Download new episodes: disabled'
+	String get changeEpisodesOff => 'Download new episodes: disabled';
+
+	/// en: 'Download new seasons: enabled'
+	String get changeSeasonsOn => 'Download new seasons: enabled';
+
+	/// en: 'Download new seasons: disabled'
+	String get changeSeasonsOff => 'Download new seasons: disabled';
+
+	/// en: 'Max episodes: ${value}'
+	String changeMaxEpisodes({required Object value}) => 'Max episodes: ${value}';
+
+	/// en: 'Retention days: ${value}'
+	String changeRetentionDays({required Object value}) => 'Retention days: ${value}';
+
+	/// en: 'No changes detected'
+	String get noChanges => 'No changes detected';
 }
 
 // Path: shaders
@@ -3474,8 +3513,6 @@ extension on Translations {
 		} ?? switch (path) {
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.premiere' => 'NEW',
 			'liveTv.reloadGuide' => 'Reload Guide',
 			'liveTv.allChannels' => 'All Channels',
@@ -3614,6 +3651,19 @@ extension on Translations {
 			'downloads.unlimitedHint' => 'Unlimited',
 			'downloads.settings' => 'Settings',
 			'downloads.save' => 'Save',
+			'downloads.confirmChangesTitle' => 'Confirm Changes',
+			'downloads.confirmSave' => 'Save Changes',
+			'downloads.qualityWarningToTranscode' => ({required Object quality}) => 'Quality will change to ${quality}. Files will be re-encoded, saving space but reducing quality.',
+			'downloads.qualityWarningToOriginal' => 'Quality will change to Original. Files will be downloaded at full resolution, using more storage.',
+			'downloads.qualityWarningChanged' => ({required Object oldQuality, required Object newQuality}) => 'Quality will change from ${oldQuality} to ${newQuality}.',
+			'downloads.settingsSaved' => 'Settings saved',
+			'downloads.changeEpisodesOn' => 'Download new episodes: enabled',
+			'downloads.changeEpisodesOff' => 'Download new episodes: disabled',
+			'downloads.changeSeasonsOn' => 'Download new seasons: enabled',
+			'downloads.changeSeasonsOff' => 'Download new seasons: disabled',
+			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Max episodes: ${value}',
+			'downloads.changeRetentionDays' => ({required Object value}) => 'Retention days: ${value}',
+			'downloads.noChanges' => 'No changes detected',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',

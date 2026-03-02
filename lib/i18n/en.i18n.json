@@ -723,7 +723,20 @@
     "retentionDaysLabel": "Retention days",
     "unlimitedHint": "Unlimited",
     "settings": "Settings",
-    "save": "Save"
+    "save": "Save",
+    "confirmChangesTitle": "Confirm Changes",
+    "confirmSave": "Save Changes",
+    "qualityWarningToTranscode": "Quality will change to ${quality}. Files will be re-encoded, saving space but reducing quality.",
+    "qualityWarningToOriginal": "Quality will change to Original. Files will be downloaded at full resolution, using more storage.",
+    "qualityWarningChanged": "Quality will change from ${oldQuality} to ${newQuality}.",
+    "settingsSaved": "Settings saved",
+    "changeEpisodesOn": "Download new episodes: enabled",
+    "changeEpisodesOff": "Download new episodes: disabled",
+    "changeSeasonsOn": "Download new seasons: enabled",
+    "changeSeasonsOff": "Download new seasons: disabled",
+    "changeMaxEpisodes": "Max episodes: ${value}",
+    "changeRetentionDays": "Retention days: ${value}",
+    "noChanges": "No changes detected"
   },
   "shaders": {
     "title": "Shaders",

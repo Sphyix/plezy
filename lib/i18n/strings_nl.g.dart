@@ -873,6 +873,19 @@ class _TranslationsDownloadsNl implements TranslationsDownloadsEn {
 	@override String get unlimitedHint => 'Onbeperkt';
 	@override String get settings => 'Instellingen';
 	@override String get save => 'Opslaan';
+	@override String get confirmChangesTitle => 'Wijzigingen bevestigen';
+	@override String get confirmSave => 'Wijzigingen opslaan';
+	@override String qualityWarningToTranscode({required Object quality}) => 'Kwaliteit wordt gewijzigd naar ${quality}. Bestanden worden opnieuw gecodeerd, wat ruimte bespaart maar de kwaliteit verlaagt.';
+	@override String get qualityWarningToOriginal => 'Kwaliteit wordt gewijzigd naar Origineel. Bestanden worden op volledige resolutie gedownload, wat meer opslag gebruikt.';
+	@override String qualityWarningChanged({required Object oldQuality, required Object newQuality}) => 'Kwaliteit wordt gewijzigd van ${oldQuality} naar ${newQuality}.';
+	@override String get settingsSaved => 'Instellingen opgeslagen';
+	@override String get changeEpisodesOn => 'Nieuwe afleveringen downloaden: ingeschakeld';
+	@override String get changeEpisodesOff => 'Nieuwe afleveringen downloaden: uitgeschakeld';
+	@override String get changeSeasonsOn => 'Nieuwe seizoenen downloaden: ingeschakeld';
+	@override String get changeSeasonsOff => 'Nieuwe seizoenen downloaden: uitgeschakeld';
+	@override String changeMaxEpisodes({required Object value}) => 'Max afleveringen: ${value}';
+	@override String changeRetentionDays({required Object value}) => 'Bewaardagen: ${value}';
+	@override String get noChanges => 'Geen wijzigingen gedetecteerd';
 }
 
 // Path: playlists
@@ -1831,8 +1844,6 @@ extension on TranslationsNl {
 		} ?? switch (path) {
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.premiere' => 'NIEUW',
 			'liveTv.reloadGuide' => 'Gids herladen',
 			'liveTv.allChannels' => 'Alle zenders',
@@ -1877,6 +1888,19 @@ extension on TranslationsNl {
 			'downloads.unlimitedHint' => 'Onbeperkt',
 			'downloads.settings' => 'Instellingen',
 			'downloads.save' => 'Opslaan',
+			'downloads.confirmChangesTitle' => 'Wijzigingen bevestigen',
+			'downloads.confirmSave' => 'Wijzigingen opslaan',
+			'downloads.qualityWarningToTranscode' => ({required Object quality}) => 'Kwaliteit wordt gewijzigd naar ${quality}. Bestanden worden opnieuw gecodeerd, wat ruimte bespaart maar de kwaliteit verlaagt.',
+			'downloads.qualityWarningToOriginal' => 'Kwaliteit wordt gewijzigd naar Origineel. Bestanden worden op volledige resolutie gedownload, wat meer opslag gebruikt.',
+			'downloads.qualityWarningChanged' => ({required Object oldQuality, required Object newQuality}) => 'Kwaliteit wordt gewijzigd van ${oldQuality} naar ${newQuality}.',
+			'downloads.settingsSaved' => 'Instellingen opgeslagen',
+			'downloads.changeEpisodesOn' => 'Nieuwe afleveringen downloaden: ingeschakeld',
+			'downloads.changeEpisodesOff' => 'Nieuwe afleveringen downloaden: uitgeschakeld',
+			'downloads.changeSeasonsOn' => 'Nieuwe seizoenen downloaden: ingeschakeld',
+			'downloads.changeSeasonsOff' => 'Nieuwe seizoenen downloaden: uitgeschakeld',
+			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Max afleveringen: ${value}',
+			'downloads.changeRetentionDays' => ({required Object value}) => 'Bewaardagen: ${value}',
+			'downloads.noChanges' => 'Geen wijzigingen gedetecteerd',
 			'playlists.title' => 'Afspeellijsten',
 			'playlists.noPlaylists' => 'Geen afspeellijsten gevonden',
 			'playlists.create' => 'Afspeellijst maken',

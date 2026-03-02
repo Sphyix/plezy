@@ -723,7 +723,20 @@
     "retentionDaysLabel": "Días de retención",
     "unlimitedHint": "Ilimitado",
     "settings": "Ajustes",
-    "save": "Guardar"
+    "save": "Guardar",
+    "confirmChangesTitle": "Confirmar cambios",
+    "confirmSave": "Guardar cambios",
+    "qualityWarningToTranscode": "La calidad cambiará a ${quality}. Los archivos se recodificarán, ahorrando espacio pero reduciendo la calidad.",
+    "qualityWarningToOriginal": "La calidad cambiará a Original. Los archivos se descargarán en resolución completa, usando más almacenamiento.",
+    "qualityWarningChanged": "La calidad cambiará de ${oldQuality} a ${newQuality}.",
+    "settingsSaved": "Ajustes guardados",
+    "changeEpisodesOn": "Descargar nuevos episodios: activado",
+    "changeEpisodesOff": "Descargar nuevos episodios: desactivado",
+    "changeSeasonsOn": "Descargar nuevas temporadas: activado",
+    "changeSeasonsOff": "Descargar nuevas temporadas: desactivado",
+    "changeMaxEpisodes": "Máx. episodios: ${value}",
+    "changeRetentionDays": "Días de retención: ${value}",
+    "noChanges": "No se detectaron cambios"
   },
   "shaders": {
     "title": "Shaders",

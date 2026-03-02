@@ -623,7 +623,20 @@
     "retentionDaysLabel": "Bewaarperiode (dagen)",
     "unlimitedHint": "Onbeperkt",
     "settings": "Instellingen",
-    "save": "Opslaan"
+    "save": "Opslaan",
+    "confirmChangesTitle": "Wijzigingen bevestigen",
+    "confirmSave": "Wijzigingen opslaan",
+    "qualityWarningToTranscode": "Kwaliteit wordt gewijzigd naar ${quality}. Bestanden worden opnieuw gecodeerd, wat ruimte bespaart maar de kwaliteit verlaagt.",
+    "qualityWarningToOriginal": "Kwaliteit wordt gewijzigd naar Origineel. Bestanden worden op volledige resolutie gedownload, wat meer opslag gebruikt.",
+    "qualityWarningChanged": "Kwaliteit wordt gewijzigd van ${oldQuality} naar ${newQuality}.",
+    "settingsSaved": "Instellingen opgeslagen",
+    "changeEpisodesOn": "Nieuwe afleveringen downloaden: ingeschakeld",
+    "changeEpisodesOff": "Nieuwe afleveringen downloaden: uitgeschakeld",
+    "changeSeasonsOn": "Nieuwe seizoenen downloaden: ingeschakeld",
+    "changeSeasonsOff": "Nieuwe seizoenen downloaden: uitgeschakeld",
+    "changeMaxEpisodes": "Max afleveringen: ${value}",
+    "changeRetentionDays": "Bewaardagen: ${value}",
+    "noChanges": "Geen wijzigingen gedetecteerd"
   },
   "playlists": {
     "title": "Afspeellijsten",

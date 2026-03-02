@@ -994,6 +994,19 @@ class _TranslationsDownloadsEs implements TranslationsDownloadsEn {
 	@override String get unlimitedHint => 'Ilimitado';
 	@override String get settings => 'Ajustes';
 	@override String get save => 'Guardar';
+	@override String get confirmChangesTitle => 'Confirmar cambios';
+	@override String get confirmSave => 'Guardar cambios';
+	@override String qualityWarningToTranscode({required Object quality}) => 'La calidad cambiará a ${quality}. Los archivos se recodificarán, ahorrando espacio pero reduciendo la calidad.';
+	@override String get qualityWarningToOriginal => 'La calidad cambiará a Original. Los archivos se descargarán en resolución completa, usando más almacenamiento.';
+	@override String qualityWarningChanged({required Object oldQuality, required Object newQuality}) => 'La calidad cambiará de ${oldQuality} a ${newQuality}.';
+	@override String get settingsSaved => 'Ajustes guardados';
+	@override String get changeEpisodesOn => 'Descargar nuevos episodios: activado';
+	@override String get changeEpisodesOff => 'Descargar nuevos episodios: desactivado';
+	@override String get changeSeasonsOn => 'Descargar nuevas temporadas: activado';
+	@override String get changeSeasonsOff => 'Descargar nuevas temporadas: desactivado';
+	@override String changeMaxEpisodes({required Object value}) => 'Máx. episodios: ${value}';
+	@override String changeRetentionDays({required Object value}) => 'Días de retención: ${value}';
+	@override String get noChanges => 'No se detectaron cambios';
 }
 
 // Path: shaders
@@ -1831,8 +1844,6 @@ extension on TranslationsEs {
 		} ?? switch (path) {
 			'liveTv.live' => 'EN VIVO',
 			'liveTv.hd' => 'HD',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.premiere' => 'NUEVO',
 			'liveTv.reloadGuide' => 'Recargar guía',
 			'liveTv.allChannels' => 'Todos los canales',
@@ -1971,6 +1982,19 @@ extension on TranslationsEs {
 			'downloads.unlimitedHint' => 'Ilimitado',
 			'downloads.settings' => 'Ajustes',
 			'downloads.save' => 'Guardar',
+			'downloads.confirmChangesTitle' => 'Confirmar cambios',
+			'downloads.confirmSave' => 'Guardar cambios',
+			'downloads.qualityWarningToTranscode' => ({required Object quality}) => 'La calidad cambiará a ${quality}. Los archivos se recodificarán, ahorrando espacio pero reduciendo la calidad.',
+			'downloads.qualityWarningToOriginal' => 'La calidad cambiará a Original. Los archivos se descargarán en resolución completa, usando más almacenamiento.',
+			'downloads.qualityWarningChanged' => ({required Object oldQuality, required Object newQuality}) => 'La calidad cambiará de ${oldQuality} a ${newQuality}.',
+			'downloads.settingsSaved' => 'Ajustes guardados',
+			'downloads.changeEpisodesOn' => 'Descargar nuevos episodios: activado',
+			'downloads.changeEpisodesOff' => 'Descargar nuevos episodios: desactivado',
+			'downloads.changeSeasonsOn' => 'Descargar nuevas temporadas: activado',
+			'downloads.changeSeasonsOff' => 'Descargar nuevas temporadas: desactivado',
+			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Máx. episodios: ${value}',
+			'downloads.changeRetentionDays' => ({required Object value}) => 'Días de retención: ${value}',
+			'downloads.noChanges' => 'No se detectaron cambios',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Sin mejora de video',
 			'shaders.nvscalerDescription' => 'Escalado de imagen NVIDIA para un video más nítido',

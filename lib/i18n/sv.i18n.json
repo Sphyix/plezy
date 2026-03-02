@@ -623,7 +623,20 @@
     "retentionDaysLabel": "Lagringstid (dagar)",
     "unlimitedHint": "Obegränsat",
     "settings": "Inställningar",
-    "save": "Spara"
+    "save": "Spara",
+    "confirmChangesTitle": "Bekräfta ändringar",
+    "confirmSave": "Spara ändringar",
+    "qualityWarningToTranscode": "Kvaliteten ändras till ${quality}. Filer kommer att omkodas, vilket sparar utrymme men minskar kvaliteten.",
+    "qualityWarningToOriginal": "Kvaliteten ändras till Original. Filer laddas ner i full upplösning, vilket använder mer lagring.",
+    "qualityWarningChanged": "Kvaliteten ändras från ${oldQuality} till ${newQuality}.",
+    "settingsSaved": "Inställningar sparade",
+    "changeEpisodesOn": "Ladda ner nya avsnitt: aktiverat",
+    "changeEpisodesOff": "Ladda ner nya avsnitt: inaktiverat",
+    "changeSeasonsOn": "Ladda ner nya säsonger: aktiverat",
+    "changeSeasonsOff": "Ladda ner nya säsonger: inaktiverat",
+    "changeMaxEpisodes": "Max avsnitt: ${value}",
+    "changeRetentionDays": "Lagringsdagar: ${value}",
+    "noChanges": "Inga ändringar upptäckta"
   },
   "playlists": {
     "title": "Spellistor",

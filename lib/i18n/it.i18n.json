@@ -623,7 +623,20 @@
     "retentionDaysLabel": "Giorni di conservazione",
     "unlimitedHint": "Illimitato",
     "settings": "Impostazioni",
-    "save": "Salva"
+    "save": "Salva",
+    "confirmChangesTitle": "Conferma modifiche",
+    "confirmSave": "Salva modifiche",
+    "qualityWarningToTranscode": "La qualità cambierà a ${quality}. I file verranno ricodificati, risparmiando spazio ma riducendo la qualità.",
+    "qualityWarningToOriginal": "La qualità cambierà a Originale. I file verranno scaricati a piena risoluzione, usando più spazio.",
+    "qualityWarningChanged": "La qualità cambierà da ${oldQuality} a ${newQuality}.",
+    "settingsSaved": "Impostazioni salvate",
+    "changeEpisodesOn": "Scarica nuovi episodi: attivato",
+    "changeEpisodesOff": "Scarica nuovi episodi: disattivato",
+    "changeSeasonsOn": "Scarica nuove stagioni: attivato",
+    "changeSeasonsOff": "Scarica nuove stagioni: disattivato",
+    "changeMaxEpisodes": "Episodi max: ${value}",
+    "changeRetentionDays": "Giorni di conservazione: ${value}",
+    "noChanges": "Nessuna modifica rilevata"
   },
   "playlists": {
     "title": "Playlist",

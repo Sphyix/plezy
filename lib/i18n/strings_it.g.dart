@@ -873,6 +873,19 @@ class _TranslationsDownloadsIt implements TranslationsDownloadsEn {
 	@override String get unlimitedHint => 'Illimitato';
 	@override String get settings => 'Impostazioni';
 	@override String get save => 'Salva';
+	@override String get confirmChangesTitle => 'Conferma modifiche';
+	@override String get confirmSave => 'Salva modifiche';
+	@override String qualityWarningToTranscode({required Object quality}) => 'La qualità cambierà a ${quality}. I file verranno ricodificati, risparmiando spazio ma riducendo la qualità.';
+	@override String get qualityWarningToOriginal => 'La qualità cambierà a Originale. I file verranno scaricati a piena risoluzione, usando più spazio.';
+	@override String qualityWarningChanged({required Object oldQuality, required Object newQuality}) => 'La qualità cambierà da ${oldQuality} a ${newQuality}.';
+	@override String get settingsSaved => 'Impostazioni salvate';
+	@override String get changeEpisodesOn => 'Scarica nuovi episodi: attivato';
+	@override String get changeEpisodesOff => 'Scarica nuovi episodi: disattivato';
+	@override String get changeSeasonsOn => 'Scarica nuove stagioni: attivato';
+	@override String get changeSeasonsOff => 'Scarica nuove stagioni: disattivato';
+	@override String changeMaxEpisodes({required Object value}) => 'Episodi max: ${value}';
+	@override String changeRetentionDays({required Object value}) => 'Giorni di conservazione: ${value}';
+	@override String get noChanges => 'Nessuna modifica rilevata';
 }
 
 // Path: playlists
@@ -1831,8 +1844,6 @@ extension on TranslationsIt {
 		} ?? switch (path) {
 			'liveTv.live' => 'IN DIRETTA',
 			'liveTv.hd' => 'HD',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.premiere' => 'NUOVO',
 			'liveTv.reloadGuide' => 'Ricarica guida',
 			'liveTv.allChannels' => 'Tutti i canali',
@@ -1877,6 +1888,19 @@ extension on TranslationsIt {
 			'downloads.unlimitedHint' => 'Illimitato',
 			'downloads.settings' => 'Impostazioni',
 			'downloads.save' => 'Salva',
+			'downloads.confirmChangesTitle' => 'Conferma modifiche',
+			'downloads.confirmSave' => 'Salva modifiche',
+			'downloads.qualityWarningToTranscode' => ({required Object quality}) => 'La qualità cambierà a ${quality}. I file verranno ricodificati, risparmiando spazio ma riducendo la qualità.',
+			'downloads.qualityWarningToOriginal' => 'La qualità cambierà a Originale. I file verranno scaricati a piena risoluzione, usando più spazio.',
+			'downloads.qualityWarningChanged' => ({required Object oldQuality, required Object newQuality}) => 'La qualità cambierà da ${oldQuality} a ${newQuality}.',
+			'downloads.settingsSaved' => 'Impostazioni salvate',
+			'downloads.changeEpisodesOn' => 'Scarica nuovi episodi: attivato',
+			'downloads.changeEpisodesOff' => 'Scarica nuovi episodi: disattivato',
+			'downloads.changeSeasonsOn' => 'Scarica nuove stagioni: attivato',
+			'downloads.changeSeasonsOff' => 'Scarica nuove stagioni: disattivato',
+			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Episodi max: ${value}',
+			'downloads.changeRetentionDays' => ({required Object value}) => 'Giorni di conservazione: ${value}',
+			'downloads.noChanges' => 'Nessuna modifica rilevata',
 			'playlists.title' => 'Playlist',
 			'playlists.noPlaylists' => 'Nessuna playlist trovata',
 			'playlists.create' => 'Crea playlist',

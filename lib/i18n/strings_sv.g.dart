@@ -873,6 +873,19 @@ class _TranslationsDownloadsSv implements TranslationsDownloadsEn {
 	@override String get unlimitedHint => 'Obegränsat';
 	@override String get settings => 'Inställningar';
 	@override String get save => 'Spara';
+	@override String get confirmChangesTitle => 'Bekräfta ändringar';
+	@override String get confirmSave => 'Spara ändringar';
+	@override String qualityWarningToTranscode({required Object quality}) => 'Kvaliteten ändras till ${quality}. Filer kommer att omkodas, vilket sparar utrymme men minskar kvaliteten.';
+	@override String get qualityWarningToOriginal => 'Kvaliteten ändras till Original. Filer laddas ner i full upplösning, vilket använder mer lagring.';
+	@override String qualityWarningChanged({required Object oldQuality, required Object newQuality}) => 'Kvaliteten ändras från ${oldQuality} till ${newQuality}.';
+	@override String get settingsSaved => 'Inställningar sparade';
+	@override String get changeEpisodesOn => 'Ladda ner nya avsnitt: aktiverat';
+	@override String get changeEpisodesOff => 'Ladda ner nya avsnitt: inaktiverat';
+	@override String get changeSeasonsOn => 'Ladda ner nya säsonger: aktiverat';
+	@override String get changeSeasonsOff => 'Ladda ner nya säsonger: inaktiverat';
+	@override String changeMaxEpisodes({required Object value}) => 'Max avsnitt: ${value}';
+	@override String changeRetentionDays({required Object value}) => 'Lagringsdagar: ${value}';
+	@override String get noChanges => 'Inga ändringar upptäckta';
 }
 
 // Path: playlists
@@ -1831,8 +1844,6 @@ extension on TranslationsSv {
 		} ?? switch (path) {
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.premiere' => 'NY',
 			'liveTv.reloadGuide' => 'Ladda om programguide',
 			'liveTv.allChannels' => 'Alla kanaler',
@@ -1877,6 +1888,19 @@ extension on TranslationsSv {
 			'downloads.unlimitedHint' => 'Obegränsat',
 			'downloads.settings' => 'Inställningar',
 			'downloads.save' => 'Spara',
+			'downloads.confirmChangesTitle' => 'Bekräfta ändringar',
+			'downloads.confirmSave' => 'Spara ändringar',
+			'downloads.qualityWarningToTranscode' => ({required Object quality}) => 'Kvaliteten ändras till ${quality}. Filer kommer att omkodas, vilket sparar utrymme men minskar kvaliteten.',
+			'downloads.qualityWarningToOriginal' => 'Kvaliteten ändras till Original. Filer laddas ner i full upplösning, vilket använder mer lagring.',
+			'downloads.qualityWarningChanged' => ({required Object oldQuality, required Object newQuality}) => 'Kvaliteten ändras från ${oldQuality} till ${newQuality}.',
+			'downloads.settingsSaved' => 'Inställningar sparade',
+			'downloads.changeEpisodesOn' => 'Ladda ner nya avsnitt: aktiverat',
+			'downloads.changeEpisodesOff' => 'Ladda ner nya avsnitt: inaktiverat',
+			'downloads.changeSeasonsOn' => 'Ladda ner nya säsonger: aktiverat',
+			'downloads.changeSeasonsOff' => 'Ladda ner nya säsonger: inaktiverat',
+			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Max avsnitt: ${value}',
+			'downloads.changeRetentionDays' => ({required Object value}) => 'Lagringsdagar: ${value}',
+			'downloads.noChanges' => 'Inga ändringar upptäckta',
 			'playlists.title' => 'Spellistor',
 			'playlists.noPlaylists' => 'Inga spellistor hittades',
 			'playlists.create' => 'Skapa spellista',

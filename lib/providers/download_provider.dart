@@ -108,6 +108,46 @@ class DownloadProvider extends ChangeNotifier {
     return settings != null && settings.isConfigured;
   }
 
+  /// Requeue pending downloads for a series after quality settings change.
+  /// Only affects queued/paused/failed downloads — completed downloads are NOT touched.
+  Future<void> requeueDownloadsForSeries(String settingsGlobalKey, PlexClient client) async {
+    final parsed = parseGlobalKey(settingsGlobalKey);
+    if (parsed == null) return;
+
+    // Find all downloads belonging to this series that are in requeueable states
+    final toRequeue = <String, PlexMetadata>{};
+    for (final entry in _downloads.entries) {
+      final status = entry.value.status;
+      if (status != DownloadStatus.queued && status != DownloadStatus.paused && status != DownloadStatus.failed) {
+        continue;
+      }
+      final meta = _metadata[entry.key];
+      if (meta == null) continue;
+
+      // Check if this download belongs to the series
+      if (meta.type == 'episode' && meta.grandparentRatingKey == parsed.ratingKey && meta.serverId == parsed.serverId) {
+        toRequeue[entry.key] = meta;
+      } else if (meta.type == 'movie' && entry.key == settingsGlobalKey) {
+        toRequeue[entry.key] = meta;
+      }
+    }
+
+    if (toRequeue.isEmpty) return;
+
+    // Cancel all matching downloads
+    for (final globalKey in toRequeue.keys) {
+      await _downloadManager.cancelDownload(globalKey);
+      _downloads.remove(globalKey);
+    }
+
+    // Re-queue with updated settings (which are already persisted in _seriesSettings)
+    for (final meta in toRequeue.values) {
+      await _queueSingleDownload(meta, client);
+    }
+
+    notifyListeners();
+  }
+
   /// Load all persisted downloads and metadata from the database/cache
   Future<void> _loadPersistedDownloads() async {
     try {

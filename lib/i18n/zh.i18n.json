@@ -623,7 +623,20 @@
     "retentionDaysLabel": "保留天数",
     "unlimitedHint": "无限制",
     "settings": "设置",
-    "save": "保存"
+    "save": "保存",
+    "confirmChangesTitle": "确认更改",
+    "confirmSave": "保存更改",
+    "qualityWarningToTranscode": "画质将更改为${quality}。文件将重新编码，节省空间但降低画质。",
+    "qualityWarningToOriginal": "画质将更改为原始画质。文件将以完整分辨率下载，占用更多存储空间。",
+    "qualityWarningChanged": "画质将从${oldQuality}更改为${newQuality}。",
+    "settingsSaved": "设置已保存",
+    "changeEpisodesOn": "下载新剧集：已启用",
+    "changeEpisodesOff": "下载新剧集：已禁用",
+    "changeSeasonsOn": "下载新季：已启用",
+    "changeSeasonsOff": "下载新季：已禁用",
+    "changeMaxEpisodes": "最大剧集数：${value}",
+    "changeRetentionDays": "保留天数：${value}",
+    "noChanges": "未检测到更改"
   },
   "playlists": {
     "title": "播放列表",
