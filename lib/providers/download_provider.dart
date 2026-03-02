@@ -58,6 +58,9 @@ class DownloadProvider extends ChangeNotifier {
   // Per-series download settings (keyed by globalKey: serverId:ratingKey)
   final Map<String, SeriesDownloadSettings> _seriesSettings = {};
 
+  // Per-show mutex for refresh operations — prevents duplicate concurrent refreshes
+  final _showRefreshCompleters = <String, Completer<void>>{};
+
   // Storage error state (set when storage is unavailable)
   String? _storageError;
   String? get storageError => _storageError;
@@ -1140,6 +1143,79 @@ class DownloadProvider extends ChangeNotifier {
   /// Call after a PlexClient becomes available (e.g. after server connect on launch).
   void resumeQueuedDownloads(PlexClient client) {
     _downloadManager.resumeQueuedDownloads(client);
+  }
+
+  /// Per-show mutex: prevents duplicate concurrent refresh operations for the same show.
+  /// If a refresh is already in-flight for [globalKey], waiting callers await the existing
+  /// Completer instead of starting a new one. The entry is removed in a finally block (AC #3).
+  Future<void> _withShowRefreshMutex(String globalKey, Future<void> Function() fn) async {
+    final existing = _showRefreshCompleters[globalKey];
+    if (existing != null) {
+      // Another caller is refreshing this show — await it without propagating its error
+      try {
+        await existing.future;
+      } catch (_) {
+        // Swallow: we didn't initiate this operation
+      }
+      return;
+    }
+
+    final completer = Completer<void>();
+    _showRefreshCompleters[globalKey] = completer;
+
+    try {
+      await fn();
+      completer.complete();
+    } catch (e) {
+      completer.completeError(e);
+      rethrow;
+    } finally {
+      _showRefreshCompleters.remove(globalKey);
+    }
+  }
+
+  /// Auto-download new episodes for shows with [downloadNewEpisodes] enabled.
+  /// Call fire-and-forget after server connection on app startup (do NOT await).
+  /// All configured shows are refreshed in parallel for fast startup (AC #1).
+  Future<void> autoDownloadNewEpisodes({
+    required Map<String, PlexClient> onlineClients,
+  }) async {
+    if (onlineClients.isEmpty) return;
+
+    final autoDownloadSettings = _seriesSettings.values.where((s) => s.downloadNewEpisodes).toList();
+    if (autoDownloadSettings.isEmpty) return;
+
+    appLogger.i('Auto-download: Checking ${autoDownloadSettings.length} configured series');
+
+    final futures = <Future<void>>[];
+
+    for (final settings in autoDownloadSettings) {
+      final parsed = parseGlobalKey(settings.globalKey);
+      if (parsed == null) continue;
+
+      final client = onlineClients[parsed.serverId];
+      if (client == null) continue; // Server offline — skip
+
+      final showMetadata = _metadata[settings.globalKey];
+      if (showMetadata == null) {
+        appLogger.w('Auto-download: No metadata for ${settings.globalKey}, skipping');
+        continue;
+      }
+
+      futures.add(
+        _withShowRefreshMutex(settings.globalKey, () async {
+          final queued = await queueMissingEpisodes(showMetadata, client);
+          if (queued > 0) {
+            appLogger.i('Auto-download: Queued $queued new episodes for ${showMetadata.title}');
+          }
+        }).catchError((Object e) {
+          appLogger.w('Auto-download failed for ${showMetadata.title}', error: e);
+        }),
+      );
+    }
+
+    await Future.wait(futures);
+    appLogger.i('Auto-download: Complete');
   }
 
   /// Refresh only metadata from API cache (after watch state sync).

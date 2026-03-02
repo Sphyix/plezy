@@ -499,10 +499,14 @@ class _SetupScreenState extends State<SetupScreen> {
       if (!mounted) return;
 
       if (result.hasConnections) {
-        // Resume any downloads that were interrupted by app kill
         final downloadProvider = context.read<DownloadProvider>();
+        final multiServerProvider = context.read<MultiServerProvider>();
         downloadProvider.ensureInitialized().then((_) {
           downloadProvider.resumeQueuedDownloads(result.firstClient!);
+          // Auto-download new episodes for configured series (fire-and-forget)
+          downloadProvider.autoDownloadNewEpisodes(
+            onlineClients: multiServerProvider.serverManager.onlineClients,
+          );
         });
 
         Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
