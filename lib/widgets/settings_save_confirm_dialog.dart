@@ -73,17 +73,21 @@ class SettingsSaveConfirmDialog extends StatelessWidget {
       ));
     }
 
-    // Max episodes change
+    // Max episodes change (show old → new for informed decision)
     if (oldSettings.maxEpisodes != newSettings.maxEpisodes) {
+      final oldVal = oldSettings.maxEpisodes == 0 ? t.downloads.unlimitedHint : '${oldSettings.maxEpisodes}';
+      final newVal = newSettings.maxEpisodes == 0 ? t.downloads.unlimitedHint : '${newSettings.maxEpisodes}';
       widgets.add(_buildChangeItem(
-        t.downloads.changeMaxEpisodes(value: newSettings.maxEpisodes == 0 ? t.downloads.unlimitedHint : '${newSettings.maxEpisodes}'),
+        t.downloads.changeMaxEpisodes(value: '$oldVal → $newVal'),
       ));
     }
 
-    // Retention days change
+    // Retention days change (show old → new for informed decision)
     if (oldSettings.retentionDays != newSettings.retentionDays) {
+      final oldVal = oldSettings.retentionDays == 0 ? t.downloads.unlimitedHint : '${oldSettings.retentionDays}';
+      final newVal = newSettings.retentionDays == 0 ? t.downloads.unlimitedHint : '${newSettings.retentionDays}';
       widgets.add(_buildChangeItem(
-        t.downloads.changeRetentionDays(value: newSettings.retentionDays == 0 ? t.downloads.unlimitedHint : '${newSettings.retentionDays}'),
+        t.downloads.changeRetentionDays(value: '$oldVal → $newVal'),
       ));
     }
 

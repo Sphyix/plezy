@@ -239,9 +239,8 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
 
   void _onDownloadPressed() async {
     // Auto-correction: if downloadNewEpisodes is ON but no meaningful episode option is set, correct to OFF (FR27)
-    if (_downloadNewEpisodes && _maxEpisodes == 0 && !_downloadNewSeasons) {
-      _downloadNewEpisodes = false;
-    }
+    // Use a local variable to avoid mutating State — the UI switch must stay consistent if user cancels.
+    final downloadNewEpisodes = (_downloadNewEpisodes && _maxEpisodes == 0 && !_downloadNewSeasons) ? false : _downloadNewEpisodes;
 
     final newSettings = SeriesDownloadSettings.defaults(
       serverId: widget.serverId,
@@ -249,7 +248,7 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
     ).copyWith(
       transcodeQuality: _transcodeQuality,
       clearTranscodeQuality: _transcodeQuality == null,
-      downloadNewEpisodes: _downloadNewEpisodes,
+      downloadNewEpisodes: downloadNewEpisodes,
       downloadNewSeasons: _downloadNewSeasons,
       maxEpisodes: _maxEpisodes,
       retentionDays: _retentionDays,

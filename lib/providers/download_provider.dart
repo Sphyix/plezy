@@ -140,9 +140,17 @@ class DownloadProvider extends ChangeNotifier {
       _downloads.remove(globalKey);
     }
 
-    // Re-queue with updated settings (which are already persisted in _seriesSettings)
-    for (final meta in toRequeue.values) {
-      await _queueSingleDownload(meta, client);
+    // Re-queue with updated settings (which are already persisted in _seriesSettings).
+    // Use lightweight path: metadata is already in _metadata so skip server re-fetch,
+    // and defer notifyListeners() to a single call at the end.
+    for (final entry in toRequeue.entries) {
+      _downloads[entry.key] = DownloadProgress(globalKey: entry.key, status: DownloadStatus.queued);
+      final transcodeQuality = _resolveTranscodeQuality(entry.key);
+      await _downloadManager.queueDownload(
+        metadata: entry.value,
+        client: client,
+        transcodeQuality: transcodeQuality,
+      );
     }
 
     notifyListeners();
