@@ -278,6 +278,7 @@ class DownloadProvider extends ChangeNotifier {
       }
 
       // Detect empty configured shows (have settings but no downloaded episodes)
+      _emptyShows.clear();
       await _loadDismissedEmptyShows();
       final showsWithEpisodes = <String>{};
       for (final meta in _metadata.values) {
@@ -288,18 +289,19 @@ class DownloadProvider extends ChangeNotifier {
       for (final settings in _seriesSettings.values) {
         final showGlobalKey = settings.globalKey;
         if (!showsWithEpisodes.contains(showGlobalKey) && !_dismissedEmptyShows.contains(showGlobalKey)) {
-          String title = 'Unknown Show';
-          final existingMeta = _metadata[showGlobalKey];
-          if (existingMeta != null) {
-            title = existingMeta.title;
-          } else {
-            final cachedMeta = await apiCache.getMetadata(settings.serverId, settings.ratingKey);
-            if (cachedMeta != null) {
-              title = cachedMeta.title;
-              _metadata[showGlobalKey] = cachedMeta;
+          // Resolve metadata to get title and verify content type
+          PlexMetadata? meta = _metadata[showGlobalKey];
+          if (meta == null) {
+            meta = await apiCache.getMetadata(settings.serverId, settings.ratingKey);
+            if (meta != null) {
+              _metadata[showGlobalKey] = meta;
             }
           }
-          _emptyShows[showGlobalKey] = title;
+          // Skip movies (empty show tracking is for TV series only)
+          if (meta != null && meta.type == 'movie') continue;
+          // Skip entries with no resolvable metadata (no useful title to display)
+          if (meta == null) continue;
+          _emptyShows[showGlobalKey] = meta.title;
         }
       }
 

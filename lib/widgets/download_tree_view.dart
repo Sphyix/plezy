@@ -280,10 +280,6 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
       );
     }
 
-    // Sort shows and movies by status and title
-    _sortNodesByStatusAndTitle(shows);
-    _sortNodesByStatusAndTitle(movies);
-
     // Add empty configured shows (no episodes, settings preserved)
     for (final entry in widget.emptyShows.entries) {
       shows.add(
@@ -296,6 +292,10 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
         ),
       );
     }
+
+    // Sort shows and movies by status and title (includes empty shows)
+    _sortNodesByStatusAndTitle(shows);
+    _sortNodesByStatusAndTitle(movies);
 
     // Combine movies and shows
     return [...movies, ...shows];
@@ -701,8 +701,11 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
 
         const SizedBox(width: 8),
 
-        // Status icon
-        _buildStatusIcon(_effectiveStatus),
+        // Status icon (empty shows use info icon instead of aggregate status)
+        if (_isEmptyShow)
+          AppIcon(Symbols.info_rounded, fill: 1, size: 20, color: Colors.grey)
+        else
+          _buildStatusIcon(_effectiveStatus),
 
         const SizedBox(width: 12),
 
