@@ -643,7 +643,8 @@
     "retentionTrimTotal": "Totaal: ${count} afleveringen worden verwijderd",
     "retentionTrimConfirm": "Verwijderen",
     "retentionTrimCancel": "Annuleren",
-    "retentionTrimComplete": "Bewaarbeleid opruiming voltooid"
+    "retentionTrimComplete": "Bewaarbeleid opruiming voltooid",
+    "retentionCleanupProgress": "Opruimen... (${current} van ${total} afleveringen)"
   },
   "playlists": {
     "title": "Afspeellijsten",

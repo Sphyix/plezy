@@ -893,6 +893,7 @@ class _TranslationsDownloadsSv implements TranslationsDownloadsEn {
 	@override String get retentionTrimConfirm => 'Ta bort';
 	@override String get retentionTrimCancel => 'Avbryt';
 	@override String get retentionTrimComplete => 'Rensning av lagringsregler klar';
+	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Rensar... (${current} av ${total} avsnitt)';
 }
 
 // Path: playlists
@@ -1197,10 +1198,8 @@ class _TranslationsVideoControlsPipErrorsSv implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Kräver Android 8.0 eller nyare';
-	@override String get iosVersion => 'Requires iOS 15.0 or newer';
 	@override String get permissionDisabled => 'Bild-i-bild-behörighet är inaktiverad. Aktivera den i Inställningar > Appar > Plezy > Bild-i-bild';
 	@override String get notSupported => 'Denna enhet stöder inte bild-i-bild-läge';
-	@override String get voSwitchFailed => 'Failed to switch video output for picture-in-picture';
 	@override String get failed => 'Bild-i-bild kunde inte starta';
 	@override String unknown({required Object error}) => 'Ett fel uppstod: ${error}';
 }
@@ -1662,10 +1661,8 @@ extension on TranslationsSv {
 			'videoControls.endsAt' => ({required Object time}) => 'Slutar ${time}',
 			'videoControls.pipFailed' => 'Bild-i-bild kunde inte starta',
 			'videoControls.pipErrors.androidVersion' => 'Kräver Android 8.0 eller nyare',
-			'videoControls.pipErrors.iosVersion' => 'Requires iOS 15.0 or newer',
 			'videoControls.pipErrors.permissionDisabled' => 'Bild-i-bild-behörighet är inaktiverad. Aktivera den i Inställningar > Appar > Plezy > Bild-i-bild',
 			'videoControls.pipErrors.notSupported' => 'Denna enhet stöder inte bild-i-bild-läge',
-			'videoControls.pipErrors.voSwitchFailed' => 'Failed to switch video output for picture-in-picture',
 			'videoControls.pipErrors.failed' => 'Bild-i-bild kunde inte starta',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Ett fel uppstod: ${error}',
 			'videoControls.chapters' => 'Kapitel',
@@ -1919,6 +1916,7 @@ extension on TranslationsSv {
 			'downloads.retentionTrimConfirm' => 'Ta bort',
 			'downloads.retentionTrimCancel' => 'Avbryt',
 			'downloads.retentionTrimComplete' => 'Rensning av lagringsregler klar',
+			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Rensar... (${current} av ${total} avsnitt)',
 			'playlists.title' => 'Spellistor',
 			'playlists.noPlaylists' => 'Inga spellistor hittades',
 			'playlists.create' => 'Skapa spellista',

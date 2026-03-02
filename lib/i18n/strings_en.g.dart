@@ -2296,6 +2296,9 @@ class TranslationsDownloadsEn {
 
 	/// en: 'Retention cleanup complete'
 	String get retentionTrimComplete => 'Retention cleanup complete';
+
+	/// en: 'Cleaning up... (${current} of ${total} episodes)'
+	String retentionCleanupProgress({required Object current, required Object total}) => 'Cleaning up... (${current} of ${total} episodes)';
 }
 
 // Path: shaders
@@ -3536,10 +3539,10 @@ extension on Translations {
 			'liveTv.tuneFailed' => 'Failed to tune channel',
 			'liveTv.loading' => 'Loading channels...',
 			'liveTv.nowPlaying' => 'Now Playing',
-			'liveTv.noPrograms' => 'No program data available',
-			'liveTv.channelNumber' => ({required Object number}) => 'Ch. ${number}',
 			_ => null,
 		} ?? switch (path) {
+			'liveTv.noPrograms' => 'No program data available',
+			'liveTv.channelNumber' => ({required Object number}) => 'Ch. ${number}',
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
 			'liveTv.premiere' => 'NEW',
@@ -3700,6 +3703,7 @@ extension on Translations {
 			'downloads.retentionTrimConfirm' => 'Remove',
 			'downloads.retentionTrimCancel' => 'Cancel',
 			'downloads.retentionTrimComplete' => 'Retention cleanup complete',
+			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Cleaning up... (${current} of ${total} episodes)',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',

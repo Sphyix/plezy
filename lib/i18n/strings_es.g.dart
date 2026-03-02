@@ -1014,6 +1014,7 @@ class _TranslationsDownloadsEs implements TranslationsDownloadsEn {
 	@override String get retentionTrimConfirm => 'Eliminar';
 	@override String get retentionTrimCancel => 'Cancelar';
 	@override String get retentionTrimComplete => 'Limpieza de retención completada';
+	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Limpiando... (${current} de ${total} episodios)';
 }
 
 // Path: shaders
@@ -1197,10 +1198,8 @@ class _TranslationsVideoControlsPipErrorsEs implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Requiere Android 8.0 o más reciente';
-	@override String get iosVersion => 'Requires iOS 15.0 or newer';
 	@override String get permissionDisabled => 'El permiso de Imagen en Imagen está desactivado. Actívalo en Ajustes > Aplicaciones > Plezy > Imagen en Imagen';
 	@override String get notSupported => 'El dispositivo no soporta el modo Imagen en Imagen';
-	@override String get voSwitchFailed => 'Failed to switch video output for picture-in-picture';
 	@override String get failed => 'Error al iniciar Imagen en Imagen';
 	@override String unknown({required Object error}) => 'Ocurrió un error: ${error}';
 }
@@ -1662,10 +1661,8 @@ extension on TranslationsEs {
 			'videoControls.endsAt' => ({required Object time}) => 'Termina a las ${time}',
 			'videoControls.pipFailed' => 'Error al iniciar Imagen en Imagen',
 			'videoControls.pipErrors.androidVersion' => 'Requiere Android 8.0 o más reciente',
-			'videoControls.pipErrors.iosVersion' => 'Requires iOS 15.0 or newer',
 			'videoControls.pipErrors.permissionDisabled' => 'El permiso de Imagen en Imagen está desactivado. Actívalo en Ajustes > Aplicaciones > Plezy > Imagen en Imagen',
 			'videoControls.pipErrors.notSupported' => 'El dispositivo no soporta el modo Imagen en Imagen',
-			'videoControls.pipErrors.voSwitchFailed' => 'Failed to switch video output for picture-in-picture',
 			'videoControls.pipErrors.failed' => 'Error al iniciar Imagen en Imagen',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Ocurrió un error: ${error}',
 			'videoControls.chapters' => 'Capítulos',
@@ -2013,6 +2010,7 @@ extension on TranslationsEs {
 			'downloads.retentionTrimConfirm' => 'Eliminar',
 			'downloads.retentionTrimCancel' => 'Cancelar',
 			'downloads.retentionTrimComplete' => 'Limpieza de retención completada',
+			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Limpiando... (${current} de ${total} episodios)',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Sin mejora de video',
 			'shaders.nvscalerDescription' => 'Escalado de imagen NVIDIA para un video más nítido',

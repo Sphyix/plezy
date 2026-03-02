@@ -64,6 +64,10 @@ class DownloadProvider extends ChangeNotifier {
   // Pending retention trims detected at startup (non-null = dialog should be shown)
   List<RetentionTrimResult>? _pendingRetentionTrims;
 
+  // Aggregate retention trim progress (non-null = trim in progress, UI should show progress dialog)
+  DeletionProgress? _retentionTrimProgress;
+  DeletionProgress? get retentionTrimProgress => _retentionTrimProgress;
+
   // Storage error state (set when storage is unavailable)
   String? _storageError;
   String? get storageError => _storageError;
@@ -119,6 +123,11 @@ class DownloadProvider extends ChangeNotifier {
 
   void clearPendingRetentionTrims() {
     _pendingRetentionTrims = null;
+    notifyListeners();
+  }
+
+  void _clearRetentionTrimProgress() {
+    _retentionTrimProgress = null;
     notifyListeners();
   }
 
@@ -1397,17 +1406,39 @@ class DownloadProvider extends ChangeNotifier {
   /// Execute retention trim: delete all episodes identified by [trims].
   /// Settings are preserved — only episode records are removed (AC #3).
   Future<void> executeRetentionTrim(List<RetentionTrimResult> trims) async {
+    final totalEpisodes = trims.fold<int>(0, (sum, t) => sum + t.episodeCount);
+    int deletedCount = 0;
+
     for (final trim in trims) {
       for (final episodeKey in trim.episodeGlobalKeys) {
+        _retentionTrimProgress = DeletionProgress(
+          globalKey: 'retention-trim',
+          itemTitle: trim.showTitle,
+          currentItem: deletedCount,
+          totalItems: totalEpisodes,
+        );
+        notifyListeners();
+
         try {
           await deleteDownload(episodeKey);
         } catch (e) {
           appLogger.w('Retention trim: failed to delete $episodeKey', error: e);
         }
+        deletedCount++;
       }
     }
-    _pendingRetentionTrims = null;
+
+    // Emit completion state for UI to detect
+    _retentionTrimProgress = DeletionProgress(
+      globalKey: 'retention-trim',
+      itemTitle: '',
+      currentItem: totalEpisodes,
+      totalItems: totalEpisodes,
+    );
     notifyListeners();
+
+    _pendingRetentionTrims = null;
+    _clearRetentionTrimProgress();
   }
 
   /// Refresh only metadata from API cache (after watch state sync).

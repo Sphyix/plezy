@@ -643,7 +643,8 @@
     "retentionTrimTotal": "Totalt: ${count} avsnitt kommer att tas bort",
     "retentionTrimConfirm": "Ta bort",
     "retentionTrimCancel": "Avbryt",
-    "retentionTrimComplete": "Rensning av lagringsregler klar"
+    "retentionTrimComplete": "Rensning av lagringsregler klar",
+    "retentionCleanupProgress": "Rensar... (${current} av ${total} avsnitt)"
   },
   "playlists": {
     "title": "Spellistor",

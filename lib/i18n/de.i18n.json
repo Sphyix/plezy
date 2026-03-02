@@ -643,7 +643,8 @@
     "retentionTrimTotal": "Gesamt: ${count} Episoden werden entfernt",
     "retentionTrimConfirm": "Entfernen",
     "retentionTrimCancel": "Abbrechen",
-    "retentionTrimComplete": "Aufbewahrungsbereinigung abgeschlossen"
+    "retentionTrimComplete": "Aufbewahrungsbereinigung abgeschlossen",
+    "retentionCleanupProgress": "Bereinigung... (${current} von ${total} Episoden)"
   },
   "playlists": {
     "title": "Wiedergabelisten",

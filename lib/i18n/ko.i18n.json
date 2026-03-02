@@ -743,7 +743,8 @@
     "retentionTrimTotal": "총 ${count}개 에피소드가 삭제됩니다",
     "retentionTrimConfirm": "삭제",
     "retentionTrimCancel": "취소",
-    "retentionTrimComplete": "보관 정리 완료"
+    "retentionTrimComplete": "보관 정리 완료",
+    "retentionCleanupProgress": "정리 중... (${total}개 중 ${current}개 에피소드)"
   },
   "shaders": {
     "title": "셰이더",

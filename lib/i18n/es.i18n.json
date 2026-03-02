@@ -743,7 +743,8 @@
     "retentionTrimTotal": "Total: ${count} episodios serán eliminados",
     "retentionTrimConfirm": "Eliminar",
     "retentionTrimCancel": "Cancelar",
-    "retentionTrimComplete": "Limpieza de retención completada"
+    "retentionTrimComplete": "Limpieza de retención completada",
+    "retentionCleanupProgress": "Limpiando... (${current} de ${total} episodios)"
   },
   "shaders": {
     "title": "Shaders",

@@ -1014,6 +1014,7 @@ class _TranslationsDownloadsFr implements TranslationsDownloadsEn {
 	@override String get retentionTrimConfirm => 'Supprimer';
 	@override String get retentionTrimCancel => 'Annuler';
 	@override String get retentionTrimComplete => 'Nettoyage de rétention terminé';
+	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Nettoyage... (${current} sur ${total} épisodes)';
 }
 
 // Path: shaders
@@ -1197,10 +1198,8 @@ class _TranslationsVideoControlsPipErrorsFr implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Nécessite Android 8.0 ou plus récent';
-	@override String get iosVersion => 'Requires iOS 15.0 or newer';
 	@override String get permissionDisabled => 'L\'autorisation Image dans l\'image est désactivée. Activez-la dans Paramètres > Applications > Plezy > Image dans l\'image';
 	@override String get notSupported => 'Cet appareil ne prend pas en charge le mode image dans l\'image';
-	@override String get voSwitchFailed => 'Failed to switch video output for picture-in-picture';
 	@override String get failed => 'Échec du démarrage du mode image dans l\'image';
 	@override String unknown({required Object error}) => 'Une erreur s\'est produite : ${error}';
 }
@@ -1662,10 +1661,8 @@ extension on TranslationsFr {
 			'videoControls.endsAt' => ({required Object time}) => 'Fin à ${time}',
 			'videoControls.pipFailed' => 'Échec du démarrage du mode image dans l\'image',
 			'videoControls.pipErrors.androidVersion' => 'Nécessite Android 8.0 ou plus récent',
-			'videoControls.pipErrors.iosVersion' => 'Requires iOS 15.0 or newer',
 			'videoControls.pipErrors.permissionDisabled' => 'L\'autorisation Image dans l\'image est désactivée. Activez-la dans Paramètres > Applications > Plezy > Image dans l\'image',
 			'videoControls.pipErrors.notSupported' => 'Cet appareil ne prend pas en charge le mode image dans l\'image',
-			'videoControls.pipErrors.voSwitchFailed' => 'Failed to switch video output for picture-in-picture',
 			'videoControls.pipErrors.failed' => 'Échec du démarrage du mode image dans l\'image',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Une erreur s\'est produite : ${error}',
 			'videoControls.chapters' => 'Chapitres',
@@ -2013,6 +2010,7 @@ extension on TranslationsFr {
 			'downloads.retentionTrimConfirm' => 'Supprimer',
 			'downloads.retentionTrimCancel' => 'Annuler',
 			'downloads.retentionTrimComplete' => 'Nettoyage de rétention terminé',
+			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Nettoyage... (${current} sur ${total} épisodes)',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Aucune amélioration vidéo',
 			'shaders.nvscalerDescription' => 'Mise à l\'échelle NVIDIA pour une vidéo plus nette',

@@ -893,6 +893,7 @@ class _TranslationsDownloadsDe implements TranslationsDownloadsEn {
 	@override String get retentionTrimConfirm => 'Entfernen';
 	@override String get retentionTrimCancel => 'Abbrechen';
 	@override String get retentionTrimComplete => 'Aufbewahrungsbereinigung abgeschlossen';
+	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Bereinigung... (${current} von ${total} Episoden)';
 }
 
 // Path: playlists
@@ -1197,10 +1198,8 @@ class _TranslationsVideoControlsPipErrorsDe implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Erfordert Android 8.0 oder neuer';
-	@override String get iosVersion => 'Requires iOS 15.0 or newer';
 	@override String get permissionDisabled => 'Bild-in-Bild-Berechtigung ist deaktiviert. Aktiviere sie unter Einstellungen > Apps > Plezy > Bild-in-Bild';
 	@override String get notSupported => 'Dieses Gerät unterstützt den Bild-in-Bild-Modus nicht';
-	@override String get voSwitchFailed => 'Failed to switch video output for picture-in-picture';
 	@override String get failed => 'Bild-in-Bild konnte nicht gestartet werden';
 	@override String unknown({required Object error}) => 'Ein Fehler ist aufgetreten: ${error}';
 }
@@ -1662,10 +1661,8 @@ extension on TranslationsDe {
 			'videoControls.endsAt' => ({required Object time}) => 'Endet um ${time}',
 			'videoControls.pipFailed' => 'Bild-in-Bild konnte nicht gestartet werden',
 			'videoControls.pipErrors.androidVersion' => 'Erfordert Android 8.0 oder neuer',
-			'videoControls.pipErrors.iosVersion' => 'Requires iOS 15.0 or newer',
 			'videoControls.pipErrors.permissionDisabled' => 'Bild-in-Bild-Berechtigung ist deaktiviert. Aktiviere sie unter Einstellungen > Apps > Plezy > Bild-in-Bild',
 			'videoControls.pipErrors.notSupported' => 'Dieses Gerät unterstützt den Bild-in-Bild-Modus nicht',
-			'videoControls.pipErrors.voSwitchFailed' => 'Failed to switch video output for picture-in-picture',
 			'videoControls.pipErrors.failed' => 'Bild-in-Bild konnte nicht gestartet werden',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Ein Fehler ist aufgetreten: ${error}',
 			'videoControls.chapters' => 'Kapitel',
@@ -1919,6 +1916,7 @@ extension on TranslationsDe {
 			'downloads.retentionTrimConfirm' => 'Entfernen',
 			'downloads.retentionTrimCancel' => 'Abbrechen',
 			'downloads.retentionTrimComplete' => 'Aufbewahrungsbereinigung abgeschlossen',
+			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Bereinigung... (${current} von ${total} Episoden)',
 			'playlists.title' => 'Wiedergabelisten',
 			'playlists.noPlaylists' => 'Keine Wiedergabelisten gefunden',
 			'playlists.create' => 'Wiedergabeliste erstellen',

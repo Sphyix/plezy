@@ -643,7 +643,8 @@
     "retentionTrimTotal": "共 ${count} 集将被删除",
     "retentionTrimConfirm": "删除",
     "retentionTrimCancel": "取消",
-    "retentionTrimComplete": "保留策略清理完成"
+    "retentionTrimComplete": "保留策略清理完成",
+    "retentionCleanupProgress": "清理中... (共 ${total} 集，已完成 ${current} 集)"
   },
   "playlists": {
     "title": "播放列表",

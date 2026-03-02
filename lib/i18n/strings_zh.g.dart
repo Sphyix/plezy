@@ -893,6 +893,7 @@ class _TranslationsDownloadsZh implements TranslationsDownloadsEn {
 	@override String get retentionTrimConfirm => '删除';
 	@override String get retentionTrimCancel => '取消';
 	@override String get retentionTrimComplete => '保留策略清理完成';
+	@override String retentionCleanupProgress({required Object total, required Object current}) => '清理中... (共 ${total} 集，已完成 ${current} 集)';
 }
 
 // Path: playlists
@@ -1197,10 +1198,8 @@ class _TranslationsVideoControlsPipErrorsZh implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => '需要 Android 8.0 或更高版本';
-	@override String get iosVersion => 'Requires iOS 15.0 or newer';
 	@override String get permissionDisabled => '画中画权限已禁用。请在设置 > 应用 > Plezy > 画中画中启用';
 	@override String get notSupported => '此设备不支持画中画模式';
-	@override String get voSwitchFailed => 'Failed to switch video output for picture-in-picture';
 	@override String get failed => '画中画启动失败';
 	@override String unknown({required Object error}) => '发生错误：${error}';
 }
@@ -1662,10 +1661,8 @@ extension on TranslationsZh {
 			'videoControls.endsAt' => ({required Object time}) => '${time} 结束',
 			'videoControls.pipFailed' => '画中画启动失败',
 			'videoControls.pipErrors.androidVersion' => '需要 Android 8.0 或更高版本',
-			'videoControls.pipErrors.iosVersion' => 'Requires iOS 15.0 or newer',
 			'videoControls.pipErrors.permissionDisabled' => '画中画权限已禁用。请在设置 > 应用 > Plezy > 画中画中启用',
 			'videoControls.pipErrors.notSupported' => '此设备不支持画中画模式',
-			'videoControls.pipErrors.voSwitchFailed' => 'Failed to switch video output for picture-in-picture',
 			'videoControls.pipErrors.failed' => '画中画启动失败',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => '发生错误：${error}',
 			'videoControls.chapters' => '章节',
@@ -1919,6 +1916,7 @@ extension on TranslationsZh {
 			'downloads.retentionTrimConfirm' => '删除',
 			'downloads.retentionTrimCancel' => '取消',
 			'downloads.retentionTrimComplete' => '保留策略清理完成',
+			'downloads.retentionCleanupProgress' => ({required Object total, required Object current}) => '清理中... (共 ${total} 集，已完成 ${current} 集)',
 			'playlists.title' => '播放列表',
 			'playlists.noPlaylists' => '未找到播放列表',
 			'playlists.create' => '创建播放列表',

@@ -16,6 +16,7 @@ import '../../widgets/media_grid_delegate.dart';
 import '../../widgets/download_tree_view.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/series_settings_dialog.dart';
+import '../../widgets/deletion_progress_dialog.dart';
 import '../../widgets/retention_trim_dialog.dart';
 import '../main_screen.dart';
 import '../libraries/state_messages.dart';
@@ -72,14 +73,45 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
     }
 
     if (confirmed) {
+      // Show progress dialog (non-blocking — fires and proceeds to executeRetentionTrim)
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => Consumer<DownloadProvider>(
+            builder: (context, provider, child) {
+              final progress = provider.retentionTrimProgress;
+
+              // Auto-dismiss when trim is complete
+              if (progress == null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (Navigator.canPop(dialogContext)) {
+                    Navigator.of(dialogContext).pop();
+                  }
+                });
+                return const SizedBox.shrink();
+              }
+
+              return DeletionProgressDialog(progress: progress);
+            },
+          ),
+        );
+      }
+
       try {
         await provider.executeRetentionTrim(trims);
-        if (mounted) {
-          showSnackBar(context, t.downloads.retentionTrimComplete);
-        }
       } catch (e) {
         debugPrint('Retention trim failed: $e');
         provider.clearPendingRetentionTrims();
+      }
+
+      // Safety pop in case auto-dismiss timing issues
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
+
+      if (mounted) {
+        showSnackBar(context, t.downloads.retentionTrimComplete);
       }
     } else {
       provider.clearPendingRetentionTrims();
