@@ -2306,8 +2306,8 @@ class TranslationsDownloadsEn {
 	/// en: 'Remove'
 	String get removeEmptyShow => 'Remove';
 
-	/// en: 'Skipped ${count} transcoding item(s) — transcoding downloads cannot be paused'
-	String pauseAllSkippedTranscoding({required Object count}) => 'Skipped ${count} transcoding item(s) — transcoding downloads cannot be paused';
+	/// en: 'Skipped ${count} transcoding items — transcoding downloads cannot be paused'
+	String pauseAllSkippedTranscoding({required Object count}) => 'Skipped ${count} transcoding items — transcoding downloads cannot be paused';
 }
 
 // Path: shaders
@@ -3715,7 +3715,7 @@ extension on Translations {
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Cleaning up... (${current} of ${total} episodes)',
 			'downloads.emptyShowNoEpisodes' => 'No episodes — settings preserved',
 			'downloads.removeEmptyShow' => 'Remove',
-			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => 'Skipped ${count} transcoding item(s) — transcoding downloads cannot be paused',
+			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => 'Skipped ${count} transcoding items — transcoding downloads cannot be paused',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',

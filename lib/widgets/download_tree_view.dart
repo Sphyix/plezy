@@ -7,8 +7,8 @@ import '../models/download_models.dart';
 import '../models/plex_metadata.dart';
 import '../utils/content_utils.dart';
 import '../utils/dialogs.dart';
-import '../utils/snackbar_helper.dart';
 import '../utils/global_key_utils.dart';
+import '../utils/snackbar_helper.dart';
 
 /// Represents a node in the download tree
 class DownloadTreeNode {

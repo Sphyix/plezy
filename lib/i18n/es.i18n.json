@@ -747,7 +747,7 @@
     "retentionCleanupProgress": "Limpiando... (${current} de ${total} episodios)",
     "emptyShowNoEpisodes": "Sin episodios — configuración conservada",
     "removeEmptyShow": "Eliminar",
-    "pauseAllSkippedTranscoding": "Se omitieron ${count} elemento(s) en transcodificación — las descargas en transcodificación no se pueden pausar"
+    "pauseAllSkippedTranscoding": "Se omitieron ${count} elementos en transcodificación — las descargas en transcodificación no se pueden pausar"
   },
   "shaders": {
     "title": "Shaders",

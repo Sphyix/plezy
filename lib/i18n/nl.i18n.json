@@ -647,7 +647,7 @@
     "retentionCleanupProgress": "Opruimen... (${current} van ${total} afleveringen)",
     "emptyShowNoEpisodes": "Geen afleveringen — instellingen bewaard",
     "removeEmptyShow": "Verwijderen",
-    "pauseAllSkippedTranscoding": "${count} transcoderend(e) item(s) overgeslagen — transcoderende downloads kunnen niet worden gepauzeerd"
+    "pauseAllSkippedTranscoding": "${count} transcoderende items overgeslagen — transcoderende downloads kunnen niet worden gepauzeerd"
   },
   "playlists": {
     "title": "Afspeellijsten",

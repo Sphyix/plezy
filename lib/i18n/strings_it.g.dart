@@ -896,7 +896,7 @@ class _TranslationsDownloadsIt implements TranslationsDownloadsEn {
 	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Pulizia in corso... (${current} di ${total} episodi)';
 	@override String get emptyShowNoEpisodes => 'Nessun episodio — impostazioni conservate';
 	@override String get removeEmptyShow => 'Rimuovi';
-	@override String pauseAllSkippedTranscoding({required Object count}) => '${count} elemento/i in transcodifica ignorato/i — i download in transcodifica non possono essere messi in pausa';
+	@override String pauseAllSkippedTranscoding({required Object count}) => '${count} elementi in transcodifica ignorati — i download in transcodifica non possono essere messi in pausa';
 }
 
 // Path: playlists
@@ -1922,7 +1922,7 @@ extension on TranslationsIt {
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Pulizia in corso... (${current} di ${total} episodi)',
 			'downloads.emptyShowNoEpisodes' => 'Nessun episodio — impostazioni conservate',
 			'downloads.removeEmptyShow' => 'Rimuovi',
-			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => '${count} elemento/i in transcodifica ignorato/i — i download in transcodifica non possono essere messi in pausa',
+			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => '${count} elementi in transcodifica ignorati — i download in transcodifica non possono essere messi in pausa',
 			'playlists.title' => 'Playlist',
 			'playlists.noPlaylists' => 'Nessuna playlist trovata',
 			'playlists.create' => 'Crea playlist',

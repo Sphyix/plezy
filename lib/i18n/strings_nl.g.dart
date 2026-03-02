@@ -896,7 +896,7 @@ class _TranslationsDownloadsNl implements TranslationsDownloadsEn {
 	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Opruimen... (${current} van ${total} afleveringen)';
 	@override String get emptyShowNoEpisodes => 'Geen afleveringen — instellingen bewaard';
 	@override String get removeEmptyShow => 'Verwijderen';
-	@override String pauseAllSkippedTranscoding({required Object count}) => '${count} transcoderend(e) item(s) overgeslagen — transcoderende downloads kunnen niet worden gepauzeerd';
+	@override String pauseAllSkippedTranscoding({required Object count}) => '${count} transcoderende items overgeslagen — transcoderende downloads kunnen niet worden gepauzeerd';
 }
 
 // Path: playlists
@@ -1922,7 +1922,7 @@ extension on TranslationsNl {
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Opruimen... (${current} van ${total} afleveringen)',
 			'downloads.emptyShowNoEpisodes' => 'Geen afleveringen — instellingen bewaard',
 			'downloads.removeEmptyShow' => 'Verwijderen',
-			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => '${count} transcoderend(e) item(s) overgeslagen — transcoderende downloads kunnen niet worden gepauzeerd',
+			'downloads.pauseAllSkippedTranscoding' => ({required Object count}) => '${count} transcoderende items overgeslagen — transcoderende downloads kunnen niet worden gepauzeerd',
 			'playlists.title' => 'Afspeellijsten',
 			'playlists.noPlaylists' => 'Geen afspeellijsten gevonden',
 			'playlists.create' => 'Afspeellijst maken',
