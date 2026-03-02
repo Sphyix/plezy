@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../focus/focusable_button.dart';
+import '../focus/focusable_wrapper.dart';
 import '../i18n/strings.g.dart';
 import '../models/download_models.dart';
 import '../services/plex_client.dart';
@@ -49,6 +51,10 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
   int _maxEpisodes = 0;
   int _retentionDays = 0;
 
+  // Task 1: Track ExpansionTile expansion state
+  bool _episodesExpanded = true; // matches initiallyExpanded: true
+  bool _retentionExpanded = false; // matches initiallyExpanded: false
+
   late final TextEditingController _maxEpisodesController;
   late final TextEditingController _retentionDaysController;
 
@@ -88,28 +94,53 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
             _buildQualityOptions(),
             const SizedBox(height: 8),
             // Episodes & seasons section (collapsible)
+            // Task 1.3: Wire onExpansionChanged to update _episodesExpanded
             ExpansionTile(
               title: Text(t.downloads.episodesLabel),
               initiallyExpanded: true,
-              children: _buildEpisodesChildren(),
+              onExpansionChanged: (expanded) => setState(() => _episodesExpanded = expanded),
+              // Task 2.1: Wrap children with ExcludeFocus — excluded when collapsed
+              children: [
+                ExcludeFocus(
+                  excluding: !_episodesExpanded,
+                  child: Column(children: _buildEpisodesChildren()),
+                ),
+              ],
             ),
             // Retention section (collapsible, initially collapsed)
+            // Task 1.4: Wire onExpansionChanged to update _retentionExpanded
             ExpansionTile(
               title: Text(t.downloads.retentionLabel),
               initiallyExpanded: false,
-              children: _buildRetentionChildren(),
+              onExpansionChanged: (expanded) => setState(() => _retentionExpanded = expanded),
+              // Task 2.2: Wrap children with ExcludeFocus — excluded when collapsed
+              children: [
+                ExcludeFocus(
+                  excluding: !_retentionExpanded,
+                  child: Column(children: _buildRetentionChildren()),
+                ),
+              ],
             ),
           ],
         ),
       ),
+      // Task 4: Wrap dialog action buttons with FocusableButton
       actions: [
-        TextButton(
+        // Task 4.1: Wrap Cancel TextButton with FocusableButton
+        FocusableButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+          child: TextButton(
+            onPressed: () => Navigator.pop(context, null),
+            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+          ),
         ),
-        FilledButton(
+        // Task 4.2: Wrap Save/Download FilledButton with FocusableButton
+        FocusableButton(
           onPressed: _onDownloadPressed,
-          child: Text(widget.initialSettings != null ? t.downloads.save : t.downloads.downloadNow),
+          child: FilledButton(
+            onPressed: _onDownloadPressed,
+            child: Text(widget.initialSettings != null ? t.downloads.save : t.downloads.downloadNow),
+          ),
         ),
       ],
     );
@@ -166,36 +197,46 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
         onChanged: (v) => setState(() => _downloadNewSeasons = v),
         dense: true,
       ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: TextFormField(
-          controller: _maxEpisodesController,
-          decoration: InputDecoration(
-            labelText: t.downloads.maxEpisodesLabel,
-            hintText: t.downloads.unlimitedHint,
+      // Task 2.3: Exclude from focus when _downloadNewEpisodes is OFF
+      // Task 3.1: Wrap TextFormField with FocusableWrapper for TV focus border
+      ExcludeFocus(
+        excluding: !_downloadNewEpisodes,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: FocusableWrapper(
+            borderRadius: 8.0,
+            useBackgroundFocus: true,
+            disableScale: true,
+            child: TextFormField(
+              controller: _maxEpisodesController,
+              decoration: InputDecoration(
+                labelText: t.downloads.maxEpisodesLabel,
+                hintText: t.downloads.unlimitedHint,
+              ),
+              enabled: _downloadNewEpisodes,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              onTap: () {
+                if (_maxEpisodes == 0) {
+                  setState(() {
+                    _maxEpisodes = 1;
+                    _maxEpisodesController.text = '1';
+                  });
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _maxEpisodesController.selection = const TextSelection(baseOffset: 0, extentOffset: 1);
+                  });
+                }
+              },
+              onChanged: (v) {
+                final parsed = int.tryParse(v) ?? 0;
+                if (parsed > 0 && v != '$parsed') {
+                  _maxEpisodesController.text = '$parsed';
+                  _maxEpisodesController.selection = TextSelection.collapsed(offset: '$parsed'.length);
+                }
+                setState(() => _maxEpisodes = parsed);
+              },
+            ),
           ),
-          enabled: _downloadNewEpisodes,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          onTap: () {
-            if (_maxEpisodes == 0) {
-              setState(() {
-                _maxEpisodes = 1;
-                _maxEpisodesController.text = '1';
-              });
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _maxEpisodesController.selection = const TextSelection(baseOffset: 0, extentOffset: 1);
-              });
-            }
-          },
-          onChanged: (v) {
-            final parsed = int.tryParse(v) ?? 0;
-            if (parsed > 0 && v != '$parsed') {
-              _maxEpisodesController.text = '$parsed';
-              _maxEpisodesController.selection = TextSelection.collapsed(offset: '$parsed'.length);
-            }
-            setState(() => _maxEpisodes = parsed);
-          },
         ),
       ),
     ];
@@ -203,35 +244,41 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
 
   List<Widget> _buildRetentionChildren() {
     return [
+      // Task 3.2: Wrap TextFormField with FocusableWrapper for TV focus border
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: TextFormField(
-          controller: _retentionDaysController,
-          decoration: InputDecoration(
-            labelText: t.downloads.retentionDaysLabel,
-            hintText: t.downloads.unlimitedHint,
+        child: FocusableWrapper(
+          borderRadius: 8.0,
+          useBackgroundFocus: true,
+          disableScale: true,
+          child: TextFormField(
+            controller: _retentionDaysController,
+            decoration: InputDecoration(
+              labelText: t.downloads.retentionDaysLabel,
+              hintText: t.downloads.unlimitedHint,
+            ),
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onTap: () {
+              if (_retentionDays == 0) {
+                setState(() {
+                  _retentionDays = 1;
+                  _retentionDaysController.text = '1';
+                });
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _retentionDaysController.selection = const TextSelection(baseOffset: 0, extentOffset: 1);
+                });
+              }
+            },
+            onChanged: (v) {
+              final parsed = int.tryParse(v) ?? 0;
+              if (parsed > 0 && v != '$parsed') {
+                _retentionDaysController.text = '$parsed';
+                _retentionDaysController.selection = TextSelection.collapsed(offset: '$parsed'.length);
+              }
+              setState(() => _retentionDays = parsed);
+            },
           ),
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          onTap: () {
-            if (_retentionDays == 0) {
-              setState(() {
-                _retentionDays = 1;
-                _retentionDaysController.text = '1';
-              });
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _retentionDaysController.selection = const TextSelection(baseOffset: 0, extentOffset: 1);
-              });
-            }
-          },
-          onChanged: (v) {
-            final parsed = int.tryParse(v) ?? 0;
-            if (parsed > 0 && v != '$parsed') {
-              _retentionDaysController.text = '$parsed';
-              _retentionDaysController.selection = TextSelection.collapsed(offset: '$parsed'.length);
-            }
-            setState(() => _retentionDays = parsed);
-          },
         ),
       ),
     ];
