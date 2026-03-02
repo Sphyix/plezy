@@ -502,11 +502,12 @@ class _SetupScreenState extends State<SetupScreen> {
         final downloadProvider = context.read<DownloadProvider>();
         final multiServerProvider = context.read<MultiServerProvider>();
         downloadProvider.ensureInitialized().then((_) {
+          // Resume downloads that were interrupted by app kill
           downloadProvider.resumeQueuedDownloads(result.firstClient!);
           // Auto-download new episodes for configured series (fire-and-forget)
-          downloadProvider.autoDownloadNewEpisodes(
+          unawaited(downloadProvider.autoDownloadNewEpisodes(
             onlineClients: multiServerProvider.serverManager.onlineClients,
-          );
+          ));
         });
 
         Navigator.pushReplacement(context, fadeRoute(MainScreen(client: result.firstClient!)));
