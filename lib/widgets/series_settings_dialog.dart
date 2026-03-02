@@ -181,12 +181,18 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
               setState(() {
                 _maxEpisodes = 1;
                 _maxEpisodesController.text = '1';
+              });
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 _maxEpisodesController.selection = const TextSelection(baseOffset: 0, extentOffset: 1);
               });
             }
           },
           onChanged: (v) {
             final parsed = int.tryParse(v) ?? 0;
+            if (parsed > 0 && v != '$parsed') {
+              _maxEpisodesController.text = '$parsed';
+              _maxEpisodesController.selection = TextSelection.collapsed(offset: '$parsed'.length);
+            }
             setState(() => _maxEpisodes = parsed);
           },
         ),
@@ -211,12 +217,18 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
               setState(() {
                 _retentionDays = 1;
                 _retentionDaysController.text = '1';
+              });
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 _retentionDaysController.selection = const TextSelection(baseOffset: 0, extentOffset: 1);
               });
             }
           },
           onChanged: (v) {
             final parsed = int.tryParse(v) ?? 0;
+            if (parsed > 0 && v != '$parsed') {
+              _retentionDaysController.text = '$parsed';
+              _retentionDaysController.selection = TextSelection.collapsed(offset: '$parsed'.length);
+            }
             setState(() => _retentionDays = parsed);
           },
         ),

@@ -186,32 +186,37 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
                             metadata: downloadProvider.metadata,
                             onPause: downloadProvider.pauseDownload,
                             onSettings: (key, title) async {
-                              final parsed = parseGlobalKey(key);
-                              String globalKey;
-                              String serverId;
-                              String ratingKey;
-                              if (parsed != null) {
-                                // Movie node: key is globalKey format
-                                globalKey = key;
-                                serverId = parsed.serverId;
-                                ratingKey = parsed.ratingKey;
-                              } else {
-                                // Show node: key is ratingKey only
-                                ratingKey = key;
-                                serverId = _findServerIdForShow(key, downloadProvider);
-                                globalKey = buildGlobalKey(serverId, ratingKey);
-                              }
-                              final existingSettings = downloadProvider.getSeriesSettingsForShow(globalKey);
-                              final result = await SeriesSettingsDialog.show(
-                                context,
-                                title: title,
-                                serverId: serverId,
-                                ratingKey: ratingKey,
-                                initialSettings: existingSettings,
-                              );
-                              if (!context.mounted) return;
-                              if (result != null) {
-                                await downloadProvider.saveSeriesSettings(result);
+                              try {
+                                final parsed = parseGlobalKey(key);
+                                String globalKey;
+                                String serverId;
+                                String ratingKey;
+                                if (parsed != null) {
+                                  // Movie node: key is globalKey format
+                                  globalKey = key;
+                                  serverId = parsed.serverId;
+                                  ratingKey = parsed.ratingKey;
+                                } else {
+                                  // Show node: key is ratingKey only
+                                  ratingKey = key;
+                                  serverId = _findServerIdForShow(key, downloadProvider);
+                                  if (serverId.isEmpty) return;
+                                  globalKey = buildGlobalKey(serverId, ratingKey);
+                                }
+                                final existingSettings = downloadProvider.getSeriesSettingsForShow(globalKey);
+                                final result = await SeriesSettingsDialog.show(
+                                  context,
+                                  title: title,
+                                  serverId: serverId,
+                                  ratingKey: ratingKey,
+                                  initialSettings: existingSettings,
+                                );
+                                if (!context.mounted) return;
+                                if (result != null) {
+                                  await downloadProvider.saveSeriesSettings(result);
+                                }
+                              } catch (e) {
+                                debugPrint('Error opening series settings: $e');
                               }
                             },
                             onResume: (globalKey) {
