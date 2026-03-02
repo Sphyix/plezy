@@ -644,7 +644,9 @@
     "retentionTrimConfirm": "Entfernen",
     "retentionTrimCancel": "Abbrechen",
     "retentionTrimComplete": "Aufbewahrungsbereinigung abgeschlossen",
-    "retentionCleanupProgress": "Bereinigung... (${current} von ${total} Episoden)"
+    "retentionCleanupProgress": "Bereinigung... (${current} von ${total} Episoden)",
+    "emptyShowNoEpisodes": "Keine Episoden — Einstellungen erhalten",
+    "removeEmptyShow": "Entfernen"
   },
   "playlists": {
     "title": "Wiedergabelisten",

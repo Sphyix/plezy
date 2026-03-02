@@ -894,6 +894,8 @@ class _TranslationsDownloadsSv implements TranslationsDownloadsEn {
 	@override String get retentionTrimCancel => 'Avbryt';
 	@override String get retentionTrimComplete => 'Rensning av lagringsregler klar';
 	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Rensar... (${current} av ${total} avsnitt)';
+	@override String get emptyShowNoEpisodes => 'Inga avsnitt — inställningar bevarade';
+	@override String get removeEmptyShow => 'Ta bort';
 }
 
 // Path: playlists
@@ -1917,6 +1919,8 @@ extension on TranslationsSv {
 			'downloads.retentionTrimCancel' => 'Avbryt',
 			'downloads.retentionTrimComplete' => 'Rensning av lagringsregler klar',
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Rensar... (${current} av ${total} avsnitt)',
+			'downloads.emptyShowNoEpisodes' => 'Inga avsnitt — inställningar bevarade',
+			'downloads.removeEmptyShow' => 'Ta bort',
 			'playlists.title' => 'Spellistor',
 			'playlists.noPlaylists' => 'Inga spellistor hittades',
 			'playlists.create' => 'Skapa spellista',

@@ -746,7 +746,9 @@
     "retentionTrimConfirm": "Remove",
     "retentionTrimCancel": "Cancel",
     "retentionTrimComplete": "Retention cleanup complete",
-    "retentionCleanupProgress": "Cleaning up... (${current} of ${total} episodes)"
+    "retentionCleanupProgress": "Cleaning up... (${current} of ${total} episodes)",
+    "emptyShowNoEpisodes": "No episodes — settings preserved",
+    "removeEmptyShow": "Remove"
   },
   "shaders": {
     "title": "Shaders",

@@ -1015,6 +1015,8 @@ class _TranslationsDownloadsFr implements TranslationsDownloadsEn {
 	@override String get retentionTrimCancel => 'Annuler';
 	@override String get retentionTrimComplete => 'Nettoyage de rétention terminé';
 	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Nettoyage... (${current} sur ${total} épisodes)';
+	@override String get emptyShowNoEpisodes => 'Aucun épisode — paramètres conservés';
+	@override String get removeEmptyShow => 'Supprimer';
 }
 
 // Path: shaders
@@ -2011,6 +2013,8 @@ extension on TranslationsFr {
 			'downloads.retentionTrimCancel' => 'Annuler',
 			'downloads.retentionTrimComplete' => 'Nettoyage de rétention terminé',
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Nettoyage... (${current} sur ${total} épisodes)',
+			'downloads.emptyShowNoEpisodes' => 'Aucun épisode — paramètres conservés',
+			'downloads.removeEmptyShow' => 'Supprimer',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Aucune amélioration vidéo',
 			'shaders.nvscalerDescription' => 'Mise à l\'échelle NVIDIA pour une vidéo plus nette',

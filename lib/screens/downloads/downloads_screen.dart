@@ -273,6 +273,8 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
                             downloads: downloadProvider.downloads,
                             metadata: downloadProvider.metadata,
                             seriesSettings: downloadProvider.seriesSettings,
+                            emptyShows: downloadProvider.emptyShows,
+                            onRemoveEmptyShow: downloadProvider.removeEmptyShow,
                             onPause: downloadProvider.pauseDownload,
                             onSettings: (key, title) async {
                               try {

@@ -894,6 +894,8 @@ class _TranslationsDownloadsNl implements TranslationsDownloadsEn {
 	@override String get retentionTrimCancel => 'Annuleren';
 	@override String get retentionTrimComplete => 'Bewaarbeleid opruiming voltooid';
 	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Opruimen... (${current} van ${total} afleveringen)';
+	@override String get emptyShowNoEpisodes => 'Geen afleveringen — instellingen bewaard';
+	@override String get removeEmptyShow => 'Verwijderen';
 }
 
 // Path: playlists
@@ -1917,6 +1919,8 @@ extension on TranslationsNl {
 			'downloads.retentionTrimCancel' => 'Annuleren',
 			'downloads.retentionTrimComplete' => 'Bewaarbeleid opruiming voltooid',
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Opruimen... (${current} van ${total} afleveringen)',
+			'downloads.emptyShowNoEpisodes' => 'Geen afleveringen — instellingen bewaard',
+			'downloads.removeEmptyShow' => 'Verwijderen',
 			'playlists.title' => 'Afspeellijsten',
 			'playlists.noPlaylists' => 'Geen afspeellijsten gevonden',
 			'playlists.create' => 'Afspeellijst maken',

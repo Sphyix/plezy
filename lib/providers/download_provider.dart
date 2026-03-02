@@ -68,6 +68,17 @@ class DownloadProvider extends ChangeNotifier {
   DeletionProgress? _retentionTrimProgress;
   DeletionProgress? get retentionTrimProgress => _retentionTrimProgress;
 
+  // Empty shows: series that have per-series settings but zero downloaded episodes after retention cleanup
+  // Key: showGlobalKey (serverId:ratingKey), Value: show title for display
+  final Map<String, String> _emptyShows = {};
+
+  // Dismissed empty shows persisted across restarts so user-dismissed entries don't reappear
+  Set<String> _dismissedEmptyShows = {};
+
+  static const String _dismissedEmptyShowsKey = 'dismissed_empty_shows';
+
+  Map<String, String> get emptyShows => Map.unmodifiable(_emptyShows);
+
   // Storage error state (set when storage is unavailable)
   String? _storageError;
   String? get storageError => _storageError;
@@ -116,6 +127,36 @@ class DownloadProvider extends ChangeNotifier {
   bool isSeriesConfigured(String globalKey) {
     final settings = _seriesSettings[globalKey];
     return settings != null && settings.isConfigured;
+  }
+
+  // Empty show accessors
+
+  /// Remove an empty show entry from the display list and persist the dismissal.
+  /// Does NOT delete series settings (those are preserved per AC #2).
+  Future<void> removeEmptyShow(String globalKey) async {
+    _emptyShows.remove(globalKey);
+    _dismissedEmptyShows.add(globalKey);
+    await _saveDismissedEmptyShows();
+    notifyListeners();
+  }
+
+  Future<void> _loadDismissedEmptyShows() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final list = prefs.getStringList(_dismissedEmptyShowsKey) ?? [];
+      _dismissedEmptyShows = list.toSet();
+    } catch (e) {
+      appLogger.w('Failed to load dismissed empty shows', error: e);
+    }
+  }
+
+  Future<void> _saveDismissedEmptyShows() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(_dismissedEmptyShowsKey, _dismissedEmptyShows.toList());
+    } catch (e) {
+      appLogger.w('Failed to save dismissed empty shows', error: e);
+    }
   }
 
   // Retention trim accessors
@@ -234,6 +275,32 @@ class DownloadProvider extends ChangeNotifier {
       for (final item in allSeriesSettings) {
         final settings = SeriesDownloadSettings.fromDriftItem(item);
         _seriesSettings[settings.globalKey] = settings;
+      }
+
+      // Detect empty configured shows (have settings but no downloaded episodes)
+      await _loadDismissedEmptyShows();
+      final showsWithEpisodes = <String>{};
+      for (final meta in _metadata.values) {
+        if (meta.isEpisode && meta.grandparentRatingKey != null && meta.serverId != null) {
+          showsWithEpisodes.add(buildGlobalKey(meta.serverId!, meta.grandparentRatingKey!));
+        }
+      }
+      for (final settings in _seriesSettings.values) {
+        final showGlobalKey = settings.globalKey;
+        if (!showsWithEpisodes.contains(showGlobalKey) && !_dismissedEmptyShows.contains(showGlobalKey)) {
+          String title = 'Unknown Show';
+          final existingMeta = _metadata[showGlobalKey];
+          if (existingMeta != null) {
+            title = existingMeta.title;
+          } else {
+            final cachedMeta = await apiCache.getMetadata(settings.serverId, settings.ratingKey);
+            if (cachedMeta != null) {
+              title = cachedMeta.title;
+              _metadata[showGlobalKey] = cachedMeta;
+            }
+          }
+          _emptyShows[showGlobalKey] = title;
+        }
       }
 
       appLogger.i(
@@ -803,6 +870,18 @@ class DownloadProvider extends ChangeNotifier {
 
     // Store full metadata for display
     _metadata[globalKey] = metadataToStore;
+
+    // If this new episode belongs to a show currently tracked as empty, clear that state
+    if (metadataToStore.isEpisode &&
+        metadataToStore.grandparentRatingKey != null &&
+        metadataToStore.serverId != null) {
+      final showGlobalKey = buildGlobalKey(metadataToStore.serverId!, metadataToStore.grandparentRatingKey!);
+      if (_emptyShows.containsKey(showGlobalKey)) {
+        _emptyShows.remove(showGlobalKey);
+        _dismissedEmptyShows.remove(showGlobalKey);
+        await _saveDismissedEmptyShows();
+      }
+    }
 
     // Update local state immediately for UI feedback
     _downloads[globalKey] = DownloadProgress(globalKey: globalKey, status: DownloadStatus.queued);
@@ -1420,6 +1499,25 @@ class DownloadProvider extends ChangeNotifier {
           appLogger.w('Retention trim: failed to delete $episodeKey', error: e);
         }
         deletedCount++;
+      }
+    }
+
+    // Detect shows that became empty after trim
+    for (final trim in trims) {
+      final hasRemainingEpisodes = _metadata.values.any(
+        (m) =>
+            m.isEpisode &&
+            m.serverId != null &&
+            m.grandparentRatingKey != null &&
+            buildGlobalKey(m.serverId!, m.grandparentRatingKey!) == trim.showGlobalKey,
+      );
+
+      if (!hasRemainingEpisodes) {
+        _emptyShows[trim.showGlobalKey] = trim.showTitle;
+        // Fresh trim overrides previous dismissal
+        if (_dismissedEmptyShows.remove(trim.showGlobalKey)) {
+          await _saveDismissedEmptyShows();
+        }
       }
     }
 

@@ -644,7 +644,9 @@
     "retentionTrimConfirm": "Ta bort",
     "retentionTrimCancel": "Avbryt",
     "retentionTrimComplete": "Rensning av lagringsregler klar",
-    "retentionCleanupProgress": "Rensar... (${current} av ${total} avsnitt)"
+    "retentionCleanupProgress": "Rensar... (${current} av ${total} avsnitt)",
+    "emptyShowNoEpisodes": "Inga avsnitt — inställningar bevarade",
+    "removeEmptyShow": "Ta bort"
   },
   "playlists": {
     "title": "Spellistor",

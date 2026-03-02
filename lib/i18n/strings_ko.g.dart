@@ -1015,6 +1015,8 @@ class _TranslationsDownloadsKo implements TranslationsDownloadsEn {
 	@override String get retentionTrimCancel => '취소';
 	@override String get retentionTrimComplete => '보관 정리 완료';
 	@override String retentionCleanupProgress({required Object total, required Object current}) => '정리 중... (${total}개 중 ${current}개 에피소드)';
+	@override String get emptyShowNoEpisodes => '에피소드 없음 — 설정 보존됨';
+	@override String get removeEmptyShow => '제거';
 }
 
 // Path: shaders
@@ -2011,6 +2013,8 @@ extension on TranslationsKo {
 			'downloads.retentionTrimCancel' => '취소',
 			'downloads.retentionTrimComplete' => '보관 정리 완료',
 			'downloads.retentionCleanupProgress' => ({required Object total, required Object current}) => '정리 중... (${total}개 중 ${current}개 에피소드)',
+			'downloads.emptyShowNoEpisodes' => '에피소드 없음 — 설정 보존됨',
+			'downloads.removeEmptyShow' => '제거',
 			'shaders.title' => '셰이더',
 			'shaders.noShaderDescription' => '비디오 향상 없음',
 			'shaders.nvscalerDescription' => '더 선명한 비디오를 위한 NVIDIA 이미지 스케일링',

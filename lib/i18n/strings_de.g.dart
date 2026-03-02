@@ -894,6 +894,8 @@ class _TranslationsDownloadsDe implements TranslationsDownloadsEn {
 	@override String get retentionTrimCancel => 'Abbrechen';
 	@override String get retentionTrimComplete => 'Aufbewahrungsbereinigung abgeschlossen';
 	@override String retentionCleanupProgress({required Object current, required Object total}) => 'Bereinigung... (${current} von ${total} Episoden)';
+	@override String get emptyShowNoEpisodes => 'Keine Episoden — Einstellungen erhalten';
+	@override String get removeEmptyShow => 'Entfernen';
 }
 
 // Path: playlists
@@ -1917,6 +1919,8 @@ extension on TranslationsDe {
 			'downloads.retentionTrimCancel' => 'Abbrechen',
 			'downloads.retentionTrimComplete' => 'Aufbewahrungsbereinigung abgeschlossen',
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Bereinigung... (${current} von ${total} Episoden)',
+			'downloads.emptyShowNoEpisodes' => 'Keine Episoden — Einstellungen erhalten',
+			'downloads.removeEmptyShow' => 'Entfernen',
 			'playlists.title' => 'Wiedergabelisten',
 			'playlists.noPlaylists' => 'Keine Wiedergabelisten gefunden',
 			'playlists.create' => 'Wiedergabeliste erstellen',

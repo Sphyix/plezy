@@ -65,6 +65,8 @@ class DownloadTreeView extends StatefulWidget {
   final VoidCallback? onBack;
   final bool suppressAutoFocus;
   final Map<String, SeriesDownloadSettings> seriesSettings;
+  final Map<String, String> emptyShows;
+  final void Function(String globalKey)? onRemoveEmptyShow;
 
   const DownloadTreeView({
     super.key,
@@ -81,6 +83,8 @@ class DownloadTreeView extends StatefulWidget {
     this.onBack,
     this.suppressAutoFocus = false,
     this.seriesSettings = const {},
+    this.emptyShows = const {},
+    this.onRemoveEmptyShow,
   });
 
   @override
@@ -280,6 +284,19 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
     _sortNodesByStatusAndTitle(shows);
     _sortNodesByStatusAndTitle(movies);
 
+    // Add empty configured shows (no episodes, settings preserved)
+    for (final entry in widget.emptyShows.entries) {
+      shows.add(
+        DownloadTreeNode(
+          key: entry.key, // globalKey (serverId:ratingKey)
+          title: entry.value,
+          type: DownloadNodeType.show,
+          status: DownloadStatus.completed,
+          children: const [],
+        ),
+      );
+    }
+
     // Combine movies and shows
     return [...movies, ...shows];
   }
@@ -366,6 +383,7 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
       onCancel: widget.onCancel,
       onDelete: widget.onDelete,
       onSettings: widget.onSettings,
+      onRemoveEmptyShow: widget.onRemoveEmptyShow,
       onNavigateLeft: widget.onNavigateLeft,
       onBack: widget.onBack,
       rowFocusNode: isFirst ? _firstItemFocusNode : null,
@@ -487,6 +505,7 @@ class _DownloadTreeItem extends StatefulWidget {
   final void Function(String globalKey)? onCancel;
   final void Function(String globalKey)? onDelete;
   final void Function(String key, String title)? onSettings;
+  final void Function(String globalKey)? onRemoveEmptyShow;
   final VoidCallback? onNavigateLeft;
   final VoidCallback? onBack;
   final FocusNode? rowFocusNode;
@@ -507,6 +526,7 @@ class _DownloadTreeItem extends StatefulWidget {
     this.onCancel,
     this.onDelete,
     this.onSettings,
+    this.onRemoveEmptyShow,
     this.onNavigateLeft,
     this.onBack,
     this.rowFocusNode,
@@ -584,7 +604,10 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
     super.dispose();
   }
 
+  bool get _isEmptyShow => widget.node.type == DownloadNodeType.show && !widget.node.hasChildren;
+
   int _getActionCount() {
+    if (_isEmptyShow) return widget.onRemoveEmptyShow != null ? 1 : 0;
     final isContainer = widget.node.type == DownloadNodeType.show || widget.node.type == DownloadNodeType.season;
     if (isContainer) {
       return _getContainerActionCount();
@@ -714,6 +737,17 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+
+              // Subtitle for empty shows
+              if (_isEmptyShow) ...[
+                const SizedBox(height: 4),
+                Text(
+                  t.downloads.emptyShowNoEpisodes,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+              ],
 
               // Summary row — shows quality badge next to completion count
               if (canExpand) ...[
@@ -864,11 +898,24 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
   }
 
   Widget _buildActions() {
+    if (_isEmptyShow) {
+      return Row(mainAxisSize: MainAxisSize.min, children: _buildEmptyShowActions());
+    }
     final isContainer = widget.node.type == DownloadNodeType.show || widget.node.type == DownloadNodeType.season;
-
     final actions = isContainer ? _buildContainerActions() : _buildItemActions();
-
     return Row(mainAxisSize: MainAxisSize.min, children: actions);
+  }
+
+  List<Widget> _buildEmptyShowActions() {
+    if (widget.onRemoveEmptyShow == null) return [];
+    return [
+      _buildActionButton(
+        icon: Symbols.close_rounded,
+        tooltip: t.downloads.removeEmptyShow,
+        onPressed: () => widget.onRemoveEmptyShow!(widget.node.key),
+        buttonIndex: 0,
+      ),
+    ];
   }
 
   List<Widget> _buildItemActions() {

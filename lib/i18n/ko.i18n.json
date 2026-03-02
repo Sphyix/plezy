@@ -744,7 +744,9 @@
     "retentionTrimConfirm": "삭제",
     "retentionTrimCancel": "취소",
     "retentionTrimComplete": "보관 정리 완료",
-    "retentionCleanupProgress": "정리 중... (${total}개 중 ${current}개 에피소드)"
+    "retentionCleanupProgress": "정리 중... (${total}개 중 ${current}개 에피소드)",
+    "emptyShowNoEpisodes": "에피소드 없음 — 설정 보존됨",
+    "removeEmptyShow": "제거"
   },
   "shaders": {
     "title": "셰이더",

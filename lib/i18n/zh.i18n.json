@@ -644,7 +644,9 @@
     "retentionTrimConfirm": "删除",
     "retentionTrimCancel": "取消",
     "retentionTrimComplete": "保留策略清理完成",
-    "retentionCleanupProgress": "清理中... (共 ${total} 集，已完成 ${current} 集)"
+    "retentionCleanupProgress": "清理中... (共 ${total} 集，已完成 ${current} 集)",
+    "emptyShowNoEpisodes": "无剧集 — 设置已保留",
+    "removeEmptyShow": "移除"
   },
   "playlists": {
     "title": "播放列表",

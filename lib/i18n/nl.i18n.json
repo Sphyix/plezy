@@ -644,7 +644,9 @@
     "retentionTrimConfirm": "Verwijderen",
     "retentionTrimCancel": "Annuleren",
     "retentionTrimComplete": "Bewaarbeleid opruiming voltooid",
-    "retentionCleanupProgress": "Opruimen... (${current} van ${total} afleveringen)"
+    "retentionCleanupProgress": "Opruimen... (${current} van ${total} afleveringen)",
+    "emptyShowNoEpisodes": "Geen afleveringen — instellingen bewaard",
+    "removeEmptyShow": "Verwijderen"
   },
   "playlists": {
     "title": "Afspeellijsten",

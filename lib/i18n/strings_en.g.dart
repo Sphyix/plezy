@@ -2299,6 +2299,12 @@ class TranslationsDownloadsEn {
 
 	/// en: 'Cleaning up... (${current} of ${total} episodes)'
 	String retentionCleanupProgress({required Object current, required Object total}) => 'Cleaning up... (${current} of ${total} episodes)';
+
+	/// en: 'No episodes — settings preserved'
+	String get emptyShowNoEpisodes => 'No episodes — settings preserved';
+
+	/// en: 'Remove'
+	String get removeEmptyShow => 'Remove';
 }
 
 // Path: shaders
@@ -3704,6 +3710,8 @@ extension on Translations {
 			'downloads.retentionTrimCancel' => 'Cancel',
 			'downloads.retentionTrimComplete' => 'Retention cleanup complete',
 			'downloads.retentionCleanupProgress' => ({required Object current, required Object total}) => 'Cleaning up... (${current} of ${total} episodes)',
+			'downloads.emptyShowNoEpisodes' => 'No episodes — settings preserved',
+			'downloads.removeEmptyShow' => 'Remove',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',

@@ -644,7 +644,9 @@
     "retentionTrimConfirm": "Rimuovi",
     "retentionTrimCancel": "Annulla",
     "retentionTrimComplete": "Pulizia della conservazione completata",
-    "retentionCleanupProgress": "Pulizia in corso... (${current} di ${total} episodi)"
+    "retentionCleanupProgress": "Pulizia in corso... (${current} di ${total} episodi)",
+    "emptyShowNoEpisodes": "Nessun episodio — impostazioni conservate",
+    "removeEmptyShow": "Rimuovi"
   },
   "playlists": {
     "title": "Playlist",
