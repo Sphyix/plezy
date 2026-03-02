@@ -60,6 +60,7 @@ class DownloadTreeView extends StatefulWidget {
   final void Function(String globalKey)? onCancel;
   final void Function(String globalKey)? onDelete;
   final void Function(String key, String title)? onSettings;
+  final ValueChanged<String>? onDeleteSeriesSettings;
   final VoidCallback? onNavigateLeft;
   final VoidCallback? onBack;
   final bool suppressAutoFocus;
@@ -75,6 +76,7 @@ class DownloadTreeView extends StatefulWidget {
     this.onCancel,
     this.onDelete,
     this.onSettings,
+    this.onDeleteSeriesSettings,
     this.onNavigateLeft,
     this.onBack,
     this.suppressAutoFocus = false,
@@ -364,6 +366,7 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
       onCancel: widget.onCancel,
       onDelete: widget.onDelete,
       onSettings: widget.onSettings,
+      onDeleteSeriesSettings: widget.onDeleteSeriesSettings,
       onNavigateLeft: widget.onNavigateLeft,
       onBack: widget.onBack,
       rowFocusNode: isFirst ? _firstItemFocusNode : null,
@@ -419,9 +422,33 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
 
   /// Delete all children of a container node
   void _deleteAllChildren(DownloadTreeNode node) {
+    // Resolve show globalKey BEFORE deleting children (metadata may be unavailable after deletions)
+    String? showGlobalKey;
+    if (node.type == DownloadNodeType.show && widget.onDeleteSeriesSettings != null) {
+      String? serverId;
+      for (final season in node.children) {
+        for (final episode in season.children) {
+          if (episode.metadata?.serverId != null) {
+            serverId = episode.metadata!.serverId;
+            break;
+          }
+        }
+        if (serverId != null) break;
+      }
+      if (serverId != null) {
+        showGlobalKey = buildGlobalKey(serverId, node.key);
+      }
+    }
+
+    // Delete all child episodes/movies
     final allKeys = _getAllChildKeys(node);
     for (final key in allKeys) {
       widget.onDelete?.call(key);
+    }
+
+    // Wipe series settings only for show-level Delete All
+    if (showGlobalKey != null) {
+      widget.onDeleteSeriesSettings!(showGlobalKey);
     }
   }
 
@@ -461,6 +488,7 @@ class _DownloadTreeItem extends StatefulWidget {
   final void Function(String globalKey)? onCancel;
   final void Function(String globalKey)? onDelete;
   final void Function(String key, String title)? onSettings;
+  final ValueChanged<String>? onDeleteSeriesSettings;
   final VoidCallback? onNavigateLeft;
   final VoidCallback? onBack;
   final FocusNode? rowFocusNode;
@@ -481,6 +509,7 @@ class _DownloadTreeItem extends StatefulWidget {
     this.onCancel,
     this.onDelete,
     this.onSettings,
+    this.onDeleteSeriesSettings,
     this.onNavigateLeft,
     this.onBack,
     this.rowFocusNode,

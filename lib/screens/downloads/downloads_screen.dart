@@ -246,6 +246,7 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
                             },
                             onCancel: downloadProvider.cancelDownload,
                             onDelete: downloadProvider.deleteDownload,
+                            onDeleteSeriesSettings: downloadProvider.deleteSeriesSettings,
                             onNavigateLeft: () => MainScreenFocusScope.of(context)?.focusSidebar(),
                             onBack: focusTabBar,
                             suppressAutoFocus: suppressAutoFocus,
