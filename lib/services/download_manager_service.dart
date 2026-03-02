@@ -810,7 +810,7 @@ class DownloadManagerService {
           _stopTranscodePolling(globalKey);
         }
       } else if (++consecutiveNulls >= 15) {
-        appLogger.i('Transcode polling: no session data after 30s for $globalKey, stopping');
+        appLogger.i('Transcode polling: no session data after ~45s for $globalKey, stopping');
         _stopTranscodePolling(globalKey);
       }
     }
@@ -943,7 +943,7 @@ class DownloadManagerService {
     _stopTranscodePolling(globalKey);
     final failedCtx = _pendingDownloadContext.remove(globalKey);
     if (failedCtx?.transcodeSessionId != null) {
-      failedCtx!.client.stopTranscodeSession(failedCtx.transcodeSessionId!);
+      unawaited(failedCtx!.client.stopTranscodeSession(failedCtx.transcodeSessionId!));
     }
     appLogger.e('Download failed for $globalKey: $errorMessage');
     await _transitionStatus(globalKey, DownloadStatus.failed, errorMessage: errorMessage);
@@ -963,7 +963,7 @@ class DownloadManagerService {
 
       final ctx = _pendingDownloadContext.remove(globalKey);
       if (ctx?.transcodeSessionId != null) {
-        ctx!.client.stopTranscodeSession(ctx.transcodeSessionId!);
+        unawaited(ctx!.client.stopTranscodeSession(ctx.transcodeSessionId!));
       }
 
       // ── Phase 1 (critical): resolve and store the video file path ──
@@ -1339,7 +1339,7 @@ class DownloadManagerService {
     _stopTranscodePolling(globalKey);
     final pauseCtx = _pendingDownloadContext[globalKey];
     if (pauseCtx?.transcodeSessionId != null) {
-      pauseCtx!.client.stopTranscodeSession(pauseCtx.transcodeSessionId!);
+      unawaited(pauseCtx!.client.stopTranscodeSession(pauseCtx.transcodeSessionId!));
     }
     // Mark as pausing synchronously so callbacks from holding-queue promotions
     // can detect and cancel promoted tasks before any await yields.
@@ -1405,7 +1405,7 @@ class DownloadManagerService {
 
     final cancelCtx = _pendingDownloadContext.remove(globalKey);
     if (cancelCtx?.transcodeSessionId != null) {
-      cancelCtx!.client.stopTranscodeSession(cancelCtx.transcodeSessionId!);
+      unawaited(cancelCtx!.client.stopTranscodeSession(cancelCtx.transcodeSessionId!));
     }
 
     final bgTaskId = await _database.getBgTaskId(globalKey);
@@ -1424,7 +1424,7 @@ class DownloadManagerService {
 
     final deleteCtx = _pendingDownloadContext.remove(globalKey);
     if (deleteCtx?.transcodeSessionId != null) {
-      deleteCtx!.client.stopTranscodeSession(deleteCtx.transcodeSessionId!);
+      unawaited(deleteCtx!.client.stopTranscodeSession(deleteCtx.transcodeSessionId!));
     }
 
     // Cancel if actively downloading via background_downloader
