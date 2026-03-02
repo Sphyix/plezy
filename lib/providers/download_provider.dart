@@ -123,10 +123,6 @@ class DownloadProvider extends ChangeNotifier {
 
   void clearPendingRetentionTrims() {
     _pendingRetentionTrims = null;
-    notifyListeners();
-  }
-
-  void _clearRetentionTrimProgress() {
     _retentionTrimProgress = null;
     notifyListeners();
   }
@@ -341,7 +337,6 @@ class DownloadProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  @override
   @override
   void dispose() {
     _progressSubscription?.cancel();
@@ -1428,17 +1423,7 @@ class DownloadProvider extends ChangeNotifier {
       }
     }
 
-    // Emit completion state for UI to detect
-    _retentionTrimProgress = DeletionProgress(
-      globalKey: 'retention-trim',
-      itemTitle: '',
-      currentItem: totalEpisodes,
-      totalItems: totalEpisodes,
-    );
-    notifyListeners();
-
-    _pendingRetentionTrims = null;
-    _clearRetentionTrimProgress();
+    clearPendingRetentionTrims();
   }
 
   /// Refresh only metadata from API cache (after watch state sync).

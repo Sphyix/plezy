@@ -74,7 +74,9 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
 
     if (confirmed) {
       // Show progress dialog (non-blocking — fires and proceeds to executeRetentionTrim)
+      bool progressDialogOpen = false;
       if (mounted) {
+        progressDialogOpen = true;
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -85,14 +87,21 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
               // Auto-dismiss when trim is complete
               if (progress == null) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (Navigator.canPop(dialogContext)) {
+                  if (progressDialogOpen && Navigator.canPop(dialogContext)) {
                     Navigator.of(dialogContext).pop();
+                    progressDialogOpen = false;
                   }
                 });
                 return const SizedBox.shrink();
               }
 
-              return DeletionProgressDialog(progress: progress);
+              return DeletionProgressDialog(
+                progress: progress,
+                progressText: t.downloads.retentionCleanupProgress(
+                  current: progress.currentItem,
+                  total: progress.totalItems,
+                ),
+              );
             },
           ),
         );
@@ -105,9 +114,10 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
         provider.clearPendingRetentionTrims();
       }
 
-      // Safety pop in case auto-dismiss timing issues
-      if (mounted && Navigator.canPop(context)) {
+      // Dismiss progress dialog if still showing
+      if (progressDialogOpen && mounted && Navigator.canPop(context)) {
         Navigator.of(context).pop();
+        progressDialogOpen = false;
       }
 
       if (mounted) {

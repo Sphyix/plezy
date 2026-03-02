@@ -4,8 +4,9 @@ import '../i18n/strings.g.dart';
 
 class DeletionProgressDialog extends StatelessWidget {
   final DeletionProgress progress;
+  final String? progressText;
 
-  const DeletionProgressDialog({super.key, required this.progress});
+  const DeletionProgressDialog({super.key, required this.progress, this.progressText});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class DeletionProgressDialog extends StatelessWidget {
 
             // Progress text
             Text(
-              t.downloads.deletingWithProgress(
+              progressText ?? t.downloads.deletingWithProgress(
                 title: progress.itemTitle,
                 current: progress.currentItem,
                 total: progress.totalItems,
@@ -32,7 +33,6 @@ class DeletionProgressDialog extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
-
 
             const SizedBox(height: 16),
 
