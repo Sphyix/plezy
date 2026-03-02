@@ -185,6 +185,7 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
                           return DownloadTreeView(
                             downloads: downloadProvider.downloads,
                             metadata: downloadProvider.metadata,
+                            seriesSettings: downloadProvider.seriesSettings,
                             onPause: downloadProvider.pauseDownload,
                             onSettings: (key, title) async {
                               try {

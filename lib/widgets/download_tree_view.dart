@@ -7,6 +7,7 @@ import '../models/download_models.dart';
 import '../models/plex_metadata.dart';
 import '../utils/content_utils.dart';
 import '../utils/dialogs.dart';
+import '../utils/global_key_utils.dart';
 
 /// Represents a node in the download tree
 class DownloadTreeNode {
@@ -62,6 +63,7 @@ class DownloadTreeView extends StatefulWidget {
   final VoidCallback? onNavigateLeft;
   final VoidCallback? onBack;
   final bool suppressAutoFocus;
+  final Map<String, SeriesDownloadSettings> seriesSettings;
 
   const DownloadTreeView({
     super.key,
@@ -76,6 +78,7 @@ class DownloadTreeView extends StatefulWidget {
     this.onNavigateLeft,
     this.onBack,
     this.suppressAutoFocus = false,
+    this.seriesSettings = const {},
   });
 
   @override
@@ -368,6 +371,7 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
       pauseAllChildren: _pauseAllChildren,
       resumeAllChildren: _resumeAllChildren,
       deleteAllChildren: _deleteAllChildren,
+      seriesSettings: widget.seriesSettings,
     );
   }
 
@@ -464,6 +468,7 @@ class _DownloadTreeItem extends StatefulWidget {
   final void Function(DownloadTreeNode) pauseAllChildren;
   final void Function(DownloadTreeNode) resumeAllChildren;
   final void Function(DownloadTreeNode) deleteAllChildren;
+  final Map<String, SeriesDownloadSettings> seriesSettings;
 
   const _DownloadTreeItem({
     required this.node,
@@ -483,6 +488,7 @@ class _DownloadTreeItem extends StatefulWidget {
     required this.pauseAllChildren,
     required this.resumeAllChildren,
     required this.deleteAllChildren,
+    required this.seriesSettings,
   });
 
   @override
@@ -634,6 +640,8 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
   }
 
   Widget _buildRowContent(ThemeData theme, bool canExpand) {
+    final qualityLabel = _getQualityLabel();
+
     return Row(
       children: [
         // Expand/collapse icon
@@ -655,20 +663,50 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                widget.node.title,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: canExpand ? FontWeight.w600 : FontWeight.normal,
+              // Title — movies show quality badge inline; all other nodes show plain title
+              if (widget.node.type == DownloadNodeType.movie && qualityLabel != null)
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.node.title,
+                        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.normal),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildQualityBadge(theme, qualityLabel),
+                  ],
+                )
+              else
+                Text(
+                  widget.node.title,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: canExpand ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
 
+              // Summary row — shows quality badge next to completion count
               if (canExpand) ...[
                 const SizedBox(height: 4),
-                Text(
-                  _getNodeSummary(),
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _getNodeSummary(),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ),
+                    if (qualityLabel != null) ...[
+                      const SizedBox(width: 8),
+                      _buildQualityBadge(theme, qualityLabel),
+                    ],
+                  ],
                 ),
               ],
 
@@ -747,6 +785,50 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
     final total = widget.node.children.length;
     final completed = widget.node.completedChildrenCount;
     return '$completed/$total completed';
+  }
+
+  String? _getQualityLabel() {
+    final node = widget.node;
+
+    if (node.type == DownloadNodeType.movie) {
+      // Movie: node.key IS the globalKey (serverId:ratingKey)
+      final settings = widget.seriesSettings[node.key];
+      if (settings == null) return null;
+      return settings.transcodeQuality ?? t.downloads.qualityOriginal;
+    }
+
+    if (node.type == DownloadNodeType.show) {
+      // Show: node.key is just ratingKey — need serverId from child metadata
+      String? serverId;
+      for (final season in node.children) {
+        for (final episode in season.children) {
+          if (episode.metadata?.serverId != null) {
+            serverId = episode.metadata!.serverId;
+            break;
+          }
+        }
+        if (serverId != null) break;
+      }
+      if (serverId == null) return null;
+
+      final globalKey = buildGlobalKey(serverId, node.key);
+      final settings = widget.seriesSettings[globalKey];
+      if (settings == null) return null;
+      return settings.transcodeQuality ?? t.downloads.qualityOriginal;
+    }
+
+    return null; // No badge for seasons/episodes
+  }
+
+  Widget _buildQualityBadge(ThemeData theme, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(label, style: theme.textTheme.labelSmall),
+    );
   }
 
   Widget _buildActions() {
