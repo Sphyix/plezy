@@ -619,7 +619,9 @@
     "retentionLabel": "保留",
     "maxEpisodesLabel": "最大剧集数",
     "retentionDaysLabel": "保留天数",
-    "unlimitedHint": "无限制"
+    "unlimitedHint": "无限制",
+    "settings": "设置",
+    "save": "保存"
   },
   "playlists": {
     "title": "播放列表",

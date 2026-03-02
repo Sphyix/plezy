@@ -619,7 +619,9 @@
     "retentionLabel": "Bevarande",
     "maxEpisodesLabel": "Max avsnitt",
     "retentionDaysLabel": "Lagringstid (dagar)",
-    "unlimitedHint": "Obegränsat"
+    "unlimitedHint": "Obegränsat",
+    "settings": "Inställningar",
+    "save": "Spara"
   },
   "playlists": {
     "title": "Spellistor",

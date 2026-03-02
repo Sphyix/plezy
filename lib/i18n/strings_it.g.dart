@@ -869,6 +869,8 @@ class _TranslationsDownloadsIt implements TranslationsDownloadsEn {
 	@override String get maxEpisodesLabel => 'Episodi max.';
 	@override String get retentionDaysLabel => 'Giorni di conservazione';
 	@override String get unlimitedHint => 'Illimitato';
+	@override String get settings => 'Impostazioni';
+	@override String get save => 'Salva';
 }
 
 // Path: playlists
@@ -1867,6 +1869,8 @@ extension on TranslationsIt {
 			'downloads.maxEpisodesLabel' => 'Episodi max.',
 			'downloads.retentionDaysLabel' => 'Giorni di conservazione',
 			'downloads.unlimitedHint' => 'Illimitato',
+			'downloads.settings' => 'Impostazioni',
+			'downloads.save' => 'Salva',
 			'playlists.title' => 'Playlist',
 			'playlists.noPlaylists' => 'Nessuna playlist trovata',
 			'playlists.create' => 'Crea playlist',

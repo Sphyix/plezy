@@ -719,7 +719,9 @@
     "retentionLabel": "Retention",
     "maxEpisodesLabel": "Max episodes",
     "retentionDaysLabel": "Retention days",
-    "unlimitedHint": "Unlimited"
+    "unlimitedHint": "Unlimited",
+    "settings": "Settings",
+    "save": "Save"
   },
   "shaders": {
     "title": "Shaders",

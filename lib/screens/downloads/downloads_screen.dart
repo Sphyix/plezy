@@ -14,6 +14,7 @@ import '../../widgets/focusable_tab_chip.dart';
 import '../../widgets/focusable_media_card.dart';
 import '../../widgets/media_grid_delegate.dart';
 import '../../widgets/download_tree_view.dart';
+import '../../widgets/series_settings_dialog.dart';
 import '../main_screen.dart';
 import '../libraries/state_messages.dart';
 import '../../i18n/strings.g.dart';
@@ -184,6 +185,35 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
                             downloads: downloadProvider.downloads,
                             metadata: downloadProvider.metadata,
                             onPause: downloadProvider.pauseDownload,
+                            onSettings: (key, title) async {
+                              final parsed = parseGlobalKey(key);
+                              String globalKey;
+                              String serverId;
+                              String ratingKey;
+                              if (parsed != null) {
+                                // Movie node: key is globalKey format
+                                globalKey = key;
+                                serverId = parsed.serverId;
+                                ratingKey = parsed.ratingKey;
+                              } else {
+                                // Show node: key is ratingKey only
+                                ratingKey = key;
+                                serverId = _findServerIdForShow(key, downloadProvider);
+                                globalKey = buildGlobalKey(serverId, ratingKey);
+                              }
+                              final existingSettings = downloadProvider.getSeriesSettingsForShow(globalKey);
+                              final result = await SeriesSettingsDialog.show(
+                                context,
+                                title: title,
+                                serverId: serverId,
+                                ratingKey: ratingKey,
+                                initialSettings: existingSettings,
+                              );
+                              if (!context.mounted) return;
+                              if (result != null) {
+                                await downloadProvider.saveSeriesSettings(result);
+                              }
+                            },
                             onResume: (globalKey) {
                               final client = getClient(globalKey);
                               if (client != null) {
@@ -224,6 +254,21 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
       ),
     );
   }
+}
+
+String _findServerIdForShow(String showRatingKey, DownloadProvider provider) {
+  for (final entry in provider.metadata.entries) {
+    final meta = entry.value;
+    if (meta.grandparentRatingKey == showRatingKey && meta.serverId != null) {
+      return meta.serverId!;
+    }
+  }
+  // Fallback: use serverId from any download globalKey
+  for (final globalKey in provider.downloads.keys) {
+    final parsed = parseGlobalKey(globalKey);
+    if (parsed != null) return parsed.serverId;
+  }
+  return '';
 }
 
 enum DownloadType { manage, tvShows, movies }

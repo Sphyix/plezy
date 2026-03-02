@@ -58,6 +58,7 @@ class DownloadTreeView extends StatefulWidget {
   final void Function(String globalKey)? onRetry;
   final void Function(String globalKey)? onCancel;
   final void Function(String globalKey)? onDelete;
+  final void Function(String key, String title)? onSettings;
   final VoidCallback? onNavigateLeft;
   final VoidCallback? onBack;
   final bool suppressAutoFocus;
@@ -71,6 +72,7 @@ class DownloadTreeView extends StatefulWidget {
     this.onRetry,
     this.onCancel,
     this.onDelete,
+    this.onSettings,
     this.onNavigateLeft,
     this.onBack,
     this.suppressAutoFocus = false,
@@ -358,6 +360,7 @@ class _DownloadTreeViewState extends State<DownloadTreeView> {
       onRetry: widget.onRetry,
       onCancel: widget.onCancel,
       onDelete: widget.onDelete,
+      onSettings: widget.onSettings,
       onNavigateLeft: widget.onNavigateLeft,
       onBack: widget.onBack,
       rowFocusNode: isFirst ? _firstItemFocusNode : null,
@@ -453,6 +456,7 @@ class _DownloadTreeItem extends StatefulWidget {
   final void Function(String globalKey)? onRetry;
   final void Function(String globalKey)? onCancel;
   final void Function(String globalKey)? onDelete;
+  final void Function(String key, String title)? onSettings;
   final VoidCallback? onNavigateLeft;
   final VoidCallback? onBack;
   final FocusNode? rowFocusNode;
@@ -471,6 +475,7 @@ class _DownloadTreeItem extends StatefulWidget {
     this.onRetry,
     this.onCancel,
     this.onDelete,
+    this.onSettings,
     this.onNavigateLeft,
     this.onBack,
     this.rowFocusNode,
@@ -562,6 +567,7 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
     if (status == DownloadStatus.paused && widget.onResume != null) count++;
     if ((status == DownloadStatus.downloading || status == DownloadStatus.queued) && widget.onCancel != null) count++;
     if (status == DownloadStatus.failed && widget.onRetry != null) count++;
+    if (widget.node.type == DownloadNodeType.movie && widget.onSettings != null) count++;
     if ((status == DownloadStatus.completed || status == DownloadStatus.failed || status == DownloadStatus.cancelled) &&
         widget.onDelete != null) {
       count++;
@@ -574,6 +580,7 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
     final status = widget.node.status;
     if ((status == DownloadStatus.downloading || status == DownloadStatus.queued) && widget.onPause != null) count++;
     if (status == DownloadStatus.paused && widget.onResume != null) count++;
+    if (widget.node.type == DownloadNodeType.show && widget.onSettings != null) count++;
     if (widget.onDelete != null) count++;
     return count;
   }
@@ -804,6 +811,18 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
       );
     }
 
+    // Settings button (movie only)
+    if (widget.node.type == DownloadNodeType.movie && widget.onSettings != null) {
+      actions.add(
+        _buildActionButton(
+          icon: Symbols.settings_rounded,
+          tooltip: t.downloads.settings,
+          onPressed: () => widget.onSettings!(widget.node.key, widget.node.title),
+          buttonIndex: buttonIndex++,
+        ),
+      );
+    }
+
     // Delete button for completed/failed/cancelled items
     if ((status == DownloadStatus.completed || status == DownloadStatus.failed || status == DownloadStatus.cancelled) &&
         widget.onDelete != null) {
@@ -851,6 +870,18 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
           icon: Symbols.play_arrow_rounded,
           tooltip: t.downloads.resumeAll,
           onPressed: () => widget.resumeAllChildren(widget.node),
+          buttonIndex: buttonIndex++,
+        ),
+      );
+    }
+
+    // Settings button (show only, not season)
+    if (widget.node.type == DownloadNodeType.show && widget.onSettings != null) {
+      actions.add(
+        _buildActionButton(
+          icon: Symbols.settings_rounded,
+          tooltip: t.downloads.settings,
+          onPressed: () => widget.onSettings!(widget.node.key, widget.node.title),
           buttonIndex: buttonIndex++,
         ),
       );

@@ -990,6 +990,8 @@ class _TranslationsDownloadsKo implements TranslationsDownloadsEn {
 	@override String get maxEpisodesLabel => '최대 에피소드';
 	@override String get retentionDaysLabel => '보관 일수';
 	@override String get unlimitedHint => '무제한';
+	@override String get settings => '설정';
+	@override String get save => '저장';
 }
 
 // Path: shaders
@@ -1961,6 +1963,8 @@ extension on TranslationsKo {
 			'downloads.maxEpisodesLabel' => '최대 에피소드',
 			'downloads.retentionDaysLabel' => '보관 일수',
 			'downloads.unlimitedHint' => '무제한',
+			'downloads.settings' => '설정',
+			'downloads.save' => '저장',
 			'shaders.title' => '셰이더',
 			'shaders.noShaderDescription' => '비디오 향상 없음',
 			'shaders.nvscalerDescription' => '더 선명한 비디오를 위한 NVIDIA 이미지 스케일링',

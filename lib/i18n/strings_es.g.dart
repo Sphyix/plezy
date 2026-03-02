@@ -990,6 +990,8 @@ class _TranslationsDownloadsEs implements TranslationsDownloadsEn {
 	@override String get maxEpisodesLabel => 'Máx. episodios';
 	@override String get retentionDaysLabel => 'Días de retención';
 	@override String get unlimitedHint => 'Ilimitado';
+	@override String get settings => 'Ajustes';
+	@override String get save => 'Guardar';
 }
 
 // Path: shaders
@@ -1961,6 +1963,8 @@ extension on TranslationsEs {
 			'downloads.maxEpisodesLabel' => 'Máx. episodios',
 			'downloads.retentionDaysLabel' => 'Días de retención',
 			'downloads.unlimitedHint' => 'Ilimitado',
+			'downloads.settings' => 'Ajustes',
+			'downloads.save' => 'Guardar',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Sin mejora de video',
 			'shaders.nvscalerDescription' => 'Escalado de imagen NVIDIA para un video más nítido',

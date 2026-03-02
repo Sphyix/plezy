@@ -869,6 +869,8 @@ class _TranslationsDownloadsZh implements TranslationsDownloadsEn {
 	@override String get maxEpisodesLabel => '最大剧集数';
 	@override String get retentionDaysLabel => '保留天数';
 	@override String get unlimitedHint => '无限制';
+	@override String get settings => '设置';
+	@override String get save => '保存';
 }
 
 // Path: playlists
@@ -1867,6 +1869,8 @@ extension on TranslationsZh {
 			'downloads.maxEpisodesLabel' => '最大剧集数',
 			'downloads.retentionDaysLabel' => '保留天数',
 			'downloads.unlimitedHint' => '无限制',
+			'downloads.settings' => '设置',
+			'downloads.save' => '保存',
 			'playlists.title' => '播放列表',
 			'playlists.noPlaylists' => '未找到播放列表',
 			'playlists.create' => '创建播放列表',

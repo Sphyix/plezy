@@ -719,7 +719,9 @@
     "retentionLabel": "보관",
     "maxEpisodesLabel": "최대 에피소드",
     "retentionDaysLabel": "보관 일수",
-    "unlimitedHint": "무제한"
+    "unlimitedHint": "무제한",
+    "settings": "설정",
+    "save": "저장"
   },
   "shaders": {
     "title": "셰이더",

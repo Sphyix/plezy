@@ -619,7 +619,9 @@
     "retentionLabel": "Conservazione",
     "maxEpisodesLabel": "Episodi max.",
     "retentionDaysLabel": "Giorni di conservazione",
-    "unlimitedHint": "Illimitato"
+    "unlimitedHint": "Illimitato",
+    "settings": "Impostazioni",
+    "save": "Salva"
   },
   "playlists": {
     "title": "Playlist",

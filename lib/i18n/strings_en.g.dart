@@ -2224,6 +2224,12 @@ class TranslationsDownloadsEn {
 
 	/// en: 'Unlimited'
 	String get unlimitedHint => 'Unlimited';
+
+	/// en: 'Settings'
+	String get settings => 'Settings';
+
+	/// en: 'Save'
+	String get save => 'Save';
 }
 
 // Path: shaders
@@ -3596,6 +3602,8 @@ extension on Translations {
 			'downloads.maxEpisodesLabel' => 'Max episodes',
 			'downloads.retentionDaysLabel' => 'Retention days',
 			'downloads.unlimitedHint' => 'Unlimited',
+			'downloads.settings' => 'Settings',
+			'downloads.save' => 'Save',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',

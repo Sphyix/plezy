@@ -77,22 +77,29 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.title),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Quality section
-          _buildSectionHeader(t.downloads.qualityLabel),
-          _buildQualityOptions(),
-          const SizedBox(height: 16),
-          // Episodes & seasons section
-          _buildSectionHeader(t.downloads.episodesLabel),
-          _buildEpisodesSection(),
-          const SizedBox(height: 16),
-          // Retention section
-          _buildSectionHeader(t.downloads.retentionLabel),
-          _buildRetentionSection(),
-        ],
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Quality section (always visible, not collapsible)
+            _buildSectionHeader(t.downloads.qualityLabel),
+            _buildQualityOptions(),
+            const SizedBox(height: 8),
+            // Episodes & seasons section (collapsible)
+            ExpansionTile(
+              title: Text(t.downloads.episodesLabel),
+              initiallyExpanded: true,
+              children: _buildEpisodesChildren(),
+            ),
+            // Retention section (collapsible, initially collapsed)
+            ExpansionTile(
+              title: Text(t.downloads.retentionLabel),
+              initiallyExpanded: false,
+              children: _buildRetentionChildren(),
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -101,7 +108,7 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
         ),
         FilledButton(
           onPressed: _onDownloadPressed,
-          child: Text(t.downloads.downloadNow),
+          child: Text(widget.initialSettings != null ? t.downloads.save : t.downloads.downloadNow),
         ),
       ],
     );
@@ -138,29 +145,29 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
     );
   }
 
-  Widget _buildEpisodesSection() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        FocusableSwitchListTile(
-          title: Text(t.downloads.downloadNewEpisodes),
-          value: _downloadNewEpisodes,
-          onChanged: (v) => setState(() {
-            _downloadNewEpisodes = v;
-            if (v && _maxEpisodes == 0) {
-              _maxEpisodes = 1;
-              _maxEpisodesController.text = '1';
-            }
-          }),
-          dense: true,
-        ),
-        FocusableSwitchListTile(
-          title: Text(t.downloads.downloadNewSeasons),
-          value: _downloadNewSeasons,
-          onChanged: (v) => setState(() => _downloadNewSeasons = v),
-          dense: true,
-        ),
-        TextFormField(
+  List<Widget> _buildEpisodesChildren() {
+    return [
+      FocusableSwitchListTile(
+        title: Text(t.downloads.downloadNewEpisodes),
+        value: _downloadNewEpisodes,
+        onChanged: (v) => setState(() {
+          _downloadNewEpisodes = v;
+          if (v && _maxEpisodes == 0) {
+            _maxEpisodes = 1;
+            _maxEpisodesController.text = '1';
+          }
+        }),
+        dense: true,
+      ),
+      FocusableSwitchListTile(
+        title: Text(t.downloads.downloadNewSeasons),
+        value: _downloadNewSeasons,
+        onChanged: (v) => setState(() => _downloadNewSeasons = v),
+        dense: true,
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: TextFormField(
           controller: _maxEpisodesController,
           decoration: InputDecoration(
             labelText: t.downloads.maxEpisodesLabel,
@@ -169,29 +176,52 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
           enabled: _downloadNewEpisodes,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          onTap: () {
+            if (_maxEpisodes == 0) {
+              setState(() {
+                _maxEpisodes = 1;
+                _maxEpisodesController.text = '1';
+                _maxEpisodesController.selection = const TextSelection(baseOffset: 0, extentOffset: 1);
+              });
+            }
+          },
           onChanged: (v) {
             final parsed = int.tryParse(v) ?? 0;
             setState(() => _maxEpisodes = parsed);
           },
         ),
-      ],
-    );
+      ),
+    ];
   }
 
-  Widget _buildRetentionSection() {
-    return TextFormField(
-      controller: _retentionDaysController,
-      decoration: InputDecoration(
-        labelText: t.downloads.retentionDaysLabel,
-        hintText: t.downloads.unlimitedHint,
+  List<Widget> _buildRetentionChildren() {
+    return [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: TextFormField(
+          controller: _retentionDaysController,
+          decoration: InputDecoration(
+            labelText: t.downloads.retentionDaysLabel,
+            hintText: t.downloads.unlimitedHint,
+          ),
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          onTap: () {
+            if (_retentionDays == 0) {
+              setState(() {
+                _retentionDays = 1;
+                _retentionDaysController.text = '1';
+                _retentionDaysController.selection = const TextSelection(baseOffset: 0, extentOffset: 1);
+              });
+            }
+          },
+          onChanged: (v) {
+            final parsed = int.tryParse(v) ?? 0;
+            setState(() => _retentionDays = parsed);
+          },
+        ),
       ),
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      onChanged: (v) {
-        final parsed = int.tryParse(v) ?? 0;
-        setState(() => _retentionDays = parsed);
-      },
-    );
+    ];
   }
 
   void _onDownloadPressed() {

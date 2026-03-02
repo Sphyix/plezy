@@ -869,6 +869,8 @@ class _TranslationsDownloadsSv implements TranslationsDownloadsEn {
 	@override String get maxEpisodesLabel => 'Max avsnitt';
 	@override String get retentionDaysLabel => 'Lagringstid (dagar)';
 	@override String get unlimitedHint => 'Obegränsat';
+	@override String get settings => 'Inställningar';
+	@override String get save => 'Spara';
 }
 
 // Path: playlists
@@ -1867,6 +1869,8 @@ extension on TranslationsSv {
 			'downloads.maxEpisodesLabel' => 'Max avsnitt',
 			'downloads.retentionDaysLabel' => 'Lagringstid (dagar)',
 			'downloads.unlimitedHint' => 'Obegränsat',
+			'downloads.settings' => 'Inställningar',
+			'downloads.save' => 'Spara',
 			'playlists.title' => 'Spellistor',
 			'playlists.noPlaylists' => 'Inga spellistor hittades',
 			'playlists.create' => 'Skapa spellista',
