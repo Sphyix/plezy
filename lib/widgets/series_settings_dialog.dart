@@ -51,7 +51,6 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
   int _maxEpisodes = 0;
   int _retentionDays = 0;
 
-  // Task 1: Track ExpansionTile expansion state
   bool _episodesExpanded = true; // matches initiallyExpanded: true
   bool _retentionExpanded = false; // matches initiallyExpanded: false
 
@@ -94,12 +93,10 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
             _buildQualityOptions(),
             const SizedBox(height: 8),
             // Episodes & seasons section (collapsible)
-            // Task 1.3: Wire onExpansionChanged to update _episodesExpanded
             ExpansionTile(
               title: Text(t.downloads.episodesLabel),
               initiallyExpanded: true,
               onExpansionChanged: (expanded) => setState(() => _episodesExpanded = expanded),
-              // Task 2.1: Wrap children with ExcludeFocus — excluded when collapsed
               children: [
                 ExcludeFocus(
                   excluding: !_episodesExpanded,
@@ -108,12 +105,10 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
               ],
             ),
             // Retention section (collapsible, initially collapsed)
-            // Task 1.4: Wire onExpansionChanged to update _retentionExpanded
             ExpansionTile(
               title: Text(t.downloads.retentionLabel),
               initiallyExpanded: false,
               onExpansionChanged: (expanded) => setState(() => _retentionExpanded = expanded),
-              // Task 2.2: Wrap children with ExcludeFocus — excluded when collapsed
               children: [
                 ExcludeFocus(
                   excluding: !_retentionExpanded,
@@ -124,9 +119,7 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
           ],
         ),
       ),
-      // Task 4: Wrap dialog action buttons with FocusableButton
       actions: [
-        // Task 4.1: Wrap Cancel TextButton with FocusableButton
         FocusableButton(
           onPressed: () => Navigator.pop(context, null),
           child: TextButton(
@@ -134,7 +127,6 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
             child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
           ),
         ),
-        // Task 4.2: Wrap Save/Download FilledButton with FocusableButton
         FocusableButton(
           onPressed: _onDownloadPressed,
           child: FilledButton(
@@ -197,8 +189,6 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
         onChanged: (v) => setState(() => _downloadNewSeasons = v),
         dense: true,
       ),
-      // Task 2.3: Exclude from focus when _downloadNewEpisodes is OFF
-      // Task 3.1: Wrap TextFormField with FocusableWrapper for TV focus border
       ExcludeFocus(
         excluding: !_downloadNewEpisodes,
         child: Padding(
@@ -244,7 +234,6 @@ class _SeriesSettingsDialogState extends State<SeriesSettingsDialog> {
 
   List<Widget> _buildRetentionChildren() {
     return [
-      // Task 3.2: Wrap TextFormField with FocusableWrapper for TV focus border
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: FocusableWrapper(
