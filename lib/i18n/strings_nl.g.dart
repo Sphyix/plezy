@@ -886,6 +886,13 @@ class _TranslationsDownloadsNl implements TranslationsDownloadsEn {
 	@override String changeMaxEpisodes({required Object value}) => 'Max afleveringen: ${value}';
 	@override String changeRetentionDays({required Object value}) => 'Bewaardagen: ${value}';
 	@override String get noChanges => 'Geen wijzigingen gedetecteerd';
+	@override String get retentionTrimTitle => 'Bewaarbeleid opruimen';
+	@override String get retentionTrimMessage => 'De volgende afleveringen overschrijden je bewaarbeleidslimieten en worden verwijderd:';
+	@override String retentionTrimShowEntry({required Object title, required Object count}) => '${title} — ${count} afleveringen';
+	@override String retentionTrimTotal({required Object count}) => 'Totaal: ${count} afleveringen worden verwijderd';
+	@override String get retentionTrimConfirm => 'Verwijderen';
+	@override String get retentionTrimCancel => 'Annuleren';
+	@override String get retentionTrimComplete => 'Bewaarbeleid opruiming voltooid';
 }
 
 // Path: playlists
@@ -1901,6 +1908,13 @@ extension on TranslationsNl {
 			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Max afleveringen: ${value}',
 			'downloads.changeRetentionDays' => ({required Object value}) => 'Bewaardagen: ${value}',
 			'downloads.noChanges' => 'Geen wijzigingen gedetecteerd',
+			'downloads.retentionTrimTitle' => 'Bewaarbeleid opruimen',
+			'downloads.retentionTrimMessage' => 'De volgende afleveringen overschrijden je bewaarbeleidslimieten en worden verwijderd:',
+			'downloads.retentionTrimShowEntry' => ({required Object title, required Object count}) => '${title} — ${count} afleveringen',
+			'downloads.retentionTrimTotal' => ({required Object count}) => 'Totaal: ${count} afleveringen worden verwijderd',
+			'downloads.retentionTrimConfirm' => 'Verwijderen',
+			'downloads.retentionTrimCancel' => 'Annuleren',
+			'downloads.retentionTrimComplete' => 'Bewaarbeleid opruiming voltooid',
 			'playlists.title' => 'Afspeellijsten',
 			'playlists.noPlaylists' => 'Geen afspeellijsten gevonden',
 			'playlists.create' => 'Afspeellijst maken',

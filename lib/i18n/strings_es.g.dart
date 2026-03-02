@@ -1007,6 +1007,13 @@ class _TranslationsDownloadsEs implements TranslationsDownloadsEn {
 	@override String changeMaxEpisodes({required Object value}) => 'Máx. episodios: ${value}';
 	@override String changeRetentionDays({required Object value}) => 'Días de retención: ${value}';
 	@override String get noChanges => 'No se detectaron cambios';
+	@override String get retentionTrimTitle => 'Limpieza de retención';
+	@override String get retentionTrimMessage => 'Los siguientes episodios superan tus límites de retención y serán eliminados:';
+	@override String retentionTrimShowEntry({required Object title, required Object count}) => '${title} — ${count} episodios';
+	@override String retentionTrimTotal({required Object count}) => 'Total: ${count} episodios serán eliminados';
+	@override String get retentionTrimConfirm => 'Eliminar';
+	@override String get retentionTrimCancel => 'Cancelar';
+	@override String get retentionTrimComplete => 'Limpieza de retención completada';
 }
 
 // Path: shaders
@@ -1995,6 +2002,13 @@ extension on TranslationsEs {
 			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Máx. episodios: ${value}',
 			'downloads.changeRetentionDays' => ({required Object value}) => 'Días de retención: ${value}',
 			'downloads.noChanges' => 'No se detectaron cambios',
+			'downloads.retentionTrimTitle' => 'Limpieza de retención',
+			'downloads.retentionTrimMessage' => 'Los siguientes episodios superan tus límites de retención y serán eliminados:',
+			'downloads.retentionTrimShowEntry' => ({required Object title, required Object count}) => '${title} — ${count} episodios',
+			'downloads.retentionTrimTotal' => ({required Object count}) => 'Total: ${count} episodios serán eliminados',
+			'downloads.retentionTrimConfirm' => 'Eliminar',
+			'downloads.retentionTrimCancel' => 'Cancelar',
+			'downloads.retentionTrimComplete' => 'Limpieza de retención completada',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Sin mejora de video',
 			'shaders.nvscalerDescription' => 'Escalado de imagen NVIDIA para un video más nítido',

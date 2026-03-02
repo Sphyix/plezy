@@ -636,7 +636,14 @@
     "changeSeasonsOff": "下载新季：已禁用",
     "changeMaxEpisodes": "最大剧集数：${value}",
     "changeRetentionDays": "保留天数：${value}",
-    "noChanges": "未检测到更改"
+    "noChanges": "未检测到更改",
+    "retentionTrimTitle": "保留策略清理",
+    "retentionTrimMessage": "以下剧集超出了您的保留限制，将被删除：",
+    "retentionTrimShowEntry": "${title} — ${count} 集",
+    "retentionTrimTotal": "共 ${count} 集将被删除",
+    "retentionTrimConfirm": "删除",
+    "retentionTrimCancel": "取消",
+    "retentionTrimComplete": "保留策略清理完成"
   },
   "playlists": {
     "title": "播放列表",

@@ -636,7 +636,14 @@
     "changeSeasonsOff": "Neue Staffeln herunterladen: deaktiviert",
     "changeMaxEpisodes": "Max. Episoden: ${value}",
     "changeRetentionDays": "Aufbewahrungstage: ${value}",
-    "noChanges": "Keine Änderungen erkannt"
+    "noChanges": "Keine Änderungen erkannt",
+    "retentionTrimTitle": "Aufbewahrungsbereinigung",
+    "retentionTrimMessage": "Die folgenden Episoden überschreiten deine Aufbewahrungsgrenzen und werden entfernt:",
+    "retentionTrimShowEntry": "${title} — ${count} Episoden",
+    "retentionTrimTotal": "Gesamt: ${count} Episoden werden entfernt",
+    "retentionTrimConfirm": "Entfernen",
+    "retentionTrimCancel": "Abbrechen",
+    "retentionTrimComplete": "Aufbewahrungsbereinigung abgeschlossen"
   },
   "playlists": {
     "title": "Wiedergabelisten",

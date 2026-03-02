@@ -886,6 +886,13 @@ class _TranslationsDownloadsSv implements TranslationsDownloadsEn {
 	@override String changeMaxEpisodes({required Object value}) => 'Max avsnitt: ${value}';
 	@override String changeRetentionDays({required Object value}) => 'Lagringsdagar: ${value}';
 	@override String get noChanges => 'Inga ändringar upptäckta';
+	@override String get retentionTrimTitle => 'Rensning av lagringsregler';
+	@override String get retentionTrimMessage => 'Följande avsnitt överstiger dina lagringsgränser och kommer att tas bort:';
+	@override String retentionTrimShowEntry({required Object title, required Object count}) => '${title} — ${count} avsnitt';
+	@override String retentionTrimTotal({required Object count}) => 'Totalt: ${count} avsnitt kommer att tas bort';
+	@override String get retentionTrimConfirm => 'Ta bort';
+	@override String get retentionTrimCancel => 'Avbryt';
+	@override String get retentionTrimComplete => 'Rensning av lagringsregler klar';
 }
 
 // Path: playlists
@@ -1901,6 +1908,13 @@ extension on TranslationsSv {
 			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Max avsnitt: ${value}',
 			'downloads.changeRetentionDays' => ({required Object value}) => 'Lagringsdagar: ${value}',
 			'downloads.noChanges' => 'Inga ändringar upptäckta',
+			'downloads.retentionTrimTitle' => 'Rensning av lagringsregler',
+			'downloads.retentionTrimMessage' => 'Följande avsnitt överstiger dina lagringsgränser och kommer att tas bort:',
+			'downloads.retentionTrimShowEntry' => ({required Object title, required Object count}) => '${title} — ${count} avsnitt',
+			'downloads.retentionTrimTotal' => ({required Object count}) => 'Totalt: ${count} avsnitt kommer att tas bort',
+			'downloads.retentionTrimConfirm' => 'Ta bort',
+			'downloads.retentionTrimCancel' => 'Avbryt',
+			'downloads.retentionTrimComplete' => 'Rensning av lagringsregler klar',
 			'playlists.title' => 'Spellistor',
 			'playlists.noPlaylists' => 'Inga spellistor hittades',
 			'playlists.create' => 'Skapa spellista',

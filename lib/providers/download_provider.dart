@@ -61,6 +61,9 @@ class DownloadProvider extends ChangeNotifier {
   // Per-show mutex for refresh operations — prevents duplicate concurrent refreshes
   final _showRefreshCompleters = <String, Completer<void>>{};
 
+  // Pending retention trims detected at startup (non-null = dialog should be shown)
+  List<RetentionTrimResult>? _pendingRetentionTrims;
+
   // Storage error state (set when storage is unavailable)
   String? _storageError;
   String? get storageError => _storageError;
@@ -109,6 +112,14 @@ class DownloadProvider extends ChangeNotifier {
   bool isSeriesConfigured(String globalKey) {
     final settings = _seriesSettings[globalKey];
     return settings != null && settings.isConfigured;
+  }
+
+  // Retention trim accessors
+  List<RetentionTrimResult>? get pendingRetentionTrims => _pendingRetentionTrims;
+
+  void clearPendingRetentionTrims() {
+    _pendingRetentionTrims = null;
+    notifyListeners();
   }
 
   /// Requeue pending downloads for a series after quality settings change.
@@ -225,6 +236,14 @@ class DownloadProvider extends ChangeNotifier {
         '${_totalEpisodeCounts.length} episode counts, and ${_seriesSettings.length} series settings',
       );
       notifyListeners();
+
+      // Evaluate retention policies at startup for apps without auto-download configured
+      final trims = await evaluateRetentionPolicies();
+      if (trims.isNotEmpty) {
+        _pendingRetentionTrims = trims;
+        appLogger.i('Retention (startup): ${trims.length} shows have episodes exceeding limits');
+        notifyListeners();
+      }
     } catch (e) {
       appLogger.e('Failed to load persisted downloads', error: e);
     }
@@ -1282,6 +1301,106 @@ class DownloadProvider extends ChangeNotifier {
 
     await Future.wait(futures);
     appLogger.i('Auto-download: Complete');
+
+    // Evaluate retention policies after auto-download completes
+    final trims = await evaluateRetentionPolicies();
+    if (trims.isNotEmpty) {
+      _pendingRetentionTrims = trims;
+      appLogger.i('Retention: ${trims.length} shows have episodes exceeding limits');
+      notifyListeners();
+    }
+  }
+
+  /// Evaluate retention policies for all series with limits configured.
+  /// Returns a list of [RetentionTrimResult] for shows with episodes exceeding their limits.
+  Future<List<RetentionTrimResult>> evaluateRetentionPolicies() async {
+    final results = <RetentionTrimResult>[];
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    for (final settings in _seriesSettings.values) {
+      if (!settings.hasRetentionPolicy && !settings.hasEpisodeLimit) continue;
+
+      final parsed = parseGlobalKey(settings.globalKey);
+      if (parsed == null) continue;
+
+      // Query DB for all episodes of this show, then scope by serverId for multi-server safety
+      final allEpisodes = await _downloadManager.database.getEpisodesByShow(parsed.ratingKey);
+      final scoped = allEpisodes.where((e) => e.serverId == parsed.serverId).toList();
+      final completed = scoped.where((e) => e.status == DownloadStatus.completed.index).toList();
+
+      if (completed.isEmpty) continue;
+
+      // Sort: watched episodes first (oldest→newest), then unwatched (oldest→newest)
+      completed.sort((a, b) {
+        final aWatched = _isWatchedOrInProgress(a.globalKey);
+        final bWatched = _isWatchedOrInProgress(b.globalKey);
+        if (aWatched != bWatched) return aWatched ? -1 : 1;
+        final aTime = a.downloadedAt ?? 0;
+        final bTime = b.downloadedAt ?? 0;
+        return aTime.compareTo(bTime);
+      });
+
+      final violations = <String>{};
+
+      // Apply retentionDays: episodes older than limit (skip null downloadedAt)
+      if (settings.hasRetentionPolicy) {
+        final cutoff = now - settings.retentionDays * 86400000;
+        for (final episode in completed) {
+          if (episode.downloadedAt != null && episode.downloadedAt! < cutoff) {
+            violations.add(episode.globalKey);
+          }
+        }
+      }
+
+      // Apply maxEpisodes: oldest episodes beyond limit (treat null downloadedAt as epoch 0)
+      if (settings.hasEpisodeLimit && completed.length > settings.maxEpisodes) {
+        final excess = completed.length - settings.maxEpisodes;
+        for (var i = 0; i < excess; i++) {
+          violations.add(completed[i].globalKey);
+        }
+      }
+
+      if (violations.isEmpty) continue;
+
+      // Preserve trim priority order from sorted list
+      final orderedKeys = completed.map((e) => e.globalKey).where(violations.contains).toList();
+
+      // Look up show title from metadata
+      final showMeta = _metadata[settings.globalKey];
+      final showTitle = showMeta?.title ?? settings.ratingKey;
+
+      results.add(
+        RetentionTrimResult(
+          showGlobalKey: settings.globalKey,
+          showTitle: showTitle,
+          episodeGlobalKeys: orderedKeys,
+          totalEpisodesForShow: completed.length,
+        ),
+      );
+    }
+
+    return results;
+  }
+
+  bool _isWatchedOrInProgress(String episodeGlobalKey) {
+    final meta = _metadata[episodeGlobalKey];
+    if (meta == null) return false;
+    final isWatched = meta.viewCount != null && meta.viewCount! > 0;
+    final isInProgress =
+        meta.viewOffset != null && meta.duration != null && meta.viewOffset! > 0 && meta.viewOffset! < meta.duration!;
+    return isWatched || isInProgress;
+  }
+
+  /// Execute retention trim: delete all episodes identified by [trims].
+  /// Settings are preserved — only episode records are removed (AC #3).
+  Future<void> executeRetentionTrim(List<RetentionTrimResult> trims) async {
+    for (final trim in trims) {
+      for (final episodeKey in trim.episodeGlobalKeys) {
+        await deleteDownload(episodeKey);
+      }
+    }
+    _pendingRetentionTrims = null;
+    notifyListeners();
   }
 
   /// Refresh only metadata from API cache (after watch state sync).

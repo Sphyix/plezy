@@ -736,7 +736,14 @@
     "changeSeasonsOff": "Download new seasons: disabled",
     "changeMaxEpisodes": "Max episodes: ${value}",
     "changeRetentionDays": "Retention days: ${value}",
-    "noChanges": "No changes detected"
+    "noChanges": "No changes detected",
+    "retentionTrimTitle": "Retention Cleanup",
+    "retentionTrimMessage": "The following episodes exceed your retention limits and will be removed:",
+    "retentionTrimShowEntry": "${title} — ${count} episodes",
+    "retentionTrimTotal": "Total: ${count} episodes will be removed",
+    "retentionTrimConfirm": "Remove",
+    "retentionTrimCancel": "Cancel",
+    "retentionTrimComplete": "Retention cleanup complete"
   },
   "shaders": {
     "title": "Shaders",

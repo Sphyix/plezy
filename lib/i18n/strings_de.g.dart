@@ -886,6 +886,13 @@ class _TranslationsDownloadsDe implements TranslationsDownloadsEn {
 	@override String changeMaxEpisodes({required Object value}) => 'Max. Episoden: ${value}';
 	@override String changeRetentionDays({required Object value}) => 'Aufbewahrungstage: ${value}';
 	@override String get noChanges => 'Keine Änderungen erkannt';
+	@override String get retentionTrimTitle => 'Aufbewahrungsbereinigung';
+	@override String get retentionTrimMessage => 'Die folgenden Episoden überschreiten deine Aufbewahrungsgrenzen und werden entfernt:';
+	@override String retentionTrimShowEntry({required Object title, required Object count}) => '${title} — ${count} Episoden';
+	@override String retentionTrimTotal({required Object count}) => 'Gesamt: ${count} Episoden werden entfernt';
+	@override String get retentionTrimConfirm => 'Entfernen';
+	@override String get retentionTrimCancel => 'Abbrechen';
+	@override String get retentionTrimComplete => 'Aufbewahrungsbereinigung abgeschlossen';
 }
 
 // Path: playlists
@@ -1901,6 +1908,13 @@ extension on TranslationsDe {
 			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Max. Episoden: ${value}',
 			'downloads.changeRetentionDays' => ({required Object value}) => 'Aufbewahrungstage: ${value}',
 			'downloads.noChanges' => 'Keine Änderungen erkannt',
+			'downloads.retentionTrimTitle' => 'Aufbewahrungsbereinigung',
+			'downloads.retentionTrimMessage' => 'Die folgenden Episoden überschreiten deine Aufbewahrungsgrenzen und werden entfernt:',
+			'downloads.retentionTrimShowEntry' => ({required Object title, required Object count}) => '${title} — ${count} Episoden',
+			'downloads.retentionTrimTotal' => ({required Object count}) => 'Gesamt: ${count} Episoden werden entfernt',
+			'downloads.retentionTrimConfirm' => 'Entfernen',
+			'downloads.retentionTrimCancel' => 'Abbrechen',
+			'downloads.retentionTrimComplete' => 'Aufbewahrungsbereinigung abgeschlossen',
 			'playlists.title' => 'Wiedergabelisten',
 			'playlists.noPlaylists' => 'Keine Wiedergabelisten gefunden',
 			'playlists.create' => 'Wiedergabeliste erstellen',

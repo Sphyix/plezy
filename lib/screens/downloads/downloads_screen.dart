@@ -16,6 +16,7 @@ import '../../widgets/media_grid_delegate.dart';
 import '../../widgets/download_tree_view.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/series_settings_dialog.dart';
+import '../../widgets/retention_trim_dialog.dart';
 import '../main_screen.dart';
 import '../libraries/state_messages.dart';
 import '../../i18n/strings.g.dart';
@@ -33,6 +34,9 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
   final _tvShowsTabChipFocusNode = FocusNode(debugLabel: 'tab_chip_tv_shows');
   final _moviesTabChipFocusNode = FocusNode(debugLabel: 'tab_chip_movies');
 
+  // Prevents showing multiple retention dialogs simultaneously
+  bool _showingRetentionDialog = false;
+
   @override
   List<FocusNode> get tabChipFocusNodes => [_queueTabChipFocusNode, _tvShowsTabChipFocusNode, _moviesTabChipFocusNode];
 
@@ -41,6 +45,42 @@ class DownloadsScreenState extends State<DownloadsScreen> with SingleTickerProvi
     super.initState();
     suppressAutoFocus = true; // Start suppressed
     initTabNavigation();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final provider = context.watch<DownloadProvider>();
+    if (provider.pendingRetentionTrims != null && !_showingRetentionDialog) {
+      _showingRetentionDialog = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _showRetentionTrimDialog(provider));
+    }
+  }
+
+  Future<void> _showRetentionTrimDialog(DownloadProvider provider) async {
+    final trims = provider.pendingRetentionTrims;
+    if (trims == null || !mounted) {
+      _showingRetentionDialog = false;
+      return;
+    }
+
+    final confirmed = await RetentionTrimDialog.show(context, trims);
+
+    if (!mounted) {
+      _showingRetentionDialog = false;
+      return;
+    }
+
+    if (confirmed) {
+      await provider.executeRetentionTrim(trims);
+      if (mounted) {
+        showSnackBar(context, t.downloads.retentionTrimComplete);
+      }
+    } else {
+      provider.clearPendingRetentionTrims();
+    }
+
+    _showingRetentionDialog = false;
   }
 
   @override

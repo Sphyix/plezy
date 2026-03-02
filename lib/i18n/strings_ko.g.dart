@@ -1007,6 +1007,13 @@ class _TranslationsDownloadsKo implements TranslationsDownloadsEn {
 	@override String changeMaxEpisodes({required Object value}) => '최대 에피소드: ${value}';
 	@override String changeRetentionDays({required Object value}) => '보관 일수: ${value}';
 	@override String get noChanges => '변경 사항 없음';
+	@override String get retentionTrimTitle => '보관 정리';
+	@override String get retentionTrimMessage => '다음 에피소드들은 보관 한도를 초과하여 삭제됩니다:';
+	@override String retentionTrimShowEntry({required Object title, required Object count}) => '${title} — ${count}개 에피소드';
+	@override String retentionTrimTotal({required Object count}) => '총 ${count}개 에피소드가 삭제됩니다';
+	@override String get retentionTrimConfirm => '삭제';
+	@override String get retentionTrimCancel => '취소';
+	@override String get retentionTrimComplete => '보관 정리 완료';
 }
 
 // Path: shaders
@@ -1995,6 +2002,13 @@ extension on TranslationsKo {
 			'downloads.changeMaxEpisodes' => ({required Object value}) => '최대 에피소드: ${value}',
 			'downloads.changeRetentionDays' => ({required Object value}) => '보관 일수: ${value}',
 			'downloads.noChanges' => '변경 사항 없음',
+			'downloads.retentionTrimTitle' => '보관 정리',
+			'downloads.retentionTrimMessage' => '다음 에피소드들은 보관 한도를 초과하여 삭제됩니다:',
+			'downloads.retentionTrimShowEntry' => ({required Object title, required Object count}) => '${title} — ${count}개 에피소드',
+			'downloads.retentionTrimTotal' => ({required Object count}) => '총 ${count}개 에피소드가 삭제됩니다',
+			'downloads.retentionTrimConfirm' => '삭제',
+			'downloads.retentionTrimCancel' => '취소',
+			'downloads.retentionTrimComplete' => '보관 정리 완료',
 			'shaders.title' => '셰이더',
 			'shaders.noShaderDescription' => '비디오 향상 없음',
 			'shaders.nvscalerDescription' => '더 선명한 비디오를 위한 NVIDIA 이미지 스케일링',

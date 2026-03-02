@@ -736,7 +736,14 @@
     "changeSeasonsOff": "Télécharger les nouvelles saisons : désactivé",
     "changeMaxEpisodes": "Épisodes max : ${value}",
     "changeRetentionDays": "Jours de rétention : ${value}",
-    "noChanges": "Aucune modification détectée"
+    "noChanges": "Aucune modification détectée",
+    "retentionTrimTitle": "Nettoyage de rétention",
+    "retentionTrimMessage": "Les épisodes suivants dépassent vos limites de rétention et seront supprimés :",
+    "retentionTrimShowEntry": "${title} — ${count} épisodes",
+    "retentionTrimTotal": "Total : ${count} épisodes seront supprimés",
+    "retentionTrimConfirm": "Supprimer",
+    "retentionTrimCancel": "Annuler",
+    "retentionTrimComplete": "Nettoyage de rétention terminé"
   },
   "shaders": {
     "title": "Shaders",

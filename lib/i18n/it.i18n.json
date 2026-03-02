@@ -636,7 +636,14 @@
     "changeSeasonsOff": "Scarica nuove stagioni: disattivato",
     "changeMaxEpisodes": "Episodi max: ${value}",
     "changeRetentionDays": "Giorni di conservazione: ${value}",
-    "noChanges": "Nessuna modifica rilevata"
+    "noChanges": "Nessuna modifica rilevata",
+    "retentionTrimTitle": "Pulizia della conservazione",
+    "retentionTrimMessage": "I seguenti episodi superano i tuoi limiti di conservazione e verranno rimossi:",
+    "retentionTrimShowEntry": "${title} — ${count} episodi",
+    "retentionTrimTotal": "Totale: ${count} episodi verranno rimossi",
+    "retentionTrimConfirm": "Rimuovi",
+    "retentionTrimCancel": "Annulla",
+    "retentionTrimComplete": "Pulizia della conservazione completata"
   },
   "playlists": {
     "title": "Playlist",

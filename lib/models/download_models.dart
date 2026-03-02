@@ -129,6 +129,29 @@ class DeletionProgress {
   }
 }
 
+/// Result of retention policy evaluation for a single show.
+/// Contains the episodes that exceed configured limits and should be trimmed.
+class RetentionTrimResult {
+  final String showGlobalKey;
+  final String showTitle;
+
+  /// Episode globalKeys ordered by trim priority (watched-oldest first, then unwatched-oldest).
+  final List<String> episodeGlobalKeys;
+
+  /// Total completed episodes for this show (for dialog context).
+  final int totalEpisodesForShow;
+
+  const RetentionTrimResult({
+    required this.showGlobalKey,
+    required this.showTitle,
+    required this.episodeGlobalKeys,
+    required this.totalEpisodesForShow,
+  });
+
+  /// Number of episodes that will be removed.
+  int get episodeCount => episodeGlobalKeys.length;
+}
+
 class SeriesDownloadSettings {
   final String serverId;
   final String ratingKey;

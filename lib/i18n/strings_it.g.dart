@@ -886,6 +886,13 @@ class _TranslationsDownloadsIt implements TranslationsDownloadsEn {
 	@override String changeMaxEpisodes({required Object value}) => 'Episodi max: ${value}';
 	@override String changeRetentionDays({required Object value}) => 'Giorni di conservazione: ${value}';
 	@override String get noChanges => 'Nessuna modifica rilevata';
+	@override String get retentionTrimTitle => 'Pulizia della conservazione';
+	@override String get retentionTrimMessage => 'I seguenti episodi superano i tuoi limiti di conservazione e verranno rimossi:';
+	@override String retentionTrimShowEntry({required Object title, required Object count}) => '${title} — ${count} episodi';
+	@override String retentionTrimTotal({required Object count}) => 'Totale: ${count} episodi verranno rimossi';
+	@override String get retentionTrimConfirm => 'Rimuovi';
+	@override String get retentionTrimCancel => 'Annulla';
+	@override String get retentionTrimComplete => 'Pulizia della conservazione completata';
 }
 
 // Path: playlists
@@ -1901,6 +1908,13 @@ extension on TranslationsIt {
 			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Episodi max: ${value}',
 			'downloads.changeRetentionDays' => ({required Object value}) => 'Giorni di conservazione: ${value}',
 			'downloads.noChanges' => 'Nessuna modifica rilevata',
+			'downloads.retentionTrimTitle' => 'Pulizia della conservazione',
+			'downloads.retentionTrimMessage' => 'I seguenti episodi superano i tuoi limiti di conservazione e verranno rimossi:',
+			'downloads.retentionTrimShowEntry' => ({required Object title, required Object count}) => '${title} — ${count} episodi',
+			'downloads.retentionTrimTotal' => ({required Object count}) => 'Totale: ${count} episodi verranno rimossi',
+			'downloads.retentionTrimConfirm' => 'Rimuovi',
+			'downloads.retentionTrimCancel' => 'Annulla',
+			'downloads.retentionTrimComplete' => 'Pulizia della conservazione completata',
 			'playlists.title' => 'Playlist',
 			'playlists.noPlaylists' => 'Nessuna playlist trovata',
 			'playlists.create' => 'Crea playlist',

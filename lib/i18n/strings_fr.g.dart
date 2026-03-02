@@ -1007,6 +1007,13 @@ class _TranslationsDownloadsFr implements TranslationsDownloadsEn {
 	@override String changeMaxEpisodes({required Object value}) => 'Épisodes max : ${value}';
 	@override String changeRetentionDays({required Object value}) => 'Jours de rétention : ${value}';
 	@override String get noChanges => 'Aucune modification détectée';
+	@override String get retentionTrimTitle => 'Nettoyage de rétention';
+	@override String get retentionTrimMessage => 'Les épisodes suivants dépassent vos limites de rétention et seront supprimés :';
+	@override String retentionTrimShowEntry({required Object title, required Object count}) => '${title} — ${count} épisodes';
+	@override String retentionTrimTotal({required Object count}) => 'Total : ${count} épisodes seront supprimés';
+	@override String get retentionTrimConfirm => 'Supprimer';
+	@override String get retentionTrimCancel => 'Annuler';
+	@override String get retentionTrimComplete => 'Nettoyage de rétention terminé';
 }
 
 // Path: shaders
@@ -1995,6 +2002,13 @@ extension on TranslationsFr {
 			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Épisodes max : ${value}',
 			'downloads.changeRetentionDays' => ({required Object value}) => 'Jours de rétention : ${value}',
 			'downloads.noChanges' => 'Aucune modification détectée',
+			'downloads.retentionTrimTitle' => 'Nettoyage de rétention',
+			'downloads.retentionTrimMessage' => 'Les épisodes suivants dépassent vos limites de rétention et seront supprimés :',
+			'downloads.retentionTrimShowEntry' => ({required Object title, required Object count}) => '${title} — ${count} épisodes',
+			'downloads.retentionTrimTotal' => ({required Object count}) => 'Total : ${count} épisodes seront supprimés',
+			'downloads.retentionTrimConfirm' => 'Supprimer',
+			'downloads.retentionTrimCancel' => 'Annuler',
+			'downloads.retentionTrimComplete' => 'Nettoyage de rétention terminé',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'Aucune amélioration vidéo',
 			'shaders.nvscalerDescription' => 'Mise à l\'échelle NVIDIA pour une vidéo plus nette',

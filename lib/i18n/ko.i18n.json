@@ -736,7 +736,14 @@
     "changeSeasonsOff": "새 시즌 다운로드: 비활성화",
     "changeMaxEpisodes": "최대 에피소드: ${value}",
     "changeRetentionDays": "보관 일수: ${value}",
-    "noChanges": "변경 사항 없음"
+    "noChanges": "변경 사항 없음",
+    "retentionTrimTitle": "보관 정리",
+    "retentionTrimMessage": "다음 에피소드들은 보관 한도를 초과하여 삭제됩니다:",
+    "retentionTrimShowEntry": "${title} — ${count}개 에피소드",
+    "retentionTrimTotal": "총 ${count}개 에피소드가 삭제됩니다",
+    "retentionTrimConfirm": "삭제",
+    "retentionTrimCancel": "취소",
+    "retentionTrimComplete": "보관 정리 완료"
   },
   "shaders": {
     "title": "셰이더",

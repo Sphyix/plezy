@@ -636,7 +636,14 @@
     "changeSeasonsOff": "Nieuwe seizoenen downloaden: uitgeschakeld",
     "changeMaxEpisodes": "Max afleveringen: ${value}",
     "changeRetentionDays": "Bewaardagen: ${value}",
-    "noChanges": "Geen wijzigingen gedetecteerd"
+    "noChanges": "Geen wijzigingen gedetecteerd",
+    "retentionTrimTitle": "Bewaarbeleid opruimen",
+    "retentionTrimMessage": "De volgende afleveringen overschrijden je bewaarbeleidslimieten en worden verwijderd:",
+    "retentionTrimShowEntry": "${title} — ${count} afleveringen",
+    "retentionTrimTotal": "Totaal: ${count} afleveringen worden verwijderd",
+    "retentionTrimConfirm": "Verwijderen",
+    "retentionTrimCancel": "Annuleren",
+    "retentionTrimComplete": "Bewaarbeleid opruiming voltooid"
   },
   "playlists": {
     "title": "Afspeellijsten",

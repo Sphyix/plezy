@@ -886,6 +886,13 @@ class _TranslationsDownloadsZh implements TranslationsDownloadsEn {
 	@override String changeMaxEpisodes({required Object value}) => '最大剧集数：${value}';
 	@override String changeRetentionDays({required Object value}) => '保留天数：${value}';
 	@override String get noChanges => '未检测到更改';
+	@override String get retentionTrimTitle => '保留策略清理';
+	@override String get retentionTrimMessage => '以下剧集超出了您的保留限制，将被删除：';
+	@override String retentionTrimShowEntry({required Object title, required Object count}) => '${title} — ${count} 集';
+	@override String retentionTrimTotal({required Object count}) => '共 ${count} 集将被删除';
+	@override String get retentionTrimConfirm => '删除';
+	@override String get retentionTrimCancel => '取消';
+	@override String get retentionTrimComplete => '保留策略清理完成';
 }
 
 // Path: playlists
@@ -1901,6 +1908,13 @@ extension on TranslationsZh {
 			'downloads.changeMaxEpisodes' => ({required Object value}) => '最大剧集数：${value}',
 			'downloads.changeRetentionDays' => ({required Object value}) => '保留天数：${value}',
 			'downloads.noChanges' => '未检测到更改',
+			'downloads.retentionTrimTitle' => '保留策略清理',
+			'downloads.retentionTrimMessage' => '以下剧集超出了您的保留限制，将被删除：',
+			'downloads.retentionTrimShowEntry' => ({required Object title, required Object count}) => '${title} — ${count} 集',
+			'downloads.retentionTrimTotal' => ({required Object count}) => '共 ${count} 集将被删除',
+			'downloads.retentionTrimConfirm' => '删除',
+			'downloads.retentionTrimCancel' => '取消',
+			'downloads.retentionTrimComplete' => '保留策略清理完成',
 			'playlists.title' => '播放列表',
 			'playlists.noPlaylists' => '未找到播放列表',
 			'playlists.create' => '创建播放列表',

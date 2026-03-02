@@ -2275,6 +2275,27 @@ class TranslationsDownloadsEn {
 
 	/// en: 'No changes detected'
 	String get noChanges => 'No changes detected';
+
+	/// en: 'Retention Cleanup'
+	String get retentionTrimTitle => 'Retention Cleanup';
+
+	/// en: 'The following episodes exceed your retention limits and will be removed:'
+	String get retentionTrimMessage => 'The following episodes exceed your retention limits and will be removed:';
+
+	/// en: '${title} — ${count} episodes'
+	String retentionTrimShowEntry({required Object title, required Object count}) => '${title} — ${count} episodes';
+
+	/// en: 'Total: ${count} episodes will be removed'
+	String retentionTrimTotal({required Object count}) => 'Total: ${count} episodes will be removed';
+
+	/// en: 'Remove'
+	String get retentionTrimConfirm => 'Remove';
+
+	/// en: 'Cancel'
+	String get retentionTrimCancel => 'Cancel';
+
+	/// en: 'Retention cleanup complete'
+	String get retentionTrimComplete => 'Retention cleanup complete';
 }
 
 // Path: shaders
@@ -3664,6 +3685,13 @@ extension on Translations {
 			'downloads.changeMaxEpisodes' => ({required Object value}) => 'Max episodes: ${value}',
 			'downloads.changeRetentionDays' => ({required Object value}) => 'Retention days: ${value}',
 			'downloads.noChanges' => 'No changes detected',
+			'downloads.retentionTrimTitle' => 'Retention Cleanup',
+			'downloads.retentionTrimMessage' => 'The following episodes exceed your retention limits and will be removed:',
+			'downloads.retentionTrimShowEntry' => ({required Object title, required Object count}) => '${title} — ${count} episodes',
+			'downloads.retentionTrimTotal' => ({required Object count}) => 'Total: ${count} episodes will be removed',
+			'downloads.retentionTrimConfirm' => 'Remove',
+			'downloads.retentionTrimCancel' => 'Cancel',
+			'downloads.retentionTrimComplete' => 'Retention cleanup complete',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',

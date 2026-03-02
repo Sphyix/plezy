@@ -636,7 +636,14 @@
     "changeSeasonsOff": "Ladda ner nya säsonger: inaktiverat",
     "changeMaxEpisodes": "Max avsnitt: ${value}",
     "changeRetentionDays": "Lagringsdagar: ${value}",
-    "noChanges": "Inga ändringar upptäckta"
+    "noChanges": "Inga ändringar upptäckta",
+    "retentionTrimTitle": "Rensning av lagringsregler",
+    "retentionTrimMessage": "Följande avsnitt överstiger dina lagringsgränser och kommer att tas bort:",
+    "retentionTrimShowEntry": "${title} — ${count} avsnitt",
+    "retentionTrimTotal": "Totalt: ${count} avsnitt kommer att tas bort",
+    "retentionTrimConfirm": "Ta bort",
+    "retentionTrimCancel": "Avbryt",
+    "retentionTrimComplete": "Rensning av lagringsregler klar"
   },
   "playlists": {
     "title": "Spellistor",
