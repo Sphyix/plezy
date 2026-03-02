@@ -1054,7 +1054,22 @@ class DownloadProvider extends ChangeNotifier {
 
     int totalQueued = 0;
     for (final seasonKey in trackedSeasonKeys) {
-      final seasonMeta = _metadata[seasonKey];
+      var seasonMeta = _metadata[seasonKey];
+      if (seasonMeta == null) {
+        // Fallback: fetch season metadata from API when not in cache
+        final parsedSeason = parseGlobalKey(seasonKey);
+        if (parsedSeason != null) {
+          try {
+            final fetched = await client.getMetadataWithImages(parsedSeason.ratingKey);
+            if (fetched != null) {
+              seasonMeta = fetched.serverId != null ? fetched : fetched.copyWith(serverId: parsedSeason.serverId);
+              _metadata[seasonKey] = seasonMeta;
+            }
+          } catch (e) {
+            appLogger.w('Auto-download: Failed to fetch metadata for season $seasonKey', error: e);
+          }
+        }
+      }
       if (seasonMeta == null) {
         appLogger.w('Auto-download: No metadata for tracked season $seasonKey, skipping');
         continue;
@@ -1250,10 +1265,10 @@ class DownloadProvider extends ChangeNotifier {
         _withShowRefreshMutex(settings.globalKey, () async {
           int queued;
           if (settings.downloadNewSeasons) {
-            appLogger.d('Auto-download: ${showMetadata.title} — all seasons mode');
+            appLogger.d('Auto-download: ${showMetadata.title} - all seasons mode');
             queued = await queueMissingEpisodes(showMetadata, client);
           } else {
-            appLogger.d('Auto-download: ${showMetadata.title} — tracked seasons only mode');
+            appLogger.d('Auto-download: ${showMetadata.title} - tracked seasons only mode');
             queued = await _queueMissingEpisodesForTrackedSeasons(settings.globalKey, client);
           }
           if (queued > 0) {
