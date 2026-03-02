@@ -506,6 +506,7 @@ class _TranslationsVideoControlsSv implements TranslationsVideoControlsEn {
 	@override String get timelineSlider => 'Videotidslinje';
 	@override String get volumeSlider => 'Volymnivå';
 	@override String endsAt({required Object time}) => 'Slutar ${time}';
+	@override String get pipActive => 'Playing in Picture-in-Picture';
 	@override String get pipFailed => 'Bild-i-bild kunde inte starta';
 	@override late final _TranslationsVideoControlsPipErrorsSv pipErrors = _TranslationsVideoControlsPipErrorsSv._(_root);
 	@override String get chapters => 'Kapitel';
@@ -1201,8 +1202,10 @@ class _TranslationsVideoControlsPipErrorsSv implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Kräver Android 8.0 eller nyare';
+	@override String get iosVersion => 'Kräver iOS 15.0 eller nyare';
 	@override String get permissionDisabled => 'Bild-i-bild-behörighet är inaktiverad. Aktivera den i Inställningar > Appar > Plezy > Bild-i-bild';
 	@override String get notSupported => 'Denna enhet stöder inte bild-i-bild-läge';
+	@override String get voSwitchFailed => 'Kunde inte byta videoutgång för bild-i-bild';
 	@override String get failed => 'Bild-i-bild kunde inte starta';
 	@override String unknown({required Object error}) => 'Ett fel uppstod: ${error}';
 }
@@ -1662,10 +1665,13 @@ extension on TranslationsSv {
 			'videoControls.timelineSlider' => 'Videotidslinje',
 			'videoControls.volumeSlider' => 'Volymnivå',
 			'videoControls.endsAt' => ({required Object time}) => 'Slutar ${time}',
+			'videoControls.pipActive' => 'Playing in Picture-in-Picture',
 			'videoControls.pipFailed' => 'Bild-i-bild kunde inte starta',
 			'videoControls.pipErrors.androidVersion' => 'Kräver Android 8.0 eller nyare',
+			'videoControls.pipErrors.iosVersion' => 'Kräver iOS 15.0 eller nyare',
 			'videoControls.pipErrors.permissionDisabled' => 'Bild-i-bild-behörighet är inaktiverad. Aktivera den i Inställningar > Appar > Plezy > Bild-i-bild',
 			'videoControls.pipErrors.notSupported' => 'Denna enhet stöder inte bild-i-bild-läge',
+			'videoControls.pipErrors.voSwitchFailed' => 'Kunde inte byta videoutgång för bild-i-bild',
 			'videoControls.pipErrors.failed' => 'Bild-i-bild kunde inte starta',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Ett fel uppstod: ${error}',
 			'videoControls.chapters' => 'Kapitel',
@@ -1848,11 +1854,11 @@ extension on TranslationsSv {
 			'liveTv.noDvr' => 'Ingen DVR konfigurerad på någon server',
 			'liveTv.tuneFailed' => 'Kunde inte ställa in kanalen',
 			'liveTv.loading' => 'Laddar kanaler...',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.nowPlaying' => 'Spelas nu',
 			'liveTv.noPrograms' => 'Ingen programdata tillgänglig',
 			'liveTv.channelNumber' => ({required Object number}) => 'Kanal ${number}',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
 			'liveTv.premiere' => 'NY',

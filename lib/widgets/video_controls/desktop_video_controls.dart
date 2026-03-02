@@ -96,6 +96,9 @@ class DesktopVideoControls extends StatefulWidget {
   /// Called to toggle ambient lighting (passed to settings sheet)
   final VoidCallback? onToggleAmbientLighting;
 
+  /// Whether subtitles are currently visible (false = hidden via sub-visibility toggle)
+  final bool subtitlesVisible;
+
   /// Whether to show the queue button
   final bool showQueueButton;
 
@@ -151,6 +154,7 @@ class DesktopVideoControls extends StatefulWidget {
     this.liveChannelName,
     this.isAmbientLightingEnabled = false,
     this.onToggleAmbientLighting,
+    this.subtitlesVisible = true,
     this.showQueueButton = false,
     this.onQueueItemSelected,
   });
@@ -633,7 +637,7 @@ class DesktopVideoControlsState extends State<DesktopVideoControls> {
                               final rate = rateSnap.data ?? 1.0;
                               if (remaining.inSeconds <= 0) return const SizedBox.shrink();
 
-                              final text = t.videoControls.endsAt(time: formatFinishTime(remaining, rate: rate));
+                              final text = t.videoControls.endsAt(time: formatFinishTime(remaining, rate: rate, is24Hour: MediaQuery.alwaysUse24HourFormatOf(context)));
                               const style = TextStyle(color: Colors.white70, fontSize: 13);
 
                               return LayoutBuilder(
@@ -681,7 +685,7 @@ class DesktopVideoControlsState extends State<DesktopVideoControls> {
                 isFullscreen: widget.isFullscreen,
                 isAlwaysOnTop: widget.isAlwaysOnTop,
                 serverId: widget.serverId,
-                onTogglePIPMode: null, // PIP not supported on desktop
+                onTogglePIPMode: widget.onTogglePIPMode,
                 onCycleBoxFitMode: widget.onCycleBoxFitMode,
                 onToggleFullscreen: widget.onToggleFullscreen,
                 onToggleAlwaysOnTop: widget.onToggleAlwaysOnTop,
@@ -697,6 +701,7 @@ class DesktopVideoControlsState extends State<DesktopVideoControls> {
                 onNavigateLeft: navigateFromTrackToVolume,
                 canControl: widget.canControl,
                 isLive: widget.isLive,
+                subtitlesVisible: widget.subtitlesVisible,
                 showQueueButton: widget.showQueueButton,
                 onQueueItemSelected: widget.onQueueItemSelected,
                 shaderService: widget.shaderService,

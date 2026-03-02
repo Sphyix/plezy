@@ -506,6 +506,7 @@ class _TranslationsVideoControlsFr implements TranslationsVideoControlsEn {
 	@override String get timelineSlider => 'Timeline vidéo';
 	@override String get volumeSlider => 'Niveau sonore';
 	@override String endsAt({required Object time}) => 'Fin à ${time}';
+	@override String get pipActive => 'Playing in Picture-in-Picture';
 	@override String get pipFailed => 'Échec du démarrage du mode image dans l\'image';
 	@override late final _TranslationsVideoControlsPipErrorsFr pipErrors = _TranslationsVideoControlsPipErrorsFr._(_root);
 	@override String get chapters => 'Chapitres';
@@ -1201,8 +1202,10 @@ class _TranslationsVideoControlsPipErrorsFr implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Nécessite Android 8.0 ou plus récent';
+	@override String get iosVersion => 'Nécessite iOS 15.0 ou plus récent';
 	@override String get permissionDisabled => 'L\'autorisation Image dans l\'image est désactivée. Activez-la dans Paramètres > Applications > Plezy > Image dans l\'image';
 	@override String get notSupported => 'Cet appareil ne prend pas en charge le mode image dans l\'image';
+	@override String get voSwitchFailed => 'Échec du changement de sortie vidéo pour l\'image dans l\'image';
 	@override String get failed => 'Échec du démarrage du mode image dans l\'image';
 	@override String unknown({required Object error}) => 'Une erreur s\'est produite : ${error}';
 }
@@ -1662,10 +1665,13 @@ extension on TranslationsFr {
 			'videoControls.timelineSlider' => 'Timeline vidéo',
 			'videoControls.volumeSlider' => 'Niveau sonore',
 			'videoControls.endsAt' => ({required Object time}) => 'Fin à ${time}',
+			'videoControls.pipActive' => 'Playing in Picture-in-Picture',
 			'videoControls.pipFailed' => 'Échec du démarrage du mode image dans l\'image',
 			'videoControls.pipErrors.androidVersion' => 'Nécessite Android 8.0 ou plus récent',
+			'videoControls.pipErrors.iosVersion' => 'Nécessite iOS 15.0 ou plus récent',
 			'videoControls.pipErrors.permissionDisabled' => 'L\'autorisation Image dans l\'image est désactivée. Activez-la dans Paramètres > Applications > Plezy > Image dans l\'image',
 			'videoControls.pipErrors.notSupported' => 'Cet appareil ne prend pas en charge le mode image dans l\'image',
+			'videoControls.pipErrors.voSwitchFailed' => 'Échec du changement de sortie vidéo pour l\'image dans l\'image',
 			'videoControls.pipErrors.failed' => 'Échec du démarrage du mode image dans l\'image',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Une erreur s\'est produite : ${error}',
 			'videoControls.chapters' => 'Chapitres',
@@ -1848,11 +1854,11 @@ extension on TranslationsFr {
 			'liveTv.noDvr' => 'Aucun DVR configuré sur les serveurs',
 			'liveTv.tuneFailed' => 'Impossible de syntoniser la chaîne',
 			'liveTv.loading' => 'Chargement des chaînes...',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.nowPlaying' => 'En cours de lecture',
 			'liveTv.noPrograms' => 'Aucune donnée de programme disponible',
 			'liveTv.channelNumber' => ({required Object number}) => 'Ch. ${number}',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.live' => 'EN DIRECT',
 			'liveTv.hd' => 'HD',
 			'liveTv.premiere' => 'NOUVEAU',

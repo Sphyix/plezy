@@ -506,6 +506,7 @@ class _TranslationsVideoControlsKo implements TranslationsVideoControlsEn {
 	@override String get timelineSlider => '타임라인';
 	@override String get volumeSlider => '볼륨 조절';
 	@override String endsAt({required Object time}) => '${time}에 종료';
+	@override String get pipActive => 'Playing in Picture-in-Picture';
 	@override String get pipFailed => '화면 속 화면 모드를 시작할 수 없습니다';
 	@override late final _TranslationsVideoControlsPipErrorsKo pipErrors = _TranslationsVideoControlsPipErrorsKo._(_root);
 	@override String get chapters => '챕터';
@@ -1201,8 +1202,10 @@ class _TranslationsVideoControlsPipErrorsKo implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Android 8.0 이상이 필요합니다';
+	@override String get iosVersion => 'iOS 15.0 이상이 필요합니다';
 	@override String get permissionDisabled => '화면 속 화면 권한이 비활성화되어 있습니다. 설정 > 앱 > Plezy > 화면 속 화면에서 활성화하세요';
 	@override String get notSupported => '이 기기는 화면 속 화면 모드를 지원하지 않습니다';
+	@override String get voSwitchFailed => '화면 속 화면을 위한 비디오 출력 전환에 실패했습니다';
 	@override String get failed => '화면 속 화면 모드를 시작할 수 없습니다';
 	@override String unknown({required Object error}) => '오류가 발생했습니다: ${error}';
 }
@@ -1662,10 +1665,13 @@ extension on TranslationsKo {
 			'videoControls.timelineSlider' => '타임라인',
 			'videoControls.volumeSlider' => '볼륨 조절',
 			'videoControls.endsAt' => ({required Object time}) => '${time}에 종료',
+			'videoControls.pipActive' => 'Playing in Picture-in-Picture',
 			'videoControls.pipFailed' => '화면 속 화면 모드를 시작할 수 없습니다',
 			'videoControls.pipErrors.androidVersion' => 'Android 8.0 이상이 필요합니다',
+			'videoControls.pipErrors.iosVersion' => 'iOS 15.0 이상이 필요합니다',
 			'videoControls.pipErrors.permissionDisabled' => '화면 속 화면 권한이 비활성화되어 있습니다. 설정 > 앱 > Plezy > 화면 속 화면에서 활성화하세요',
 			'videoControls.pipErrors.notSupported' => '이 기기는 화면 속 화면 모드를 지원하지 않습니다',
+			'videoControls.pipErrors.voSwitchFailed' => '화면 속 화면을 위한 비디오 출력 전환에 실패했습니다',
 			'videoControls.pipErrors.failed' => '화면 속 화면 모드를 시작할 수 없습니다',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => '오류가 발생했습니다: ${error}',
 			'videoControls.chapters' => '챕터',
@@ -1848,11 +1854,11 @@ extension on TranslationsKo {
 			'liveTv.noDvr' => '서버에 DVR이 구성되어 있지 않습니다',
 			'liveTv.tuneFailed' => '채널 튜닝에 실패했습니다',
 			'liveTv.loading' => '채널 로딩 중...',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.nowPlaying' => '현재 재생 중',
 			'liveTv.noPrograms' => '프로그램 데이터가 없습니다',
 			'liveTv.channelNumber' => ({required Object number}) => '채널 ${number}',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.live' => '실시간',
 			'liveTv.hd' => 'HD',
 			'liveTv.premiere' => '신규',

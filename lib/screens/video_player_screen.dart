@@ -188,7 +188,8 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
   /// iOS auto-PiP is system-initiated during the background transition, so
   /// isPipActive may not be true yet — we also check the auto-PiP setting.
   bool get _shouldSkipForPip =>
-      PipService().isPipActive.value || (Platform.isIOS && _autoPipEnabled);
+      PipService().isPipActive.value ||
+      ((Platform.isIOS || Platform.isMacOS) && _autoPipEnabled);
 
   // Services
   MediaControlsManager? _mediaControlsManager;
@@ -1101,10 +1102,13 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
 
         // Initialize video PIP and filter manager with player and available versions
         if (player != null) {
+          final settings = await SettingsService.getInstance();
           _videoFilterManager = VideoFilterManager(
             player: player!,
             availableVersions: _availableVersions,
             selectedMediaIndex: widget.selectedMediaIndex,
+            initialBoxFitMode: settings.getDefaultBoxFitMode(),
+            onBoxFitModeChanged: (mode) => settings.setDefaultBoxFitMode(mode),
           );
           // Update video filter once dimensions are available
           _videoFilterManager!.updateVideoFilter();
@@ -1264,15 +1268,18 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
     }
   }
 
-  /// Apply the saved shader preset on playback start
+  /// Apply the saved shader preset on playback start.
+  /// Reads directly from SettingsService (synchronous SharedPreferences) to
+  /// avoid a race with ShaderProvider's async initialization.
   Future<void> _applySavedShaderPreset() async {
     if (_shaderService == null || !_shaderService!.isSupported) return;
 
     try {
-      final shaderProvider = context.read<ShaderProvider>();
-      final preset = shaderProvider.savedPreset;
+      final settings = await SettingsService.getInstance();
+      final presetId = settings.getGlobalShaderPreset();
+      final preset = ShaderPreset.fromId(presetId) ?? ShaderPreset.none;
       await _shaderService!.applyPreset(preset);
-      shaderProvider.setCurrentPreset(preset);
+      context.read<ShaderProvider>().setCurrentPreset(preset);
     } catch (e) {
       appLogger.d('Could not apply shader preset', error: e);
     }
@@ -2567,6 +2574,36 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> with WidgetsBindin
           },
           child: Stack(
             children: [
+              // macOS PiP placeholder — video is in PiP window, show background with icon
+              // Placed before Video so controls render on top
+              if (Platform.isMacOS)
+                ValueListenableBuilder<bool>(
+                  valueListenable: PipService().isPipActive,
+                  builder: (context, isInPip, child) {
+                    if (!isInPip) return const SizedBox.shrink();
+                    return Positioned.fill(
+                      child: Container(
+                        color: Colors.black,
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Symbols.picture_in_picture_alt_rounded, size: 48, color: Colors.white.withValues(alpha: 0.5)),
+                              const SizedBox(height: 12),
+                              Text(
+                                t.videoControls.pipActive,
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               // Video player
               Center(
                 child: LayoutBuilder(

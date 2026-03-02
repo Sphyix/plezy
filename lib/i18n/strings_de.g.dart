@@ -506,6 +506,7 @@ class _TranslationsVideoControlsDe implements TranslationsVideoControlsEn {
 	@override String get timelineSlider => 'Video-Zeitleiste';
 	@override String get volumeSlider => 'Lautstärkepegel';
 	@override String endsAt({required Object time}) => 'Endet um ${time}';
+	@override String get pipActive => 'Playing in Picture-in-Picture';
 	@override String get pipFailed => 'Bild-in-Bild konnte nicht gestartet werden';
 	@override late final _TranslationsVideoControlsPipErrorsDe pipErrors = _TranslationsVideoControlsPipErrorsDe._(_root);
 	@override String get chapters => 'Kapitel';
@@ -1201,8 +1202,10 @@ class _TranslationsVideoControlsPipErrorsDe implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Erfordert Android 8.0 oder neuer';
+	@override String get iosVersion => 'Erfordert iOS 15.0 oder neuer';
 	@override String get permissionDisabled => 'Bild-in-Bild-Berechtigung ist deaktiviert. Aktiviere sie unter Einstellungen > Apps > Plezy > Bild-in-Bild';
 	@override String get notSupported => 'Dieses Gerät unterstützt den Bild-in-Bild-Modus nicht';
+	@override String get voSwitchFailed => 'Videoausgabe für Bild-in-Bild konnte nicht umgeschaltet werden';
 	@override String get failed => 'Bild-in-Bild konnte nicht gestartet werden';
 	@override String unknown({required Object error}) => 'Ein Fehler ist aufgetreten: ${error}';
 }
@@ -1662,10 +1665,13 @@ extension on TranslationsDe {
 			'videoControls.timelineSlider' => 'Video-Zeitleiste',
 			'videoControls.volumeSlider' => 'Lautstärkepegel',
 			'videoControls.endsAt' => ({required Object time}) => 'Endet um ${time}',
+			'videoControls.pipActive' => 'Playing in Picture-in-Picture',
 			'videoControls.pipFailed' => 'Bild-in-Bild konnte nicht gestartet werden',
 			'videoControls.pipErrors.androidVersion' => 'Erfordert Android 8.0 oder neuer',
+			'videoControls.pipErrors.iosVersion' => 'Erfordert iOS 15.0 oder neuer',
 			'videoControls.pipErrors.permissionDisabled' => 'Bild-in-Bild-Berechtigung ist deaktiviert. Aktiviere sie unter Einstellungen > Apps > Plezy > Bild-in-Bild',
 			'videoControls.pipErrors.notSupported' => 'Dieses Gerät unterstützt den Bild-in-Bild-Modus nicht',
+			'videoControls.pipErrors.voSwitchFailed' => 'Videoausgabe für Bild-in-Bild konnte nicht umgeschaltet werden',
 			'videoControls.pipErrors.failed' => 'Bild-in-Bild konnte nicht gestartet werden',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Ein Fehler ist aufgetreten: ${error}',
 			'videoControls.chapters' => 'Kapitel',
@@ -1848,11 +1854,11 @@ extension on TranslationsDe {
 			'liveTv.noDvr' => 'Kein DVR auf einem Server konfiguriert',
 			'liveTv.tuneFailed' => 'Kanal konnte nicht eingestellt werden',
 			'liveTv.loading' => 'Kanäle werden geladen...',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.nowPlaying' => 'Läuft gerade',
 			'liveTv.noPrograms' => 'Keine Programmdaten verfügbar',
 			'liveTv.channelNumber' => ({required Object number}) => 'Kanal ${number}',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
 			'liveTv.premiere' => 'NEU',

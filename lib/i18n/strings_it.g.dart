@@ -506,6 +506,7 @@ class _TranslationsVideoControlsIt implements TranslationsVideoControlsEn {
 	@override String get timelineSlider => 'Timeline video';
 	@override String get volumeSlider => 'Livello volume';
 	@override String endsAt({required Object time}) => 'Finisce alle ${time}';
+	@override String get pipActive => 'Playing in Picture-in-Picture';
 	@override String get pipFailed => 'Impossibile avviare la modalità Picture-in-Picture';
 	@override late final _TranslationsVideoControlsPipErrorsIt pipErrors = _TranslationsVideoControlsPipErrorsIt._(_root);
 	@override String get chapters => 'Capitoli';
@@ -1201,8 +1202,10 @@ class _TranslationsVideoControlsPipErrorsIt implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Richiede Android 8.0 o versioni successive';
+	@override String get iosVersion => 'Richiede iOS 15.0 o versioni successive';
 	@override String get permissionDisabled => 'L\'autorizzazione Picture-in-Picture è disabilitata. Abilitala in Impostazioni > App > Plezy > Picture-in-Picture';
 	@override String get notSupported => 'Questo dispositivo non supporta la modalità Picture-in-Picture';
+	@override String get voSwitchFailed => 'Impossibile cambiare l\'uscita video per Picture-in-Picture';
 	@override String get failed => 'Impossibile avviare la modalità Picture-in-Picture';
 	@override String unknown({required Object error}) => 'Si è verificato un errore: ${error}';
 }
@@ -1662,10 +1665,13 @@ extension on TranslationsIt {
 			'videoControls.timelineSlider' => 'Timeline video',
 			'videoControls.volumeSlider' => 'Livello volume',
 			'videoControls.endsAt' => ({required Object time}) => 'Finisce alle ${time}',
+			'videoControls.pipActive' => 'Playing in Picture-in-Picture',
 			'videoControls.pipFailed' => 'Impossibile avviare la modalità Picture-in-Picture',
 			'videoControls.pipErrors.androidVersion' => 'Richiede Android 8.0 o versioni successive',
+			'videoControls.pipErrors.iosVersion' => 'Richiede iOS 15.0 o versioni successive',
 			'videoControls.pipErrors.permissionDisabled' => 'L\'autorizzazione Picture-in-Picture è disabilitata. Abilitala in Impostazioni > App > Plezy > Picture-in-Picture',
 			'videoControls.pipErrors.notSupported' => 'Questo dispositivo non supporta la modalità Picture-in-Picture',
+			'videoControls.pipErrors.voSwitchFailed' => 'Impossibile cambiare l\'uscita video per Picture-in-Picture',
 			'videoControls.pipErrors.failed' => 'Impossibile avviare la modalità Picture-in-Picture',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Si è verificato un errore: ${error}',
 			'videoControls.chapters' => 'Capitoli',
@@ -1848,11 +1854,11 @@ extension on TranslationsIt {
 			'liveTv.noDvr' => 'Nessun DVR configurato su nessun server',
 			'liveTv.tuneFailed' => 'Impossibile sintonizzare il canale',
 			'liveTv.loading' => 'Caricamento canali...',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.nowPlaying' => 'In riproduzione',
 			'liveTv.noPrograms' => 'Nessun dato di programma disponibile',
 			'liveTv.channelNumber' => ({required Object number}) => 'Canale ${number}',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.live' => 'IN DIRETTA',
 			'liveTv.hd' => 'HD',
 			'liveTv.premiere' => 'NUOVO',

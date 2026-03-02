@@ -506,6 +506,7 @@ class _TranslationsVideoControlsNl implements TranslationsVideoControlsEn {
 	@override String get timelineSlider => 'Videotijdlijn';
 	@override String get volumeSlider => 'Volumeniveau';
 	@override String endsAt({required Object time}) => 'Eindigt om ${time}';
+	@override String get pipActive => 'Playing in Picture-in-Picture';
 	@override String get pipFailed => 'Beeld-in-beeld kon niet worden gestart';
 	@override late final _TranslationsVideoControlsPipErrorsNl pipErrors = _TranslationsVideoControlsPipErrorsNl._(_root);
 	@override String get chapters => 'Hoofdstukken';
@@ -1201,8 +1202,10 @@ class _TranslationsVideoControlsPipErrorsNl implements TranslationsVideoControls
 
 	// Translations
 	@override String get androidVersion => 'Vereist Android 8.0 of nieuwer';
+	@override String get iosVersion => 'Vereist iOS 15.0 of nieuwer';
 	@override String get permissionDisabled => 'Beeld-in-beeld toestemming is uitgeschakeld. Schakel deze in via Instellingen > Apps > Plezy > Beeld-in-beeld';
 	@override String get notSupported => 'Dit apparaat ondersteunt geen beeld-in-beeld modus';
+	@override String get voSwitchFailed => 'Kan video-uitvoer niet wisselen voor beeld-in-beeld';
 	@override String get failed => 'Beeld-in-beeld kon niet worden gestart';
 	@override String unknown({required Object error}) => 'Er is een fout opgetreden: ${error}';
 }
@@ -1662,10 +1665,13 @@ extension on TranslationsNl {
 			'videoControls.timelineSlider' => 'Videotijdlijn',
 			'videoControls.volumeSlider' => 'Volumeniveau',
 			'videoControls.endsAt' => ({required Object time}) => 'Eindigt om ${time}',
+			'videoControls.pipActive' => 'Playing in Picture-in-Picture',
 			'videoControls.pipFailed' => 'Beeld-in-beeld kon niet worden gestart',
 			'videoControls.pipErrors.androidVersion' => 'Vereist Android 8.0 of nieuwer',
+			'videoControls.pipErrors.iosVersion' => 'Vereist iOS 15.0 of nieuwer',
 			'videoControls.pipErrors.permissionDisabled' => 'Beeld-in-beeld toestemming is uitgeschakeld. Schakel deze in via Instellingen > Apps > Plezy > Beeld-in-beeld',
 			'videoControls.pipErrors.notSupported' => 'Dit apparaat ondersteunt geen beeld-in-beeld modus',
+			'videoControls.pipErrors.voSwitchFailed' => 'Kan video-uitvoer niet wisselen voor beeld-in-beeld',
 			'videoControls.pipErrors.failed' => 'Beeld-in-beeld kon niet worden gestart',
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Er is een fout opgetreden: ${error}',
 			'videoControls.chapters' => 'Hoofdstukken',
@@ -1848,11 +1854,11 @@ extension on TranslationsNl {
 			'liveTv.noDvr' => 'Geen DVR geconfigureerd op een server',
 			'liveTv.tuneFailed' => 'Kan zender niet afstemmen',
 			'liveTv.loading' => 'Zenders laden...',
+			_ => null,
+		} ?? switch (path) {
 			'liveTv.nowPlaying' => 'Nu aan het afspelen',
 			'liveTv.noPrograms' => 'Geen programmagegevens beschikbaar',
 			'liveTv.channelNumber' => ({required Object number}) => 'Kanaal ${number}',
-			_ => null,
-		} ?? switch (path) {
 			'liveTv.live' => 'LIVE',
 			'liveTv.hd' => 'HD',
 			'liveTv.premiere' => 'NIEUW',
